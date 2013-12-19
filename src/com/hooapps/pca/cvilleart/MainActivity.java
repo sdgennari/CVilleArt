@@ -38,6 +38,7 @@ public class MainActivity extends FragmentActivity
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
+	private ListView rightNavDrawerList;
 	
 	/** Called when the app is first opened */
     @Override
@@ -71,6 +72,7 @@ public class MainActivity extends FragmentActivity
         	// Initialize the NavDrawers
         	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         	initializeLeftNavDrawer();
+        	initializeRightNavDrawer();
         }
         
     }
@@ -103,6 +105,33 @@ public class MainActivity extends FragmentActivity
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	leftNavDrawerList.setAdapter(adapter);
+    }
+    
+    /**
+     * Creates the items for the rightNavDrawer and places them inside of the 
+     * custom ItemArrayAdapter. This adapter is then set as the adapter for 
+     * the ListView.
+     */
+    public void initializeRightNavDrawer() {
+    	rightNavDrawerList = (ListView) findViewById(R.id.right_drawer);
+    	
+    	// Initialize the List of items for the ItemArrayAdapter
+    	List<Item> items = new ArrayList<Item>();
+    	items.add(new Header("Help"));
+    	items.add(new TextItem("Help"));
+    	items.add(new TextItem("Terms/Conditions"));
+    	items.add(new TextItem("Report a Problem"));
+    	items.add(new TextItem("Rate this App"));
+    	items.add(new TextItem("Share this App"));
+    	
+    	items.add(new Header("Settings"));
+    	items.add(new TextItem("Theme Color"));
+    	items.add(new TextItem("Sounds"));
+    	items.add(new TextItem("Default Home Screen"));
+    	
+    	// Set the ItemArrayAdapter as the ListView adapter
+    	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
+    	rightNavDrawerList.setAdapter(adapter);
     }
     
     @Override
