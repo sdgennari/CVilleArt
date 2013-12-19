@@ -24,16 +24,23 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f080001;
-        public static final int fragment_container=0x7f080000;
+        public static final int action_settings=0x7f080006;
+        public static final int drawer_layout=0x7f080001;
+        public static final int fragment_container=0x7f080002;
+        public static final int item_text=0x7f080005;
+        public static final int left_drawer=0x7f080003;
+        public static final int right_drawer=0x7f080004;
+        public static final int separator=0x7f080000;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int discover_view=0x7f030001;
         public static final int event_view=0x7f030002;
-        public static final int home_screen=0x7f030003;
-        public static final int near_me_view=0x7f030004;
-        public static final int transportation_view=0x7f030005;
+        public static final int header=0x7f030003;
+        public static final int home_screen=0x7f030004;
+        public static final int near_me_view=0x7f030005;
+        public static final int text_item=0x7f030006;
+        public static final int transportation_view=0x7f030007;
     }
     public static final class menu {
         public static final int main=0x7f070000;
@@ -70,5 +77,8 @@ public final class R {
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f060001;
+        /**  Light Theme For the Application 
+         */
+        public static final int LightAppTheme=0x7f060002;
     }
 }

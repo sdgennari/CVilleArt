@@ -7,16 +7,28 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.hooapps.pca.cvilleart.NavDrawer.Header;
+import com.hooapps.pca.cvilleart.NavDrawer.Item;
+import com.hooapps.pca.cvilleart.NavDrawer.ItemArrayAdapter;
+import com.hooapps.pca.cvilleart.NavDrawer.TextItem;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
+import android.widget.ListView;
 
 //TODO Update the JavaDoc description as the functionality increases
 
 /**
-* MainActivity that is run when the app is initially started. [MORE HERE]
+* MainActivity that is run when the app is initially started. The main activity
+* creates the fragement_container as well as the left and right sliding drawers
+* that house the navigation and option menus. [MORE HERE]
 * 
 * @author Spencer Gennari
 */
@@ -24,10 +36,17 @@ import android.view.Menu;
 public class MainActivity extends FragmentActivity
 		implements HomeScreenFragment.OnViewSelectedListener{
 	
+	private DrawerLayout drawerLayout;
+	private ListView leftNavDrawerList;
+	
 	/** Called when the app is first opened */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Make sure to set the theme here, before loading any views
+        //this.setTheme(R.style.LightTheme);
+        
         setContentView(R.layout.home_screen);
         
         // Make sure that the home screen contains the fragment_container 
@@ -48,10 +67,44 @@ public class MainActivity extends FragmentActivity
         	
         	// Add the fragment to the fragment_container FrameLayout
         	getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+        	
+        	// Initialize the NavDrawers
+        	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        	initializeLeftNavDrawer();
         }
         
     }
-
+    
+    /**
+     * Creates the items for the leftNavDrawer and places them inside of the 
+     * custom ItemArrayAdapter. This adapter is then set as the adapter for 
+     * the ListView.
+     */
+    public void initializeLeftNavDrawer() {
+    	leftNavDrawerList = (ListView) findViewById(R.id.left_drawer);
+    	
+    	// Initialize the List of items for the ItemArrayAdapter
+    	List<Item> items = new ArrayList<Item>();
+    	items.add(new Header("Menu"));
+    	items.add(new TextItem("Home"));
+    	items.add(new TextItem("Bookmarks"));
+    	items.add(new TextItem("Recent"));
+    	
+    	items.add(new Header("CVille Art"));
+    	items.add(new TextItem("Near Me"));
+    	items.add(new TextItem("Discover"));
+    	items.add(new TextItem("Transportation"));
+    	items.add(new TextItem("Events"));
+    	
+    	items.add(new Header("Community"));
+    	items.add(new TextItem("Streams"));
+    	items.add(new TextItem("Capture"));
+    	
+    	// Set the ItemArrayAdapter as the ListView adapter
+    	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
+    	leftNavDrawerList.setAdapter(adapter);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
