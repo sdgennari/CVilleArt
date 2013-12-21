@@ -4,11 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:textSize="18sp"
-        android:text="NearMe" />
-
+    <FrameLayout 
+    android:id="@+id/fragment_content"
+    android:layout_weight="1"
+    android:layout_height="0dip"
+    android:layout_width = "match_parent"
+    android:layout_marginTop="?android:attr/actionBarSize">
+        
+    </FrameLayout>
+    
 </LinearLayout>
