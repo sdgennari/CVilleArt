@@ -59,6 +59,7 @@ import com.hooapps.pca.cvilleart.R;
 //     Write Code to Handle Devices For Which Google Play Services Aren't Enabled and to Handle Failed 
 //		Connection Attempts with the LocationClient
 
+
 //TODO: Sometimes the app crashes when leaving NearMeFragment b/c Acitvity gets destroyed?
 
 public class NearMeFragment extends Fragment implements android.widget.AdapterView.OnItemSelectedListener,
@@ -73,7 +74,7 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		fragment = new SupportMapFragment();
 		FragmentManager fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
@@ -107,6 +108,7 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 			mMap.setMyLocationEnabled(true);
 		}
 	}
+
 	public void setUpMap(int markerType)
 	{
 		if (mMap == null)
@@ -139,6 +141,7 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 			break;
 		}
 	}
+
 	
 	@Override
 	public void onStart() {
@@ -218,13 +221,17 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
     }
 
 	//Centers map on user every time LocationClient Connects (whenever onResume() is called)
+
 	//If the user isn't within 10 miles of JefTheater, map centers on JefTheater
+
+
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Log.d("Checkpoints","LocationClient Connected");
 		Location mCurLoc = mLocationClient.getLastLocation();
 		double mCurLat = mCurLoc.getLatitude();
 		double mCurLong = mCurLoc.getLongitude();
+
 		
 		float[] distanceFromJefTheater = new float[1];
 		Location.distanceBetween(mCurLat,mCurLong,jefTheaterLocation.latitude,jefTheaterLocation.longitude,distanceFromJefTheater);

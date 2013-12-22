@@ -17,8 +17,7 @@
 	    android:layout_height="wrap_content" />
          
     </LinearLayout>
-	   
-    
+
     <FrameLayout 
     android:id="@+id/fragment_content"
     android:layout_weight="1"
