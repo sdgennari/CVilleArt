@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-<<<<<<< HEAD
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height = "wrap_content"
@@ -18,20 +17,12 @@
 	    android:layout_height="wrap_content" />
          
     </LinearLayout>
-	   
-    
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
+
     <FrameLayout 
     android:id="@+id/fragment_content"
     android:layout_weight="1"
     android:layout_height="0dip"
-<<<<<<< HEAD
     android:layout_width = "match_parent">
-=======
-    android:layout_width = "match_parent"
-    android:layout_marginTop="?android:attr/actionBarSize">
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
         
     </FrameLayout>
     

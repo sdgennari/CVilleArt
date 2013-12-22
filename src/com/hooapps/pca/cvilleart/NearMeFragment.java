@@ -24,12 +24,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-<<<<<<< HEAD
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -38,13 +36,9 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-<<<<<<< HEAD
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-=======
-import com.google.android.gms.maps.model.LatLng;
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
 import com.hooapps.pca.cvilleart.R;
 
 // TODO Update the JavaDoc description as the functionality increases
@@ -69,18 +63,11 @@ import com.hooapps.pca.cvilleart.R;
 <<<<<<< HEAD
 public class NearMeFragment extends Fragment implements android.widget.AdapterView.OnItemSelectedListener,
 GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener  {
-=======
-public class NearMeFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
-GooglePlayServicesClient.OnConnectionFailedListener  {
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
 	
 	private GoogleMap mMap;
 	private SupportMapFragment fragment;
 	private LocationClient mLocationClient;
-<<<<<<< HEAD
 	public static final LatLng jefTheaterLocation = new LatLng(38.030656,-78.481205);
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -119,7 +106,7 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
 			mMap.setMyLocationEnabled(true);
 		}
 	}
-<<<<<<< HEAD
+
 	public void setUpMap(int markerType)
 	{
 		if (mMap == null)
@@ -152,8 +139,7 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
 			break;
 		}
 	}
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
+
 	
 	@Override
 	public void onStart() {
@@ -164,7 +150,7 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
         // applied to the fragment at this point so we can safely call methods that
 		// rely upon the layout having already been set up
 		setUpMap();
-<<<<<<< HEAD
+
 		
 		Spinner spinner = (Spinner) this.getView().findViewById(R.id.genre_spinner);
 		// Create an ArrayAdapter using the string array and a default spinner layout
@@ -177,8 +163,6 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
 		// Register this fragment as a listener for this spinner's item selected events 
 		spinner.setOnItemSelectedListener(this);
 		
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
 		Bundle args = getArguments();
 		if (args != null) {
 			// TODO Modify fragment according to settings
@@ -235,17 +219,16 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
     }
 
 	//Centers map on user every time LocationClient Connects (whenever onResume() is called)
-<<<<<<< HEAD
+
 	//If the user isn't within 10 miles of JefTheater, map centers on JefTheater
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
+
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Log.d("Checkpoints","LocationClient Connected");
 		Location mCurLoc = mLocationClient.getLastLocation();
 		double mCurLat = mCurLoc.getLatitude();
 		double mCurLong = mCurLoc.getLongitude();
-<<<<<<< HEAD
+
 		
 		float[] distanceFromJefTheater = new float[1];
 		Location.distanceBetween(mCurLat,mCurLong,jefTheaterLocation.latitude,jefTheaterLocation.longitude,distanceFromJefTheater);
@@ -260,10 +243,6 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(jefTheaterLocation, 18));
 		}
 		
-=======
-		LatLng mCurrentLocation = new LatLng(mCurLat, mCurLong);
-		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLocation, 18));
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
 	}
 
 	@Override
@@ -271,7 +250,6 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
 		Log.d("Checkpoints","LocationClient Disconnected");
 	}
 
-<<<<<<< HEAD
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
@@ -283,6 +261,4 @@ GooglePlayServicesClient.OnConnectionFailedListener  {
 		//Never Called as Far as I Can Tell
 	}
 
-=======
->>>>>>> f5a79effb420eb79074715c0950b92ccfa0cafc7
 }
