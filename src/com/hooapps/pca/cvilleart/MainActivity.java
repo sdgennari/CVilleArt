@@ -21,16 +21,19 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.view.View;
 
 //TODO Update the JavaDoc description as the functionality increases
 
 /**
 * MainActivity that is run when the app is initially started. The main activity
 * creates the fragement_container as well as the left and right sliding drawers
-* that house the navigation and option menus. [MORE HERE]
+* that house the navigation and option menus. OnItem[MORE HERE]
 * 
-* @author Spencer Gennari
+* @author Spencer Gennari Alex Ramey
 */
 
 public class MainActivity extends FragmentActivity
@@ -39,6 +42,7 @@ public class MainActivity extends FragmentActivity
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
 	private ListView rightNavDrawerList;
+	private Fragment oldFragment;
 	
 	/** Called when the app is first opened */
     @Override
@@ -102,9 +106,23 @@ public class MainActivity extends FragmentActivity
     	items.add(new TextItem("Streams"));
     	items.add(new TextItem("Capture"));
     	
+    	
+    	
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	leftNavDrawerList.setAdapter(adapter);
+    	leftNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
+    		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+    			if (position > 4 && position < 9)
+    			{
+    				onViewSelected(position - 5);
+    			}
+    			else if (position == 1)
+    			{
+    				onViewSelected(4);
+    			}
+    		}
+    	});
     }
     
     /**
@@ -173,6 +191,10 @@ public class MainActivity extends FragmentActivity
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
     		break;
+    	case 4: newFragment = new HomeScreenFragment();
+    		args = new Bundle();
+    		break;
+    	
     	}
     	
     	// Abort the mission if the fragment or args is still null to avoid NullPointerException
@@ -185,7 +207,12 @@ public class MainActivity extends FragmentActivity
     	
     	// Replace the fragment in fragment_container with the new fragemnt
     	// Add the transaction to the back stack to allow for navigation with the back button
-    	transaction.replace(R.id.fragment_container, newFragment);
+    	
+    	if (oldFragment != null) //it will be null the first time
+    	transaction.remove(oldFragment);//prevents fragments from stacking up. Is this unnecessary?
+    	
+    	oldFragment = newFragment;
+    	transaction.replace(R.id.fragment_container, newFragment); //Is fragment_container redrawn when oldFragment is removed?
     	transaction.addToBackStack(null);
     	
     	//Commit the transaction

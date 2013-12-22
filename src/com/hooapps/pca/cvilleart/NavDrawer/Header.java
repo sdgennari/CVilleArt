@@ -1,5 +1,6 @@
 package com.hooapps.pca.cvilleart.NavDrawer;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import com.hooapps.pca.cvilleart.NavDrawer.ItemArrayAdapter.Type;
 
 public class Header implements Item {
 	private final String text;
+	
 	
 	public Header(String text) {
 		this.text = text;
@@ -41,13 +43,13 @@ public class Header implements Item {
 	public View getView(LayoutInflater inflater, View convertView) {
 		View view;
 		if (convertView == null) {
-			view = (View) inflater.inflate(R.layout.header, null);
+			view = (View) inflater.inflate(R.layout.drawer_list_header, null);
 		} else {
 			view = convertView;
 		}
 		
-		TextView textView = (TextView) view.findViewById(R.id.separator);
-		textView.setText(text);
+		TextView header = (TextView) view.findViewById(R.id.header);
+		header.setText(this.text);
 		
 		return view;
 	}
