@@ -33,7 +33,8 @@ import android.view.View;
 * creates the fragement_container as well as the left and right sliding drawers
 * that house the navigation and option menus. OnItem[MORE HERE]
 * 
-* @author Spencer Gennari Alex Ramey
+* @author Spencer Gennari
+* @author Alex Ramey
 */
 
 public class MainActivity extends FragmentActivity
