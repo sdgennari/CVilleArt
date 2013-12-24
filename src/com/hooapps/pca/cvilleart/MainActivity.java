@@ -20,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -33,7 +34,7 @@ import android.view.View;
 * creates the fragement_container as well as the left and right sliding drawers
 * that house the navigation and option menus. OnItem[MORE HERE]
 * 
-* @author Spencer Gennari
+* @author Spencer Gennari 
 * @author Alex Ramey
 */
 
@@ -57,6 +58,15 @@ public class MainActivity extends FragmentActivity
         // Make sure that the home screen contains the fragment_container 
         if(findViewById(R.id.fragment_container) != null) {
         	
+        	//When device is rotated, Android destroys activity and then recreates it.
+        	//Therefore, it is important to properly initialize the Nav Drawers every time onCreate() is called.
+        	//To accomplish this, the following 3 lines of code needed to be placed before the savedInstanceState
+        	//if statement, which returns out of onCreate() before the Nav Drawers are ready to go after device
+        	//rotation, since savedInstanceState is not null in that scenario
+        	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        	initializeLeftNavDrawer();
+        	initializeRightNavDrawer();
+        	
         	// Only create new fragments if the app is not being restored
         	// This prevents multiple, identical fragments from stacking up 
         	if(savedInstanceState != null) {
@@ -66,17 +76,12 @@ public class MainActivity extends FragmentActivity
         	// Create the initial HomeScreenFragment
         	HomeScreenFragment firstFragment = new HomeScreenFragment();
         	
-        	// If special instructions were provided by the Intend,
+        	// If special instructions were provided by the Intent,
         	// pass them onto the HomeScreenFragment
         	firstFragment.setArguments(getIntent().getExtras());
         	
         	// Add the fragment to the fragment_container FrameLayout
         	getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
-        	
-        	// Initialize the NavDrawers
-        	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        	initializeLeftNavDrawer();
-        	initializeRightNavDrawer();
         }
         
     }
