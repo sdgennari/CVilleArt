@@ -42,7 +42,6 @@ public class MainActivity extends FragmentActivity
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
 	private ListView rightNavDrawerList;
-	private Fragment oldFragment;
 	
 	/** Called when the app is first opened */
     @Override
@@ -208,11 +207,10 @@ public class MainActivity extends FragmentActivity
     	// Replace the fragment in fragment_container with the new fragemnt
     	// Add the transaction to the back stack to allow for navigation with the back button
     	
-    	if (oldFragment != null) //it will be null the first time
-    	transaction.remove(oldFragment);//prevents fragments from stacking up. Is this unnecessary?
-    	
-    	oldFragment = newFragment;
-    	transaction.replace(R.id.fragment_container, newFragment); //Is fragment_container redrawn when oldFragment is removed?
+    	transaction.replace(R.id.fragment_container, newFragment);
+    	//NOTE: This is fine as is. According to the API, this doesn't replace the fragment_container. Instead, it replaces
+    	//all the fragments in the given container with the newFragment. In other words, it removes everything in the container
+    	//and then puts the given fragment in the container, so all the oldFragmnet nonsense I put in here was not necessary
     	transaction.addToBackStack(null);
     	
     	//Commit the transaction
