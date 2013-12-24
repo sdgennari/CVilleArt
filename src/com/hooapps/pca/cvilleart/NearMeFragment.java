@@ -45,7 +45,8 @@ import com.hooapps.pca.cvilleart.R;
 /**
  * Fragment to display the location-specific art in CVille. [MORE HERE]
  * 
- * @author Spencer Gennari Alex Ramey
+ * @author Spencer Gennari
+ * @author Alex Ramey
  *
  */
 
