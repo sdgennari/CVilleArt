@@ -43,15 +43,15 @@ public class HomeScreenFragment extends ListFragment {
 		"Browse Upcoming Events"
 	};
 	
-	OnViewSelectedListener mCallback;
+	OnHomeScreenViewSelectedListener mCallback;
 	
-	public interface OnViewSelectedListener {
+	public interface OnHomeScreenViewSelectedListener {
 		/**
 		 * Called by HomeScreenFragment when a view is selected
 		 * 
 		 * @param position The position of the view in the list
 		 * */
-		public void onViewSelected(int position);
+		public void onHomeScreenViewSelected(int position);
 	}
 	
 	@Override
@@ -72,7 +72,7 @@ public class HomeScreenFragment extends ListFragment {
 		// Make sure that the activity implements OnViewSelectedListener
 		// If not, throw an exception
 		try {
-			mCallback = (OnViewSelectedListener) activity;
+			mCallback = (OnHomeScreenViewSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnViewSelectedListener");
 		}
@@ -89,7 +89,7 @@ public class HomeScreenFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// Notify the parent activity
-		mCallback.onViewSelected(position);
+		mCallback.onHomeScreenViewSelected(position);
 	}
 
 }

@@ -1,7 +1,7 @@
-package com.hooapps.pca.cvilleart.NavDrawer;
+package com.hooapps.pca.cvilleart.ListViewElems;
 
 import com.hooapps.pca.cvilleart.R;
-import com.hooapps.pca.cvilleart.NavDrawer.ItemArrayAdapter.Type;
+import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter.Type;
 
 import android.view.LayoutInflater;
 import android.view.View;

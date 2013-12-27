@@ -6,7 +6,7 @@
  * but always give credit where credit is due.
  */
 
-package com.hooapps.pca.cvilleart.NavDrawer;
+package com.hooapps.pca.cvilleart.ListViewElems;
 
 import android.view.LayoutInflater;
 import android.view.View;
