@@ -126,6 +126,8 @@ public class MainActivity extends FragmentActivity
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	leftNavDrawerList.setAdapter(adapter);
+    	
+    	// Respond accordingly when an item is clicked
     	leftNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
     		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
     			if (position > 4 && position < 9)
@@ -136,6 +138,8 @@ public class MainActivity extends FragmentActivity
     			{
     				onHomeScreenViewSelected(4);
     			}
+    			
+    			drawerLayout.closeDrawer(leftNavDrawerList);
     		}
     	});
     }
@@ -165,6 +169,15 @@ public class MainActivity extends FragmentActivity
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	rightNavDrawerList.setAdapter(adapter);
+    	
+    	// Respond accordingly when an item is clicked
+    	rightNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
+    		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+    			//TODO Add click functionality here
+    			
+    			drawerLayout.closeDrawer(rightNavDrawerList);
+    		}
+    	});
     }
     
     @Override
@@ -244,25 +257,24 @@ public class MainActivity extends FragmentActivity
     	// TODO Make this more dynamic (maybe?). I'd like to believe there is a better way...
     	Fragment newFragment = null;
     	Bundle args = null;
-    	
+
     	// Abort the mission if the fragment or args is still null to avoid NullPointerException
     	if (newFragment == null || args == null) {
     		return;
     	}
-    	
+
     	newFragment.setArguments(args);
     	FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-    	
+
     	// Replace the fragment in fragment_container with the new fragemnt
     	// Add the transaction to the back stack to allow for navigation with the back button
-    	
-    	if (oldFragment != null) //it will be null the first time
-    	transaction.remove(oldFragment);//prevents fragments from stacking up. Is this unnecessary?
-    	
-    	oldFragment = newFragment;
-    	transaction.replace(R.id.fragment_container, newFragment); //Is fragment_container redrawn when oldFragment is removed?
+
+    	transaction.replace(R.id.fragment_container, newFragment);
+    	//NOTE: This is fine as is. According to the API, this doesn't replace the fragment_container. Instead, it replaces
+    	//all the fragments in the given container with the newFragment. In other words, it removes everything in the container
+    	//and then puts the given fragment in the container, so all the oldFragmnet nonsense I put in here was not necessary
     	transaction.addToBackStack(null);
-    	
+
     	//Commit the transaction
     	transaction.commit();
     }
