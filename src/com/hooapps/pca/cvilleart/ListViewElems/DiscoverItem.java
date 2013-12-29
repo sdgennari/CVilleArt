@@ -21,16 +21,20 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
  */
 
 public class DiscoverItem implements Item {
-	private final String title;
-	private final String type;
-	private final String imagePath;
+	public final String title;
+	public final String type;
+	public final String imagePath;
+	public final String description;
+	public final String address;
 	private ImageView imageView = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	
-	public DiscoverItem(String title, String type, String imagePath) {
+	public DiscoverItem(String title, String type, String imagePath, String description, String address) {
 		this.title = title;
 		this.type = type;
 		this.imagePath = imagePath;
+		this.description = description;
+		this.address = address;
 	}
 	
 	/**

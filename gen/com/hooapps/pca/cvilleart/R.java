@@ -167,9 +167,15 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f040006;
         public static final int common_signin_btn_light_text_focused=0x7f040007;
         public static final int common_signin_btn_light_text_pressed=0x7f040005;
-        public static final int common_signin_btn_text_dark=0x7f04000d;
-        public static final int common_signin_btn_text_light=0x7f04000e;
+        public static final int common_signin_btn_text_dark=0x7f040013;
+        public static final int common_signin_btn_text_light=0x7f040014;
+        public static final int dnace=0x7f040012;
+        public static final int film=0x7f040010;
+        public static final int gallery=0x7f04000d;
         public static final int gray=0x7f04000c;
+        public static final int music=0x7f040011;
+        public static final int other=0x7f04000f;
+        public static final int theatre=0x7f04000e;
         public static final int white=0x7f04000a;
     }
     public static final class dimen {
@@ -220,39 +226,44 @@ containing a value of this type.
         public static final int theatre=0x7f020022;
     }
     public static final class id {
-        public static final int action_settings=0x7f050012;
-        public static final int arrow=0x7f05000b;
-        public static final int discover_content=0x7f050008;
-        public static final int drawer_layout=0x7f05000c;
-        public static final int fragment_container=0x7f05000d;
-        public static final int fragment_content=0x7f050011;
-        public static final int genre_spinner=0x7f050010;
-        public static final int header=0x7f050009;
+        public static final int action_settings=0x7f050016;
+        public static final int address=0x7f050008;
+        public static final int arrow=0x7f05000f;
+        public static final int description=0x7f050007;
+        public static final int discover_content=0x7f05000c;
+        public static final int drawer_layout=0x7f050010;
+        public static final int fragment_container=0x7f050011;
+        public static final int fragment_content=0x7f050015;
+        public static final int genre_spinner=0x7f050014;
+        public static final int header=0x7f05000d;
         public static final int hybrid=0x7f050004;
-        public static final int image=0x7f050005;
-        public static final int item=0x7f05000a;
-        public static final int left_drawer=0x7f05000e;
+        public static final int image=0x7f050009;
+        public static final int item=0x7f05000e;
+        public static final int left_drawer=0x7f050012;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
-        public static final int right_drawer=0x7f05000f;
+        public static final int right_drawer=0x7f050013;
         public static final int satellite=0x7f050002;
         public static final int terrain=0x7f050003;
-        public static final int type=0x7f050007;
-        public static final int venue_title=0x7f050006;
+        public static final int type=0x7f05000b;
+        public static final int venue_image=0x7f050005;
+        public static final int venue_name=0x7f050006;
+        public static final int venue_title=0x7f05000a;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int discover_list_item=0x7f030001;
-        public static final int discover_view=0x7f030002;
-        public static final int drawer_list_header=0x7f030003;
-        public static final int drawer_list_item=0x7f030004;
-        public static final int event_view=0x7f030005;
-        public static final int home_screen=0x7f030006;
-        public static final int near_me_view=0x7f030007;
-        public static final int transportation_view=0x7f030008;
+        public static final int discover_item_view=0x7f030001;
+        public static final int discover_list_item=0x7f030002;
+        public static final int discover_list_view=0x7f030003;
+        public static final int drawer_list_header=0x7f030004;
+        public static final int drawer_list_item=0x7f030005;
+        public static final int event_view=0x7f030006;
+        public static final int home_screen=0x7f030007;
+        public static final int near_me_view=0x7f030008;
+        public static final int transportation_view=0x7f030009;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
@@ -354,7 +365,9 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
+        public static final int description=0x7f06001d;
         public static final int hello_world=0x7f06001c;
+        public static final int need_to_know=0x7f06001e;
     }
     public static final class style {
         /** 

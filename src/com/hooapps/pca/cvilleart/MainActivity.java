@@ -10,6 +10,7 @@ package com.hooapps.pca.cvilleart;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hooapps.pca.cvilleart.ListViewElems.DiscoverItem;
 import com.hooapps.pca.cvilleart.ListViewElems.HeaderItem;
 import com.hooapps.pca.cvilleart.ListViewElems.Item;
 import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter;
@@ -26,7 +27,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.view.View;
 
 //TODO Update the JavaDoc description as the functionality increases
@@ -42,7 +45,7 @@ import android.view.View;
 
 public class MainActivity extends FragmentActivity
 		implements HomeScreenFragment.OnHomeScreenViewSelectedListener,
-		DiscoverFragment.OnDiscoverViewSelectedListener {
+		DiscoverListFragment.OnDiscoverViewSelectedListener {
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -205,7 +208,7 @@ public class MainActivity extends FragmentActivity
     		// TODO Pass all relevant info to the fragment via args
     		break;
     	// DiscoverFragment
-    	case 1: newFragment = new DiscoverFragment();
+    	case 1: newFragment = new DiscoverListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
     		break;
@@ -233,13 +236,10 @@ public class MainActivity extends FragmentActivity
     	newFragment.setArguments(args);
     	FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     	
-    	// Replace the fragment in fragment_container with the new fragemnt
+    	// Replace the fragment in fragment_container with the new fragment
     	// Add the transaction to the back stack to allow for navigation with the back button
     	
     	transaction.replace(R.id.fragment_container, newFragment);
-    	//NOTE: This is fine as is. According to the API, this doesn't replace the fragment_container. Instead, it replaces
-    	//all the fragments in the given container with the newFragment. In other words, it removes everything in the container
-    	//and then puts the given fragment in the container, so all the oldFragmnet nonsense I put in here was not necessary
     	transaction.addToBackStack(null);
     	
     	//Commit the transaction
@@ -247,32 +247,35 @@ public class MainActivity extends FragmentActivity
     }
     
     /**
-     * Called when a user selects an item in the DiscoverFragment
+     * Called when a user selects an item in the DiscoverFragment. This list 
+     * is dynamic and needs to be handled accordingly. When an item is clicked,
+     * a new fragment with information about the attraction is displayed on the
+     * screen.
      * 
      * @param position The position of the item selected in the DiscoverFragment list
      */
-    public void onDiscoverViewSelected(int position) {
+	public void onDiscoverViewSelected(ListView l, View v, int position, long id) {
     	// Create a fragment based on the item that was clicked and swap to that fragment
     	// TODO Make sure that this is not stacking up fragments within the code...
-    	// TODO Make this more dynamic (maybe?). I'd like to believe there is a better way...
-    	Fragment newFragment = null;
-    	Bundle args = null;
-
-    	// Abort the mission if the fragment or args is still null to avoid NullPointerException
-    	if (newFragment == null || args == null) {
-    		return;
-    	}
-
+    	Fragment newFragment = new DiscoverItemFragment();
+    	Bundle args = new Bundle();
+    	
+    	// Retrieve the item from the adapter
+    	ListAdapter adapter = l.getAdapter();
+    	DiscoverItem item = (DiscoverItem) adapter.getItem(position);
+    	
+    	// Put the info in the args bundle
+    	args.putString("title", item.title);
+    	args.putString("type", item.type);
+    	args.putString("imagePath", item.imagePath);
+    	args.putString("description", item.description);
+    	args.putString("address", item.address);
     	newFragment.setArguments(args);
     	FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-    	// Replace the fragment in fragment_container with the new fragemnt
+    	// Replace the fragment in fragment_container with the new fragment
     	// Add the transaction to the back stack to allow for navigation with the back button
-
     	transaction.replace(R.id.fragment_container, newFragment);
-    	//NOTE: This is fine as is. According to the API, this doesn't replace the fragment_container. Instead, it replaces
-    	//all the fragments in the given container with the newFragment. In other words, it removes everything in the container
-    	//and then puts the given fragment in the container, so all the oldFragmnet nonsense I put in here was not necessary
     	transaction.addToBackStack(null);
 
     	//Commit the transaction

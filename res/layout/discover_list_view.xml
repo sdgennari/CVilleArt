@@ -13,9 +13,7 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="4dp"
         android:background = "@color/black" >
-        
-        <!-- ListView Content Here -->
-        
+
    </ListView>
 
 </LinearLayout>

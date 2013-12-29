@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Shader.TileMode;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 
 /**
@@ -28,8 +27,8 @@ public class RoundedImageView extends ImageView {
 	private static final int SIZE = 64;
 	
 	private float density;
-	private int size;
-	private int radius;
+	private static int size;
+	private static int radius;
 	
 	public RoundedImageView(Context context) {
 		super(context);
@@ -66,15 +65,12 @@ public class RoundedImageView extends ImageView {
 	@Override
 	public void setImageBitmap(Bitmap bmp) {
 		// Focus on the center part of the image
-		Log.d("IMG", "Cropping bitmap...");
 		bmp = scaleAndCropBitmap(bmp);
 		
 		// Draw the image boarder, shadows, etc.
-		Log.d("IMG", "Drawing modified bitmap...");
 		bmp = getModifiedBitmap(bmp);
 		
 		// Set bmp as the Bitmap for the ImageView
-		Log.d("IMG", "Setting bitmap...");
 		super.setImageBitmap(bmp);
 	}
 	
@@ -85,7 +81,7 @@ public class RoundedImageView extends ImageView {
 	 * @param bmp The original bitmap to be scaled and cropped
 	 * @return The modified bitmap that has been scaled to fit in the radius
 	 */
-	private Bitmap scaleAndCropBitmap(Bitmap bmp) {
+	public static Bitmap scaleAndCropBitmap(Bitmap bmp) {
 		int width = bmp.getWidth();
 		int height = bmp.getHeight();
 		
@@ -110,7 +106,7 @@ public class RoundedImageView extends ImageView {
 	 * @param bmp A pre-scaled version of the bitmap
 	 * @return The finished bitmap, complete with border and shadow.
 	 */
-	private Bitmap getModifiedBitmap(Bitmap bmp) {
+	public static Bitmap getModifiedBitmap(Bitmap bmp) {
 		Bitmap output = Bitmap.createBitmap(size, size, Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
 		Paint paint = new Paint();

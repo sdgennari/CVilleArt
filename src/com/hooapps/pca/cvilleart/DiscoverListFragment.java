@@ -36,7 +36,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
  *
  */
 
-public class DiscoverFragment extends ListFragment {
+public class DiscoverListFragment extends ListFragment {
 	
 	OnDiscoverViewSelectedListener mCallback;
 	
@@ -46,19 +46,16 @@ public class DiscoverFragment extends ListFragment {
 	
 	public interface OnDiscoverViewSelectedListener {
 		/**
-		 * Called by DiscoverFragment when a view is selected
+		 * Called by DiscoverListFragment when a view is selected
 		 * 
 		 * @param position The position of the view in the list
 		 * */
-		public void onDiscoverViewSelected(int position);
+		public void onDiscoverViewSelected(ListView l, View v, int position, long id);
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// Use a preset android list item layout
-		int layout = android.R.layout.simple_list_item_activated_1;
 		
 		// Load data into items for the list
 		loadDataIntoList();
@@ -92,7 +89,7 @@ public class DiscoverFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// Notify the parent activity
-		mCallback.onDiscoverViewSelected(position);
+		mCallback.onDiscoverViewSelected(l, v, position, id);
 	}
 	
 	public void loadDataIntoList() {
@@ -111,17 +108,31 @@ public class DiscoverFragment extends ListFragment {
 				"Theatre"
 				};
 		
-		String[] urls = {"http://directories.charlottesvillearts.org/container.php?file=title.jpg&lay=PHP%20-%20Primary%20Image&recid=4872&field=Directory_Primary_Image",
+		String[] imageUrls = {"http://directories.charlottesvillearts.org/container.php?file=title.jpg&lay=PHP%20-%20Primary%20Image&recid=4872&field=Directory_Primary_Image",
 				"http://directories.charlottesvillearts.org/container.php?file=streetView.jpg&lay=PHP%20-%20Primary%20Image&recid=4907&field=Directory_Primary_Image",
 				"http://directories.charlottesvillearts.org/container.php?file=sign.jpg&lay=PHP%20-%20Primary%20Image&recid=6926&field=Directory_Primary_Image",
 				"http://directories.charlottesvillearts.org/container.php?file=filename-351-507749145306.jpg&lay=PHP%20-%20Primary%20Image&recid=7384&field=Directory_Primary_Image",
 				"http://directories.charlottesvillearts.org/container.php?file=Screen+shot+2013-06-24+at+9.48.02+AM.png&lay=PHP%20-%20Primary%20Image&recid=4819&field=Directory_Primary_Image"
 				};
 		
+		String[] descriptions ={"The purpose of the Humanities, Fine Arts & Social Sciences Division is to offer world-class coursework applicable to the needs of the students whether their goal is transfer to a four-year college, moving into a college curriculum, improving job skills or fostering artistic abilities for personal development.",
+				"For most of the middle of the 20th century, Charlottesville’s Paramount Theater had taken a leading role in the community. Created by Chicago architectural firm Rapp & Rapp, architects of The Paramount-Publix chain and its flagship theater in New York City’s Times Square, Charlottesville’s Paramount was part of the golden age of cinema.",
+				"FIREFISH Gallery, located on the Downtown Mall in Charlottesville, hosts a variety of classes for adults, teens, and children. Mosaic lessons teach participants how to create decorative objects of art using rich colors, reflective surfaces and timeless permanence.",
+				"Para Cofee is located on the Corner near the University of Virginia. It is a coffee shop that hosts occasional concerts and art shows.",
+				"Founded in 1973, Four County Players is Central Virginia's longest continuously operating community theater. For more than 35 years, the players have delighted audiences with a full range of theater experiences."
+				};
+		
+		String[] addresses ={"V. Earl Dickinson Building, 501 College Drive, Charlottesville, VA 22902",
+				"215 East Main St., Charlottesville, VA 22902",
+				"108 2nd St NW, Charlottesville, VA 22902",
+				"19 Elliewood Avenue, Charlottesville, VA 22903",
+				"5256 Governor Barbour St., Barboursville, VA 22923"
+				};
+		
 		//TODO Replace titles.length with the dynamic query length
 		DiscoverItem item = null;
 		for(int i=0; i<titles.length; i++) {
-			item = new DiscoverItem(titles[i], types[i], urls[i]);
+			item = new DiscoverItem(titles[i], types[i], imageUrls[i], descriptions[i], addresses[i]);
 			venueList.add(item);
 		}
 	}
