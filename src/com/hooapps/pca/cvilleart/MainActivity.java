@@ -20,17 +20,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.view.View;
 
 //TODO Update the JavaDoc description as the functionality increases
 
 /**
 * MainActivity that is run when the app is initially started. The main activity
 * creates the fragement_container as well as the left and right sliding drawers
-* that house the navigation and option menus. [MORE HERE]
+* that house the navigation and option menus. OnItem[MORE HERE]
 * 
-* @author Spencer Gennari
+* @author Spencer Gennari 
+* @author Alex Ramey
 */
 
 public class MainActivity extends FragmentActivity
@@ -53,6 +58,15 @@ public class MainActivity extends FragmentActivity
         // Make sure that the home screen contains the fragment_container 
         if(findViewById(R.id.fragment_container) != null) {
         	
+        	//When device is rotated, Android destroys activity and then recreates it.
+        	//Therefore, it is important to properly initialize the Nav Drawers every time onCreate() is called.
+        	//To accomplish this, the following 3 lines of code needed to be placed before the savedInstanceState
+        	//if statement, which returns out of onCreate() before the Nav Drawers are ready to go after device
+        	//rotation, since savedInstanceState is not null in that scenario
+        	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        	initializeLeftNavDrawer();
+        	initializeRightNavDrawer();
+        	
         	// Only create new fragments if the app is not being restored
         	// This prevents multiple, identical fragments from stacking up 
         	if(savedInstanceState != null) {
@@ -62,17 +76,12 @@ public class MainActivity extends FragmentActivity
         	// Create the initial HomeScreenFragment
         	HomeScreenFragment firstFragment = new HomeScreenFragment();
         	
-        	// If special instructions were provided by the Intend,
+        	// If special instructions were provided by the Intent,
         	// pass them onto the HomeScreenFragment
         	firstFragment.setArguments(getIntent().getExtras());
         	
         	// Add the fragment to the fragment_container FrameLayout
         	getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
-        	
-        	// Initialize the NavDrawers
-        	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        	initializeLeftNavDrawer();
-        	initializeRightNavDrawer();
         }
         
     }
@@ -102,9 +111,23 @@ public class MainActivity extends FragmentActivity
     	items.add(new TextItem("Streams"));
     	items.add(new TextItem("Capture"));
     	
+    	
+    	
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	leftNavDrawerList.setAdapter(adapter);
+    	leftNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
+    		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+    			if (position > 4 && position < 9)
+    			{
+    				onViewSelected(position - 5);
+    			}
+    			else if (position == 1)
+    			{
+    				onViewSelected(4);
+    			}
+    		}
+    	});
     }
     
     /**
@@ -173,6 +196,10 @@ public class MainActivity extends FragmentActivity
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
     		break;
+    	case 4: newFragment = new HomeScreenFragment();
+    		args = new Bundle();
+    		break;
+    	
     	}
     	
     	// Abort the mission if the fragment or args is still null to avoid NullPointerException
@@ -185,7 +212,11 @@ public class MainActivity extends FragmentActivity
     	
     	// Replace the fragment in fragment_container with the new fragemnt
     	// Add the transaction to the back stack to allow for navigation with the back button
+    	
     	transaction.replace(R.id.fragment_container, newFragment);
+    	//NOTE: This is fine as is. According to the API, this doesn't replace the fragment_container. Instead, it replaces
+    	//all the fragments in the given container with the newFragment. In other words, it removes everything in the container
+    	//and then puts the given fragment in the container, so all the oldFragmnet nonsense I put in here was not necessary
     	transaction.addToBackStack(null);
     	
     	//Commit the transaction

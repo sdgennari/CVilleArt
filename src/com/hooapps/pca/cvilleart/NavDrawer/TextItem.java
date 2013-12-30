@@ -10,7 +10,7 @@ import android.widget.TextView;
 /**
 * Item for the custom ListView in the NavDrawer. Holds basic text entries with
 * icons.
-* 
+
 * @author Spencer Gennari
 */
 
@@ -39,16 +39,19 @@ public class TextItem implements Item {
 	 * @return The updated View with the new information
 	 */
 	@Override
-	public View getView(LayoutInflater inflater, View convertView) {
+	public View getView(LayoutInflater inflater, View convertView)
+	{
 		View view;
 		if (convertView == null) {
-			view = (View) inflater.inflate(R.layout.text_item, null);
+			view = (View) inflater.inflate(R.layout.drawer_list_item, null);
 		} else {
 			view = convertView;
 		}
 		
-		TextView textView = (TextView) view.findViewById(R.id.item_text);
-		textView.setText(text);
+		TextView item = (TextView) view.findViewById(R.id.item);
+		item.setText(this.text);
+		TextView arrow = (TextView) view.findViewById(R.id.arrow);
+		arrow.setText(">");
 		
 		return view;
 	}
