@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -20,6 +20,7 @@
     <!-- Light Theme For the Application -->
     <style name="LightAppTheme" parent="AppBaseTheme">
         <item name="android:background">#F2F2F2</item>
+        <item name="android:foreground">#585858</item>
     </style>
 
 </resources>

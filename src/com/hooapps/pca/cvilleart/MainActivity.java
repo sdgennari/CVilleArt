@@ -10,10 +10,13 @@ package com.hooapps.pca.cvilleart;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hooapps.pca.cvilleart.NavDrawer.Header;
-import com.hooapps.pca.cvilleart.NavDrawer.Item;
-import com.hooapps.pca.cvilleart.NavDrawer.ItemArrayAdapter;
-import com.hooapps.pca.cvilleart.NavDrawer.TextItem;
+import com.hooapps.pca.cvilleart.ListViewElems.DiscoverItem;
+import com.hooapps.pca.cvilleart.ListViewElems.HeaderItem;
+import com.hooapps.pca.cvilleart.ListViewElems.Item;
+import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter;
+import com.hooapps.pca.cvilleart.ListViewElems.TextItem;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,7 +27,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.view.View;
 
 //TODO Update the JavaDoc description as the functionality increases
@@ -39,7 +44,8 @@ import android.view.View;
 */
 
 public class MainActivity extends FragmentActivity
-		implements HomeScreenFragment.OnViewSelectedListener{
+		implements HomeScreenFragment.OnHomeScreenViewSelectedListener,
+		DiscoverListFragment.OnDiscoverViewSelectedListener {
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -54,6 +60,13 @@ public class MainActivity extends FragmentActivity
         //this.setTheme(R.style.LightTheme);
         
         setContentView(R.layout.home_screen);
+        
+        //*****
+        // TODO CITE THIS IMAGE LOADER AND EMAIL AUTHOR ON GITHUB AS PER INSTRUCTIONS
+        //*****
+        // Initialize the image loader for async loading within the app
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext()).build();
+        ImageLoader.getInstance().init(config);
         
         // Make sure that the home screen contains the fragment_container 
         if(findViewById(R.id.fragment_container) != null) {
@@ -96,18 +109,18 @@ public class MainActivity extends FragmentActivity
     	
     	// Initialize the List of items for the ItemArrayAdapter
     	List<Item> items = new ArrayList<Item>();
-    	items.add(new Header("Menu"));
+    	items.add(new HeaderItem("Menu"));
     	items.add(new TextItem("Home"));
     	items.add(new TextItem("Bookmarks"));
     	items.add(new TextItem("Recent"));
     	
-    	items.add(new Header("CVille Art"));
+    	items.add(new HeaderItem("CVille Art"));
     	items.add(new TextItem("Near Me"));
     	items.add(new TextItem("Discover"));
     	items.add(new TextItem("Transportation"));
     	items.add(new TextItem("Events"));
     	
-    	items.add(new Header("Community"));
+    	items.add(new HeaderItem("Community"));
     	items.add(new TextItem("Streams"));
     	items.add(new TextItem("Capture"));
     	
@@ -116,16 +129,28 @@ public class MainActivity extends FragmentActivity
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	leftNavDrawerList.setAdapter(adapter);
+    	
+    	// Respond accordingly when an item is clicked
     	leftNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
     		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
     			if (position > 4 && position < 9)
     			{
+
     				onViewSelected(position - 5);
     			}
     			else if (position == 1)
     			{
     				onViewSelected(4);
     			}
+
+    				onHomeScreenViewSelected(position - 5);
+    			}
+    			else if (position == 1)
+    			{
+    				onHomeScreenViewSelected(4);
+    			}
+    			
+    			drawerLayout.closeDrawer(leftNavDrawerList);
     		}
     	});
     }
@@ -140,14 +165,14 @@ public class MainActivity extends FragmentActivity
     	
     	// Initialize the List of items for the ItemArrayAdapter
     	List<Item> items = new ArrayList<Item>();
-    	items.add(new Header("Help"));
+    	items.add(new HeaderItem("Help"));
     	items.add(new TextItem("Help"));
     	items.add(new TextItem("Terms/Conditions"));
     	items.add(new TextItem("Report a Problem"));
     	items.add(new TextItem("Rate this App"));
     	items.add(new TextItem("Share this App"));
     	
-    	items.add(new Header("Settings"));
+    	items.add(new HeaderItem("Settings"));
     	items.add(new TextItem("Theme Color"));
     	items.add(new TextItem("Sounds"));
     	items.add(new TextItem("Default Home Screen"));
@@ -155,6 +180,15 @@ public class MainActivity extends FragmentActivity
     	// Set the ItemArrayAdapter as the ListView adapter
     	ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
     	rightNavDrawerList.setAdapter(adapter);
+    	
+    	// Respond accordingly when an item is clicked
+    	rightNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
+    		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+    			//TODO Add click functionality here
+    			
+    			drawerLayout.closeDrawer(rightNavDrawerList);
+    		}
+    	});
     }
     
     @Override
@@ -169,7 +203,7 @@ public class MainActivity extends FragmentActivity
      * 
      * @param position The position of the item selected in the HomeScreenFragment list
      */
-    public void onViewSelected(int position) {
+    public void onHomeScreenViewSelected(int position) {
     	// Create a fragment based on the item that was clicked and swap to that fragment
     	// TODO Make sure that this is not stacking up fragments within the code...
     	// TODO Make this more dynamic (maybe?). I'd like to believe there is a better way...
@@ -182,7 +216,7 @@ public class MainActivity extends FragmentActivity
     		// TODO Pass all relevant info to the fragment via args
     		break;
     	// DiscoverFragment
-    	case 1: newFragment = new DiscoverFragment();
+    	case 1: newFragment = new DiscoverListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
     		break;
@@ -210,7 +244,7 @@ public class MainActivity extends FragmentActivity
     	newFragment.setArguments(args);
     	FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     	
-    	// Replace the fragment in fragment_container with the new fragemnt
+    	// Replace the fragment in fragment_container with the new fragment
     	// Add the transaction to the back stack to allow for navigation with the back button
     	
     	transaction.replace(R.id.fragment_container, newFragment);
@@ -223,4 +257,39 @@ public class MainActivity extends FragmentActivity
     	transaction.commit();
     }
     
+    /**
+     * Called when a user selects an item in the DiscoverFragment. This list 
+     * is dynamic and needs to be handled accordingly. When an item is clicked,
+     * a new fragment with information about the attraction is displayed on the
+     * screen.
+     * 
+     * @param position The position of the item selected in the DiscoverFragment list
+     */
+	public void onDiscoverViewSelected(ListView l, View v, int position, long id) {
+    	// Create a fragment based on the item that was clicked and swap to that fragment
+    	// TODO Make sure that this is not stacking up fragments within the code...
+    	Fragment newFragment = new DiscoverItemFragment();
+    	Bundle args = new Bundle();
+    	
+    	// Retrieve the item from the adapter
+    	ListAdapter adapter = l.getAdapter();
+    	DiscoverItem item = (DiscoverItem) adapter.getItem(position);
+    	
+    	// Put the info in the args bundle
+    	args.putString("title", item.title);
+    	args.putString("type", item.type);
+    	args.putString("imagePath", item.imagePath);
+    	args.putString("description", item.description);
+    	args.putString("address", item.address);
+    	newFragment.setArguments(args);
+    	FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+    	// Replace the fragment in fragment_container with the new fragment
+    	// Add the transaction to the back stack to allow for navigation with the back button
+    	transaction.replace(R.id.fragment_container, newFragment);
+    	transaction.addToBackStack(null);
+
+    	//Commit the transaction
+    	transaction.commit();
+    }
 }

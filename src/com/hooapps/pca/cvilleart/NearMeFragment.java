@@ -44,8 +44,9 @@ import com.hooapps.pca.cvilleart.R;
 
 /**
  * Fragment to display the location-specific art in CVille. [MORE HERE]
- * 
- * @author Spencer Gennari Alex Ramey
+ *
+ * @author Spencer Gennari
+ * @author Alex Ramey
  *
  */
 
@@ -58,6 +59,7 @@ import com.hooapps.pca.cvilleart.R;
 //			and implement com.google.android.gms.location.LocationListener.
 //     Write Code to Handle Devices For Which Google Play Services Aren't Enabled and to Handle Failed 
 //		Connection Attempts with the LocationClient
+
 
 //TODO: Sometimes the app crashes when leaving NearMeFragment b/c Acitvity gets destroyed?
 
@@ -73,7 +75,7 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		fragment = new SupportMapFragment();
 		FragmentManager fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
@@ -107,6 +109,7 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 			mMap.setMyLocationEnabled(true);
 		}
 	}
+
 	public void setUpMap(int markerType)
 	{
 		if (mMap == null)
@@ -218,7 +221,9 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
     }
 
 	//Centers map on user every time LocationClient Connects (whenever onResume() is called)
+
 	//If the user isn't within 10 miles of JefTheater, map centers on JefTheater
+
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		Log.d("Checkpoints","LocationClient Connected");

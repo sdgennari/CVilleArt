@@ -1,4 +1,4 @@
-package com.hooapps.pca.cvilleart.NavDrawer;
+package com.hooapps.pca.cvilleart.ListViewElems;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.hooapps.pca.cvilleart.R;
-import com.hooapps.pca.cvilleart.NavDrawer.ItemArrayAdapter.Type;
+import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter.Type;
 
 /**
 * Item for the custom ListView in the NavDrawer. Acts as a separator to divide
@@ -15,11 +15,12 @@ import com.hooapps.pca.cvilleart.NavDrawer.ItemArrayAdapter.Type;
 * @author Spencer Gennari
 */
 
-public class Header implements Item {
+public class HeaderItem implements Item {
 	private final String text;
 	
 	
-	public Header(String text) {
+
+	public HeaderItem(String text) {
 		this.text = text;
 	}
 	
