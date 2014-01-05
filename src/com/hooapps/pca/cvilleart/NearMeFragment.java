@@ -15,18 +15,23 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.util.ArrayList;
+
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -63,13 +68,18 @@ import com.hooapps.pca.cvilleart.R;
 
 //TODO: Sometimes the app crashes when leaving NearMeFragment b/c Acitvity gets destroyed?
 
-public class NearMeFragment extends Fragment implements android.widget.AdapterView.OnItemSelectedListener,
-GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener  {
+public class NearMeFragment extends Fragment implements
+GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener,
+OnCheckedChangeListener {
 	
 	private GoogleMap mMap;
 	private SupportMapFragment fragment;
 	private LocationClient mLocationClient;
 	public static final LatLng jefTheaterLocation = new LatLng(38.030656,-78.481205);
+	private ArrayList<ToggleButton> toggles;
+	private boolean[] toggleStates = new boolean[7];
+	private LinearLayout toggleHolder;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -106,40 +116,77 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 	    }
 		if (mMap != null){
 			mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-			mMap.setMyLocationEnabled(true);
+			mMap.setMyLocationEnabled(true); //creates "blue dot" that is updated on map automatically as user moves
 		}
 	}
-
+	
+	/**Clears map, toggles the appropriate boolean value in the toggleStates array, and redraws markers based on the toggle states */
+	//TODO: Replace Test Code with code that traverses a given set of data and either makes a marker for every piece of data in the set
+	// if there will be sets for each venue type or makes a marker for each object in the set whose venue field is the appropriate type
+	// if all venues will be held in one set with a field value that denotes their type
+	
+	//TODO: Create all markers to register click events; when the event is received, the set can be searched 
+	//		for the object whose title field matches the marker title, and then a method like onDiscoverViewSelected
+	//		in the main activity can be called and sent the object as a parameter. The method will replace the 
+	//		current fragment with a DiscoverItemFragment populated by information contained in the object.
+	
 	public void setUpMap(int markerType)
 	{
 		if (mMap == null)
 			return;
 		mMap.clear();
-		//TODO: Delete Test Code
-		//--------------Test Code Begins -------------
-		MarkerOptions test = new MarkerOptions().title(markerType + "").position(jefTheaterLocation);
-		mMap.addMarker(test);
-		//-----------Test Code Ends--------
 		
-		//TODO: Load in appropriate marker sets
-		switch (markerType)
+		toggleStates[markerType] = !toggleStates[markerType];
+		Log.d("Checkpoints","SetupMap ToggleState[6] = " + toggleStates[6]);
+		
+		//Dance
+		if (toggleStates[0])
 		{
-		case 0: //All
-			break;
-		case 1: //Dance
-			break;
-		case 2: //Galleries
-			break;
-		case 3: //Literary
-			break;
-		case 4: //Music
-			break;
-		case 5: //Theatre
-			break;
-		case 6: //Visual Arts
-			break;
-		case 7: //Other
-			break;
+			MarkerOptions test = new MarkerOptions().title("Dance").position(new LatLng(38.031,-78.481))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.dancemarker)).anchor((float).50,(float) .50);;
+			mMap.addMarker(test);
+		}
+		//Gallery
+		if (toggleStates[1])
+		{
+			MarkerOptions test = new MarkerOptions().title("Gallery").position(new LatLng(38.032,-78.482))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.gallerymarker)).anchor((float).50,(float) .50);;
+			mMap.addMarker(test);
+		}
+		//Literary
+		if (toggleStates[2])
+		{
+			MarkerOptions test = new MarkerOptions().title("Literary").position(new LatLng(38.030,-78.480))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)).anchor((float).50,(float) .50);;
+			mMap.addMarker(test);
+		}
+		//Music
+		if (toggleStates[3])
+		{
+			MarkerOptions test = new MarkerOptions().title("Jefferson Theater").position(jefTheaterLocation)
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.musicmarker)).anchor((float).50,(float) .50);
+			mMap.addMarker(test);
+		}
+		//Theatre
+		if (toggleStates[4])
+		{
+			MarkerOptions test = new MarkerOptions().title("Theatre").position(new LatLng(38.029,-78.479))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.theatremarker)).anchor((float).50,(float) .50);;
+			mMap.addMarker(test);
+		}
+		//Visual
+		if (toggleStates[5])
+		{
+			MarkerOptions test = new MarkerOptions().title("Visual").position(new LatLng(38.033,-78.483))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.filmmarker)).anchor((float).50,(float) .50);;
+			mMap.addMarker(test);
+		}
+		//Other
+		if (toggleStates[6])
+		{
+			MarkerOptions test = new MarkerOptions().title("Other").position(new LatLng(38.0335,-78.4835))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.othermarker)).anchor((float).50,(float) .50);;
+			mMap.addMarker(test);
 		}
 	}
 	
@@ -152,18 +199,40 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
         // applied to the fragment at this point so we can safely call methods that
 		// rely upon the layout having already been set up
 		
+		toggleHolder = (LinearLayout) this.getView().findViewById(R.id.toggleholder);
+		LayoutParams params = toggleHolder.getLayoutParams();
+		params.height = getPixelHeight();
+		
 		setUpMap();
 		
-		Spinner spinner = (Spinner) this.getView().findViewById(R.id.genre_spinner);
-		// Create an ArrayAdapter using the string array and a default spinner layout
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(),
-		        R.array.map_genre_string_array, android.R.layout.simple_spinner_item);
-		// Specify the layout to use when the list of choices appears
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		// Apply the adapter to the spinner
-		spinner.setAdapter(adapter);
-		// Register this fragment as a listener for this spinner's item selected events 
-		spinner.setOnItemSelectedListener(this);
+		toggles = new ArrayList<ToggleButton>();
+		
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.dancetoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.gallerytoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.literarytoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.musictoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.theatretoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.visualtoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.othertoggle)));
+		
+		//Every time the fragment is refreshed, all of the toggles start off enabled
+		for (ToggleButton i : toggles)
+		{
+			i.setText("");
+			i.setTextOff("OFF");
+			i.setTextOn("");
+			i.setChecked(true);
+			i.setOnCheckedChangeListener(this);
+		}
+		
+		for (int i = 0; i < toggleStates.length - 1; i++)
+		{
+			toggleStates[i] = true;
+		}
+		
+		toggleStates[toggleStates.length - 1] = false;
+		//Is flipped to True when setUpMap() is called
+		setUpMap(toggleStates.length - 1);
 		
 		Bundle args = getArguments();
 		if (args != null) {
@@ -178,6 +247,7 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 	public void onResume()
 	{
 		super.onResume();
+		
 		if (servicesConnected() && !mLocationClient.isConnected())
 		{
 			mLocationClient.connect();
@@ -250,16 +320,45 @@ GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnect
 	public void onDisconnected() {
 		Log.d("Checkpoints","LocationClient Disconnected");
 	}
-
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int pos,
-			long id) {
-		setUpMap(pos);
+	
+	public int getPixelHeight()
+	{
+		DisplayMetrics metrics = this.getActivity().getResources().getDisplayMetrics();
+		int width = metrics.widthPixels;
+		return width/7;
 	}
 
+	/** Map is redrawn whenever a button is toggled*/
 	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {
-		//Never Called as Far as I Can Tell
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		if (buttonView.getId() == R.id.dancetoggle)
+		{
+			setUpMap(0);
+		}
+		else if (buttonView.getId() == R.id.gallerytoggle)
+		{
+			setUpMap(1);
+		}
+		else if (buttonView.getId() == R.id.literarytoggle)
+		{
+			setUpMap(2);
+		}
+		else if (buttonView.getId() == R.id.musictoggle)
+		{
+			setUpMap(3);
+		}
+		else if (buttonView.getId() == R.id.theatretoggle)
+		{
+			setUpMap(4);
+		}
+		else if (buttonView.getId() == R.id.visualtoggle)
+		{
+			setUpMap(5);
+		}
+		else if (buttonView.getId() == R.id.othertoggle)
+		{
+			setUpMap(6);
+		}
+		
 	}
-
 }
