@@ -79,7 +79,7 @@ public class DiscoverItemFragment extends Fragment {
 	private void updateDiscoverItem(Bundle args) {
 		// Retrieve the data from the args bundle
 		String title = args.getString("title");
-		String type = args.getString("type");
+		//String type = args.getString("type");
 		String description = args.getString("description");
 		String address = args.getString("address");
 		String imagePath = args.getString("imagePath");

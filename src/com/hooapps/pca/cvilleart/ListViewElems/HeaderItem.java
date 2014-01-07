@@ -1,6 +1,5 @@
 package com.hooapps.pca.cvilleart.ListViewElems;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;

@@ -8,9 +8,10 @@
 package com.hooapps.pca.cvilleart;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-import com.hooapps.pca.cvilleart.ListViewElems.DiscoverItem;
+import com.hooapps.pca.cvilleart.DataElems.AlarmReceiver;
 import com.hooapps.pca.cvilleart.ListViewElems.HeaderItem;
 import com.hooapps.pca.cvilleart.ListViewElems.Item;
 import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter;
@@ -18,6 +19,10 @@ import com.hooapps.pca.cvilleart.ListViewElems.TextItem;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -26,7 +31,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.view.View;
 
@@ -103,6 +107,8 @@ public class MainActivity extends FragmentActivity
         	getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
         }
         
+        // Schedule the services to update the data
+        scheduleServices();
     }
     
     /**
@@ -269,16 +275,18 @@ public class MainActivity extends FragmentActivity
     	Fragment newFragment = new DiscoverItemFragment();
     	Bundle args = new Bundle();
     	
-    	// Retrieve the item from the adapter
-    	ListAdapter adapter = l.getAdapter();
-    	DiscoverItem item = (DiscoverItem) adapter.getItem(position);
+    	String name = (String) v.getTag(R.id.venue_title);
+    	String type = (String) v.getTag(R.id.type);
+    	String imagePath = (String) v.getTag(R.id.image);
+    	String description = (String) v.getTag(R.id.description);
+    	String address = (String) v.getTag(R.id.address);
     	
-    	// Put the info in the args bundle
-    	args.putString("title", item.title);
-    	args.putString("type", item.type);
-    	args.putString("imagePath", item.imagePath);
-    	args.putString("description", item.description);
-    	args.putString("address", item.address);
+    	args.putString("title", name);
+    	args.putString("type", type);
+    	args.putString("imagePath", imagePath);
+    	args.putString("description", description);
+    	args.putString("address", address);
+    	
     	newFragment.setArguments(args);
     	FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -290,4 +298,27 @@ public class MainActivity extends FragmentActivity
     	//Commit the transaction
     	transaction.commit();
     }
+	
+	/**
+	 * Helper method to schedule services at the appropriate time to update 
+	 * the database.
+	 */
+	private void scheduleServices() {
+		Context context = this.getApplicationContext();
+		Intent intent = new Intent(context, AlarmReceiver.class);
+		PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+		AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+
+		// Set the alarm to a specific time (00:00:00 in this case)
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(System.currentTimeMillis());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		
+		// Repeat the alarm every day
+		alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+		
+		// Repeat the alarm every minute to debug 
+		//alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60*1000, alarmIntent);
+	}
 }
