@@ -5,16 +5,165 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/toggleholder"
         android:layout_width="match_parent"
-        android:layout_height = "wrap_content"
+        android:layout_height = "1dp"
+        android:background = "@color/black"
         android:orientation = "horizontal">
         
-        <Spinner
-	    android:id="@+id/genre_spinner"
-	    android:textSize = "18sp"
-	    android:padding="0dp"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content" />
+        <ToggleButton 
+	    android:id="@+id/dancetoggle"
+	    android:background = "@drawable/dance"
+	    android:layout_width = "0dp"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+         
+        <ToggleButton 
+	    android:id="@+id/gallerytoggle"
+	    android:background = "@drawable/gallery"
+	    android:layout_width = "0dp"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+         
+        <ToggleButton 
+	    android:id="@+id/literarytoggle"
+	    android:layout_width = "0dp"
+	    android:background = "@drawable/ic_launcher"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+          
+        <ToggleButton 
+	    android:id="@+id/musictoggle"
+	    android:background = "@drawable/music"
+	    android:layout_width = "0dp"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+           
+        <ToggleButton 
+	    android:id="@+id/theatretoggle"
+	    android:background = "@drawable/theatre"
+	    android:layout_width = "0dp"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+            
+        <ToggleButton 
+	    android:id="@+id/visualtoggle"
+	    android:background = "@drawable/film"
+	    android:layout_width = "0dp"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+             
+        <ToggleButton 
+	    android:id="@+id/othertoggle"
+	    android:background = "@drawable/other"
+	    android:layout_width = "0dp"
+	    android:layout_height = "match_parent"
+	    android:layout_weight = ".1425"
+	    />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+	    android:id="@+id/togglelabels"
+	    android:layout_width="match_parent"
+	    android:layout_height = "wrap_content"
+	    android:background = "@color/black"
+	    android:orientation = "horizontal">
+        
+        <TextView
+            android:id="@+id/dancetogglelabel"
+            android:gravity="center"
+            android:text = "@string/dance"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />
+        
+        <TextView
+            android:id="@+id/gallerytogglelabel"
+            android:gravity="center"
+            android:text = "@string/gallery"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />
+                
+         <TextView
+            android:id="@+id/literarytogglelabel"
+            android:gravity="center"
+            android:text = "@string/literary"
+            android:layout_gravity="center"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />
+         
+          <TextView
+            android:id="@+id/musictogglelabel"
+            android:gravity="center"
+            android:text = "@string/music"
+            android:layout_gravity="center"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />        
+
+         <TextView
+            android:id="@+id/theatretogglelabel"
+            android:gravity="center"
+            android:text = "@string/theatre"
+            android:layout_gravity="center"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />          
+         
+         <TextView
+            android:id="@+id/visualtogglelabel"
+            android:gravity="center"
+            android:text = "@string/visual"
+            android:layout_gravity="center"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />
+         
+         <TextView
+            android:id="@+id/othertogglelabel"
+            android:gravity="center"
+            android:text = "@string/other"
+            android:layout_gravity="center"
+            android:layout_width = "0dp"
+            android:layout_height = "wrap_content"
+            android:layout_weight = ".1425"
+            android:textColor="@color/white"
+            android:textSize = "16sp"
+            android:background = "@color/black"
+            />         
          
     </LinearLayout>
 

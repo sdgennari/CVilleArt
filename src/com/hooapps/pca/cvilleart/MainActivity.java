@@ -23,13 +23,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.view.View;
 
 //TODO Update the JavaDoc description as the functionality increases
@@ -44,13 +42,21 @@ import android.view.View;
 */
 
 public class MainActivity extends FragmentActivity
-		implements HomeScreenFragment.OnHomeScreenViewSelectedListener,
-		DiscoverListFragment.OnDiscoverViewSelectedListener {
+		implements DiscoverListFragment.OnDiscoverViewSelectedListener {
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
 	private ListView rightNavDrawerList;
+	private Integer lastBackgroundImage;
 	
+	public Integer getLastBackgroundImage() {
+		return lastBackgroundImage;
+	}
+
+	public void setLastBackgroundImage(Integer lastBackgroundImage) {
+		this.lastBackgroundImage = lastBackgroundImage;
+	}
+
 	/** Called when the app is first opened */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,23 +139,7 @@ public class MainActivity extends FragmentActivity
     	// Respond accordingly when an item is clicked
     	leftNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
     		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-    			if (position > 4 && position < 9)
-    			{
-
-    				onViewSelected(position - 5);
-    			}
-    			else if (position == 1)
-    			{
-    				onViewSelected(4);
-    			}
-
-    				onHomeScreenViewSelected(position - 5);
-    			}
-    			else if (position == 1)
-    			{
-    				onHomeScreenViewSelected(4);
-    			}
-    			
+    			onLeftDrawerViewSelected(position);
     			drawerLayout.closeDrawer(leftNavDrawerList);
     		}
     	});
@@ -184,8 +174,7 @@ public class MainActivity extends FragmentActivity
     	// Respond accordingly when an item is clicked
     	rightNavDrawerList.setOnItemClickListener(new OnItemClickListener(){
     		public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-    			//TODO Add click functionality here
-    			
+    			onRightDrawerViewSelected(position);
     			drawerLayout.closeDrawer(rightNavDrawerList);
     		}
     	});
@@ -203,35 +192,36 @@ public class MainActivity extends FragmentActivity
      * 
      * @param position The position of the item selected in the HomeScreenFragment list
      */
-    public void onHomeScreenViewSelected(int position) {
+    public void onLeftDrawerViewSelected(int position) {
     	// Create a fragment based on the item that was clicked and swap to that fragment
     	// TODO Make sure that this is not stacking up fragments within the code...
     	// TODO Make this more dynamic (maybe?). I'd like to believe there is a better way...
     	Fragment newFragment = null;
     	Bundle args = null;
     	switch(position) {
+    	//Home
+    	case 1: newFragment = new HomeScreenFragment();
+		args = new Bundle();
+		break;
     	// NearMeFragment
-    	case 0: newFragment = new NearMeFragment();
+    	case 5: newFragment = new NearMeFragment();
     		args = new Bundle();
     		// TODO Pass all relevant info to the fragment via args
     		break;
     	// DiscoverFragment
-    	case 1: newFragment = new DiscoverListFragment();
+    	case 6: newFragment = new DiscoverListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
     		break;
     	// TransportationFragment
-    	case 2: newFragment = new TransportationFragment();
+    	case 7: newFragment = new TransportationFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
     		break;
     	// EventFragment
-    	case 3: newFragment = new EventFragment();
+    	case 8: newFragment = new EventFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
-    		break;
-    	case 4: newFragment = new HomeScreenFragment();
-    		args = new Bundle();
     		break;
     	
     	}
@@ -256,6 +246,14 @@ public class MainActivity extends FragmentActivity
     	//Commit the transaction
     	transaction.commit();
     }
+    
+    public void onRightDrawerViewSelected(int position)
+    {
+    	switch(position){
+    		//TODO: add functionality
+    	}
+    }
+    
     
     /**
      * Called when a user selects an item in the DiscoverFragment. This list 

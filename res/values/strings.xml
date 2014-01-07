@@ -7,16 +7,13 @@
     
     <string name="description">Description:</string>
     <string name="need_to_know">Need to Know:</string>
-
-    <string-array name="map_genre_string_array">
-        <item>All</item>
-        <item>Dance</item>
-        <item>Galleries</item>
-        <item>Literary</item>
-        <item>Music</item>
-        <item>Theatre</item>
-        <item>Visual Arts</item>
-        <item>Other</item>
-    </string-array>
+    
+    <string name="dance">Dance</string>
+    <string name="gallery">Gallery</string>
+    <string name="literary">Literary</string>
+    <string name="music">Music</string>
+    <string name="theatre">Theatre</string>
+    <string name="visual">Visual</string>
+    <string name="other">Other</string>
     
 </resources>
