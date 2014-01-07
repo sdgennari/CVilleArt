@@ -4,11 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <ImageView
+        android:id="@+id/homesceen_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:text="Event"
-        android:textSize="18sp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
