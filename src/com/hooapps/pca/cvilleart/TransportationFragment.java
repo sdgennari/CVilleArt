@@ -9,32 +9,40 @@ package com.hooapps.pca.cvilleart;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
 import com.hooapps.pca.cvilleart.R;
+import com.hooapps.pca.cvilleart.Transportation.TransportationBikeFragment;
+import com.hooapps.pca.cvilleart.Transportation.TransportationParkingFragment;
+import com.hooapps.pca.cvilleart.Transportation.TransportationPublicFragment;
+import com.hooapps.pca.cvilleart.Transportation.TransportationTaxiFragment;
 
 // TODO Update the JavaDoc description as the functionality increases
 
 /**
  * Fragment to provide information about various transportation routes to and
- * from art venues. This Fragment has a TabHost which contains a TabWidget wrapped
+ * from art venues. This Fragment has a FragmentTabHost which contains a TabWidget wrapped
  * in a HorizontalScrollView that holds tabs and a FrameLayout in which tab content is displayed.
- * Tabs are added by invoking TabHost.addTab(TabSpec), where the TabSpec defines
- * the tab's tag that is passed to the TabContentFactory's public View createTabContent(String tag)
- * method, the tab's content (an instance of a TabContentFactory), and the tab's 
- * indicator (String Label).
+ * Tabs are added by invoking FragmentTabHost.addTab(TabSpec, FragmenttoLaunch, Bundle args), where 
+ * the TabSpec defines the tab's tag (used inside code of FragmentTabHost) and indicator (label).
+ * the setup method must be invoked before tabs can be added to finish initializing the FragmentTabHost.
+ * You pass it the context, the ChildFragmentManager, and the FrameLayout that will contain the Fragments
+ * that are loaded in by the tabs.
  * 
+ * Tier 1 Fragment
  * @author Spencer Gennari
  * @author Alex Ramey
  *
  */
 
 public class TransportationFragment extends Fragment {
-	private TabHost tabHost;
+	private FragmentTabHost tabHost;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// If the activity is being recreated, restore previous version
@@ -43,8 +51,34 @@ public class TransportationFragment extends Fragment {
 			// TODO Code to restore prior version here  
 		}
 		
-		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.transportation_view, container, false);
+		
+		View rootView = inflater.inflate(R.layout.transportation_view, container, false);
+		
+		tabHost = (FragmentTabHost) rootView.findViewById(R.id.tabhost);
+		Log.d("Test","A");
+		
+		tabHost.setup(this.getActivity(),this.getChildFragmentManager(), android.R.id.tabcontent);
+		Log.d("Test","B");
+		
+		
+		TabSpec publicTrans = tabHost.newTabSpec("Public Transportation");
+		publicTrans.setIndicator("Public Transportation");
+		
+		TabSpec parking = tabHost.newTabSpec("Parking");
+		parking.setIndicator("Parking");
+		
+		TabSpec taxi = tabHost.newTabSpec("Taxi");
+		taxi.setIndicator("Taxi");
+		
+		TabSpec bike = tabHost.newTabSpec("Bike Rental");
+		bike.setIndicator("Bike Rental");
+		
+		tabHost.addTab(publicTrans,TransportationPublicFragment.class, null);
+		tabHost.addTab(parking, TransportationParkingFragment.class, null);
+		tabHost.addTab(taxi, TransportationTaxiFragment.class, null);
+		tabHost.addTab(bike, TransportationBikeFragment.class, null);
+		
+		return rootView;
 	}
 	
 	@Override
@@ -62,30 +96,6 @@ public class TransportationFragment extends Fragment {
 			// TODO Setup the fragment according to other specifications
 		}
 		
-		tabHost = (TabHost) this.getView().findViewById(R.id.tabhost);
-		TransportationViewFinder finder = new TransportationViewFinder(LayoutInflater.from(this.getActivity()));
-		
-		TabSpec publicTrans = tabHost.newTabSpec("public");
-		publicTrans.setIndicator("Public Transportation");
-		publicTrans.setContent(finder);
-		
-		TabSpec parking = tabHost.newTabSpec("parking");
-		parking.setIndicator("Parking");
-		parking.setContent(finder);
-		
-		TabSpec taxi = tabHost.newTabSpec("taxi");
-		taxi.setIndicator("Taxi");
-		taxi.setContent(finder);
-		
-		TabSpec bike = tabHost.newTabSpec("bike");
-		bike.setIndicator("Bike Rental");
-		bike.setContent(finder);
-		
-		tabHost.setup();
-		tabHost.addTab(publicTrans);
-		tabHost.addTab(parking);
-		tabHost.addTab(taxi);
-		tabHost.addTab(bike);
 	}
 	
 	@Override
@@ -94,5 +104,12 @@ public class TransportationFragment extends Fragment {
 		
 		// TODO Save important info form the fragment here
 		// Use the format 'outState.put[String/Boolean/Int/etc.](key, value);'
+	}
+	
+	@Override
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+		tabHost = null;
 	}
 }
