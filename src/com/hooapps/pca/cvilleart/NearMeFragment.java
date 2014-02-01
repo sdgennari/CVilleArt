@@ -16,7 +16,10 @@
 package com.hooapps.pca.cvilleart;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -60,10 +63,9 @@ import com.hooapps.pca.cvilleart.R;
 //Location Tracking is initiated by mMap.setMyLocationEnabled(true). Additionally, a LocationClient is 
 //set up that can be used to get the user's current location at any time. (Perhaps for distance to venue)
 //TODO If we want to receive notifications of the user's LatLng every few seconds in order to respond
-//  		with event-driven code, we need to use LocationClient
-//			and implement com.google.android.gms.location.LocationListener.
-//     Write Code to Handle Devices For Which Google Play Services Aren't Enabled and to Handle Failed 
-//		Connection Attempts with the LocationClient
+// with event-driven code, we need to use LocationClient and implement com.google.android.gms.location.LocationListener.
+// Write Code to Handle Devices For Which Google Play Services Aren't Enabled and to Handle Failed 
+// Connection Attempts with the LocationClient
 
 
 //TODO: Sometimes the app crashes when leaving NearMeFragment b/c Acitvity gets destroyed?
@@ -75,24 +77,36 @@ OnCheckedChangeListener {
 	private GoogleMap mMap;
 	private SupportMapFragment fragment;
 	private LocationClient mLocationClient;
-	public static final LatLng jefTheaterLocation = new LatLng(38.030656,-78.481205);
 	private ArrayList<ToggleButton> toggles;
-	private boolean[] toggleStates = new boolean[7];
+	private boolean[] toggleStates;
 	private LinearLayout toggleHolder;
+	Geocoder addressStringToAddressObject;
+	
+	//For Testing Purposes
+	public static final LatLng jefTheaterLocation = new LatLng(38.030656,-78.481205);
+	private static final String jefTheaterAddress = "110 E Main St, Charlottesville, VA";
 	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		toggleStates = new boolean[6];
 
 		fragment = new SupportMapFragment();
 		FragmentManager fm = getChildFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.fragment_content, fragment);
+		ft.replace(R.id.near_me_fragment_content, fragment);
 		ft.commit();
 		
 		mLocationClient = new LocationClient(this.getActivity(), this, this);
+		
+		Log.d("Checkpoints", Geocoder.isPresent() + "");
+		if (Geocoder.isPresent())
+		{
+			addressStringToAddressObject = new Geocoder(this.getActivity(), Locale.US);
+		}
 	}
 	
 	@Override
@@ -115,7 +129,7 @@ OnCheckedChangeListener {
 	        mMap = fragment.getMap();
 	    }
 		if (mMap != null){
-			mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+			mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 			mMap.setMyLocationEnabled(true); //creates "blue dot" that is updated on map automatically as user moves
 		}
 	}
@@ -137,55 +151,58 @@ OnCheckedChangeListener {
 		mMap.clear();
 		
 		toggleStates[markerType] = !toggleStates[markerType];
-		Log.d("Checkpoints","SetupMap ToggleState[6] = " + toggleStates[6]);
 		
 		//Dance
 		if (toggleStates[0])
 		{
 			MarkerOptions test = new MarkerOptions().title("Dance").position(new LatLng(38.031,-78.481))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.dancemarker)).anchor((float).50,(float) .50);;
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.dancemarker)).anchor((float).50,(float).50);
+			mMap.addMarker(test);
+		}
+		//Film
+		if (toggleStates[1])
+		{
+			MarkerOptions test = new MarkerOptions().title("Film").position(new LatLng(38.032,-78.482))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.filmmarker)).anchor((float).50,(float) .50);;
 			mMap.addMarker(test);
 		}
 		//Gallery
-		if (toggleStates[1])
-		{
-			MarkerOptions test = new MarkerOptions().title("Gallery").position(new LatLng(38.032,-78.482))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.gallerymarker)).anchor((float).50,(float) .50);;
-			mMap.addMarker(test);
-		}
-		//Literary
 		if (toggleStates[2])
 		{
-			MarkerOptions test = new MarkerOptions().title("Literary").position(new LatLng(38.030,-78.480))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)).anchor((float).50,(float) .50);;
+			MarkerOptions test = new MarkerOptions().title("Gallery").position(new LatLng(38.030,-78.480))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.gallerymarker)).anchor((float).50,(float) .50);;
 			mMap.addMarker(test);
 		}
 		//Music
 		if (toggleStates[3])
 		{
-			MarkerOptions test = new MarkerOptions().title("Jefferson Theater").position(jefTheaterLocation)
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.musicmarker)).anchor((float).50,(float) .50);
+			Address address = null;
+			try{
+				address = addressStringToAddressObject.getFromLocationName(jefTheaterAddress,1).get(0);
+			}
+			catch (Exception e)
+			{
+				Log.d("Checkpoints","Address Exception");
+			}
+			if (address != null){
+				LatLng JefTheater = new LatLng(address.getLatitude(), address.getLongitude());
+				MarkerOptions test2 = new MarkerOptions().title("Jefferson Theater").position(JefTheater)
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.musicmarker)).anchor((float).50,(float) .50);
+				mMap.addMarker(test2);
+			}
+		}
+		//Other
+		if (toggleStates[4])
+		{
+			MarkerOptions test = new MarkerOptions().title("Other").position(new LatLng(38.029,-78.479))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.othermarker)).anchor((float).50,(float) .50);;
 			mMap.addMarker(test);
 		}
 		//Theatre
-		if (toggleStates[4])
-		{
-			MarkerOptions test = new MarkerOptions().title("Theatre").position(new LatLng(38.029,-78.479))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.theatremarker)).anchor((float).50,(float) .50);;
-			mMap.addMarker(test);
-		}
-		//Visual
 		if (toggleStates[5])
 		{
-			MarkerOptions test = new MarkerOptions().title("Visual").position(new LatLng(38.033,-78.483))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.filmmarker)).anchor((float).50,(float) .50);;
-			mMap.addMarker(test);
-		}
-		//Other
-		if (toggleStates[6])
-		{
-			MarkerOptions test = new MarkerOptions().title("Other").position(new LatLng(38.0335,-78.4835))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.othermarker)).anchor((float).50,(float) .50);;
+			MarkerOptions test = new MarkerOptions().title("Theatre").position(new LatLng(38.033,-78.483))
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.theatremarker)).anchor((float).50,(float) .50);
 			mMap.addMarker(test);
 		}
 	}
@@ -208,12 +225,12 @@ OnCheckedChangeListener {
 		toggles = new ArrayList<ToggleButton>();
 		
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.dancetoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.filmtoggle)));
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.gallerytoggle)));
-		toggles.add((ToggleButton)(this.getView().findViewById(R.id.literarytoggle)));
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.musictoggle)));
-		toggles.add((ToggleButton)(this.getView().findViewById(R.id.theatretoggle)));
-		toggles.add((ToggleButton)(this.getView().findViewById(R.id.visualtoggle)));
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.othertoggle)));
+		toggles.add((ToggleButton)(this.getView().findViewById(R.id.theatretoggle)));
+		
 		
 		//Every time the fragment is refreshed, all of the toggles start off enabled
 		for (ToggleButton i : toggles)
@@ -325,7 +342,7 @@ OnCheckedChangeListener {
 	{
 		DisplayMetrics metrics = this.getActivity().getResources().getDisplayMetrics();
 		int width = metrics.widthPixels;
-		return width/7;
+		return width/6;
 	}
 
 	/** Map is redrawn whenever a button is toggled*/
@@ -335,11 +352,11 @@ OnCheckedChangeListener {
 		{
 			setUpMap(0);
 		}
-		else if (buttonView.getId() == R.id.gallerytoggle)
+		else if (buttonView.getId() == R.id.filmtoggle)
 		{
 			setUpMap(1);
 		}
-		else if (buttonView.getId() == R.id.literarytoggle)
+		else if (buttonView.getId() == R.id.gallerytoggle)
 		{
 			setUpMap(2);
 		}
@@ -347,18 +364,13 @@ OnCheckedChangeListener {
 		{
 			setUpMap(3);
 		}
-		else if (buttonView.getId() == R.id.theatretoggle)
+		else if (buttonView.getId() == R.id.othertoggle)
 		{
 			setUpMap(4);
 		}
-		else if (buttonView.getId() == R.id.visualtoggle)
+		else if (buttonView.getId() == R.id.theatretoggle)
 		{
 			setUpMap(5);
 		}
-		else if (buttonView.getId() == R.id.othertoggle)
-		{
-			setUpMap(6);
-		}
-		
 	}
 }

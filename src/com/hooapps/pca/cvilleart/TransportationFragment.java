@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TabHost.TabSpec;
 
 import com.hooapps.pca.cvilleart.R;
-import com.hooapps.pca.cvilleart.Transportation.TransportationBikeFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationParkingFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationPublicFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationTaxiFragment;
@@ -70,13 +69,9 @@ public class TransportationFragment extends Fragment {
 		TabSpec taxi = tabHost.newTabSpec("Taxi");
 		taxi.setIndicator("Taxi");
 		
-		TabSpec bike = tabHost.newTabSpec("Bike Rental");
-		bike.setIndicator("Bike Rental");
-		
 		tabHost.addTab(publicTrans,TransportationPublicFragment.class, null);
 		tabHost.addTab(parking, TransportationParkingFragment.class, null);
 		tabHost.addTab(taxi, TransportationTaxiFragment.class, null);
-		tabHost.addTab(bike, TransportationBikeFragment.class, null);
 		
 		return rootView;
 	}

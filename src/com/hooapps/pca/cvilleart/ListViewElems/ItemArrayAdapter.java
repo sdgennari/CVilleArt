@@ -21,7 +21,7 @@ public class ItemArrayAdapter extends ArrayAdapter<Item>{
 	
 	/** All the types of entries in the list */
 	public enum Type {
-		TEXT_ITEM, HEADER_ITEM, GRID_ITEM
+		TEXT_ITEM, HEADER_ITEM, GRID_ITEM, VENUE_ITEM
 	}
 	
 	public ItemArrayAdapter(Context context, List<Item> items) {

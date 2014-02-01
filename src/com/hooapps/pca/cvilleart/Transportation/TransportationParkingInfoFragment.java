@@ -4,6 +4,10 @@ import com.hooapps.pca.cvilleart.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +19,22 @@ import android.widget.TextView;
 */
 public class TransportationParkingInfoFragment extends Fragment
 {
-	private TextView description;
-	private static final String idea = "This should be a ListFragment. It will have a Location Client that"
-			+ "notifies it of the user's location frequently. The List will be re-sorted, listing closest options first"
-			+ "with each update. We will need to have a List of ParkingLocation Objects that have a LatLng field, then"
-			+ "we can use the static Location.distanceBetween() method in a comparator class for sorting the list."
-			+ "It will be a lot like the Discover Section. Each parking lot item will have a name, distance away, and "
-			+ "info on rates/times. When a parking lot item in the list is clicked, it will launch"
-			+ "a map fragment and pass it the LatLng of the ParkingLot with rates/times/info in the marker label";
+	private TextView text;
+	private SpannableString content;
+	private static final String MARKET_STREET_GARAGE_TITLE = "Market Street Garage";
+	private static final String MARKET_STREET_GARAGE = "504 E Market St., Charlottesville VA\n"
+			+ "$2.50 per Hour\n";
+	private static final String WATER_STREET_GARAGE_TITLE =  "Water Street Parking Garage";
+	private static final String WATER_STREET_GARAGE = "200 E Water St., Charlottesville, VA\n"
+			+ "$2.00 per Hour\n";
+	private static final String WATER_STREET_LOT_TITLE = "Water Street Lot";
+	private static final String WATER_STREET_LOT = "100 E Water St., Charlottesville, VA\n"
+			+ "$2.50 per Hour\n";
+	private static final String MORE_INFO_TITLE = "More Information";
+	private static final String MORE_INFO_INFO = "Monday-Wednesday: 6am - Midnight\n"
+			+ "Thursday-Saturday 6am - 1am\n"
+			+ "Sunday: Noon - 10pm\n\n"
+			+ "Note: Prices & Hours Subject to Change";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// If the activity is being recreated, restore previous version
@@ -51,7 +63,42 @@ public class TransportationParkingInfoFragment extends Fragment
 			// TODO Setup the fragment according to other specifications
 		}
 		
-		description = (TextView) this.getView().findViewById(R.id.description);
-		description.setText(idea);
+		text = (TextView) this.getView().findViewById(R.id.market_garage_title);
+		content = new SpannableString(MARKET_STREET_GARAGE_TITLE);
+		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+		text.setText(content);
+		
+		text = (TextView) this.getView().findViewById(R.id.market_garage_info);
+		text.setText(MARKET_STREET_GARAGE);
+		
+		text = (TextView) this.getView().findViewById(R.id.water_garage_title);
+		content = new SpannableString(WATER_STREET_GARAGE_TITLE);
+		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+		text.setText(content);
+		
+		text = (TextView) this.getView().findViewById(R.id.water_garage_info);
+		text.setText(WATER_STREET_GARAGE);
+		
+		text = (TextView) this.getView().findViewById(R.id.water_lot_title);
+		content = new SpannableString(WATER_STREET_LOT_TITLE);
+		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+		text.setText(content);
+		
+		text = (TextView) this.getView().findViewById(R.id.water_lot_info);
+		text.setText(WATER_STREET_LOT);
+		
+		text = (TextView) this.getView().findViewById(R.id.more_info_title);
+		content = new SpannableString(MORE_INFO_TITLE);
+		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+		text.setText(content);
+		
+		text = (TextView) this.getView().findViewById(R.id.more_info_info);
+		text.setText(MORE_INFO_INFO);
+		
+		text = (TextView) this.getView().findViewById(R.id.more_info_link);
+		text.setClickable(true);
+		text.setMovementMethod(LinkMovementMethod.getInstance());
+		String url = "<a href='http://www.charlottesvilleparking.com/index.php/locations'> Click Here For More Information </a>";
+		text.setText(Html.fromHtml(url));
 	}
 }

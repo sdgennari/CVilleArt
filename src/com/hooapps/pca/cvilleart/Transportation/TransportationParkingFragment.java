@@ -39,8 +39,8 @@ public class TransportationParkingFragment extends Fragment
 		TabSpec publicMap = tabHost.newTabSpec("Map");
 		publicMap.setIndicator("Map");
 		
-		TabSpec publicInfo = tabHost.newTabSpec("List");
-		publicInfo.setIndicator("List");
+		TabSpec publicInfo = tabHost.newTabSpec("Info");
+		publicInfo.setIndicator("Info");
 		
 		tabHost.addTab(publicMap, TransportationParkingMapFragment.class, null);
 		tabHost.addTab(publicInfo,TransportationParkingInfoFragment.class, null);
