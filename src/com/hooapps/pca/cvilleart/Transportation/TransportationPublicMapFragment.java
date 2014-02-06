@@ -23,8 +23,8 @@ import android.widget.TextView;
 public class TransportationPublicMapFragment extends Fragment
 {
 	private TextView description;
-	private static final String idea = "Here we load in a GoogleMap with markers/overlays, load in an image, or load in a"
-			+ "WebView that gives a visual of UTS and CAT routes and stops.";
+	private static final String idea = "Here we load in a GoogleMap with markers or something to give a visual"
+			+ "of the surrounding public transportation bus stops";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// If the activity is being recreated, restore previous version

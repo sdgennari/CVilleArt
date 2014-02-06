@@ -9,11 +9,10 @@
     <string name="need_to_know">Need to Know:</string>
     
     <string name="dance">Dance</string>
+    <string name="film">Film</string>
     <string name="gallery">Gallery</string>
-    <string name="literary">Literary</string>
     <string name="music">Music</string>
-    <string name="theatre">Theatre</string>
-    <string name="visual">Visual</string>
     <string name="other">Other</string>
+    <string name="theatre">Theatre</string>
     
 </resources>
