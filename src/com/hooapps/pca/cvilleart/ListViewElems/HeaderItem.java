@@ -17,8 +17,6 @@ import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter.Type;
 public class HeaderItem implements Item {
 	private final String text;
 	
-	
-
 	public HeaderItem(String text) {
 		this.text = text;
 	}

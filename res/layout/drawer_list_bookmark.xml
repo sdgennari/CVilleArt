@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:id = "@+id/bookmarkholder1"
+        android:layout_width = "match_parent"
+        android:layout_height = "0dp"
+        android:orientation = "horizontal"
+        android:layout_weight = ".5">
+        
+        <ImageButton
+            android:id = "@+id/bookmark1"
+            android:scaleType = "fitCenter"
+            android:layout_width = "80dp"
+            android:layout_height = "80dp"
+            android:padding = "10dp"
+            android:onClick = "onBookmarkClick">
+        </ImageButton>
+        
+        <ImageButton
+            android:id = "@+id/bookmark2"
+            android:scaleType = "fitCenter"
+            android:layout_width = "80dp"
+            android:layout_height = "80dp"
+            android:padding = "10dp"
+            android:onClick = "onBookmarkClick">
+        </ImageButton>
+        
+        <ImageButton
+            android:id = "@+id/bookmark3"
+            android:scaleType = "fitCenter"
+            android:layout_width = "80dp"
+            android:layout_height = "80dp"
+            android:padding = "10dp"
+            android:onClick = "onBookmarkClick">
+        </ImageButton>
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width = "match_parent"
+        android:layout_height = "0dp"
+        android:orientation = "horizontal"
+        android:layout_weight = ".5" >
+        
+        <ImageButton
+            android:id = "@+id/bookmark4"
+            android:scaleType = "fitCenter"
+            android:layout_width = "80dp"
+            android:layout_height = "80dp"
+            android:padding = "10dp"
+            android:onClick = "onBookmarkClick">
+        </ImageButton>
+        
+        <ImageButton
+            android:id = "@+id/bookmark5"
+            android:scaleType = "fitCenter"
+            android:layout_width = "80dp"
+            android:layout_height = "80dp"
+            android:padding = "10dp"
+            android:onClick = "onBookmarkClick">
+        </ImageButton>
+        
+        <ImageButton
+            android:id = "@+id/bookmark6"
+            android:scaleType = "fitCenter"
+            android:layout_width = "80dp"
+            android:layout_height = "80dp"
+            android:padding = "10dp"
+            android:onClick = "onBookmarkClick">
+        </ImageButton>
+        
+    </LinearLayout>
+
+</LinearLayout>

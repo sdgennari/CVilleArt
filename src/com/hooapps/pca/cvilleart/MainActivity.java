@@ -20,6 +20,7 @@ import jxl.*;
 
 import com.hooapps.pca.cvilleart.DataElems.AlarmReceiver;
 import com.hooapps.pca.cvilleart.ListViewElems.ArtVenue;
+import com.hooapps.pca.cvilleart.ListViewElems.BookmarkItem;
 import com.hooapps.pca.cvilleart.ListViewElems.HeaderItem;
 import com.hooapps.pca.cvilleart.ListViewElems.Item;
 import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter;
@@ -41,6 +42,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.view.View;
@@ -134,11 +136,13 @@ public class MainActivity extends FragmentActivity implements
 					.add(R.id.fragment_container, firstFragment).commit();
 		}
 		
+		//Will only execute when savedInstanceState == null
 		AsyncExcelLoader excelLoader = new AsyncExcelLoader();
 		excelLoader.setActivity(this);
 		excelLoader.execute(new File(this.getFilesDir(),"PCAExcelData"));
 		
 		// Schedule the services to update the data
+		//Will only execute when savedInstanceState == null
 		scheduleServices();
 	}
 
@@ -152,6 +156,13 @@ public class MainActivity extends FragmentActivity implements
 
 		// Initialize the List of items for the ItemArrayAdapter
 		List<Item> items = new ArrayList<Item>();
+		items.add(new HeaderItem("Favorites"));
+		//TODO: Write BookmarkItem Constructor to receive list of image URLs to display
+		//Use sharedPreferences to keep track of what urls the user wants and what discoverItemFragment to display upon click
+		//Make it easy to add/remove bookmarks
+		//have a better default image
+		items.add(new BookmarkItem());
+		
 		items.add(new HeaderItem("Menu"));
 		items.add(new TextItem("Home"));
 		items.add(new TextItem("Bookmarks"));
@@ -179,7 +190,10 @@ public class MainActivity extends FragmentActivity implements
 				drawerLayout.closeDrawer(leftNavDrawerList);
 			}
 		});
-		
+	}
+
+	private void bookmark2setOnClickListener(MainActivity mainActivity) {
+		// TODO Auto-generated method stub
 		
 	}
 
@@ -244,30 +258,30 @@ public class MainActivity extends FragmentActivity implements
 		Bundle args = null;
 		switch (position) {
 		// Home
-		case 1:
+		case 3:
 			newFragment = new HomeScreenFragment();
 			args = new Bundle();
 			break;
 		// NearMeFragment
-		case 5:
+		case 7:
 			newFragment = new NearMeFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
 		// DiscoverFragment
-		case 6:
+		case 8:
 			newFragment = new DiscoverListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
 		// TransportationFragment
-		case 7:
+		case 9:
 			newFragment = new TransportationFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
 		// EventFragment
-		case 8:
+		case 10:
 			newFragment = new EventFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
@@ -443,5 +457,21 @@ public class MainActivity extends FragmentActivity implements
 			stringHolder.clear();
 		}
 		workbook.close();
+	}
+
+	public void onBookmarkClick(View v) {
+		int id = v.getId();
+		if (id == R.id.bookmark1)
+			Log.d("Testing", "Image Button 1");
+		else if (id == R.id.bookmark2)
+			Log.d("Testing", "Image Button 2");
+		else if (id == R.id.bookmark3)
+			Log.d("Testing","Image Button 3");
+		else if (id == R.id.bookmark4)
+			Log.d("Testing","Image Button 4");
+		else if (id == R.id.bookmark5)
+			Log.d("Testing","Image Button 5");
+		else if (id == R.id.bookmark6)
+			Log.d("Testing","Image Button 6");
 	}
 }
