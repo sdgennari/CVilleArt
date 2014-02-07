@@ -21,8 +21,7 @@ import android.widget.TextView;
 public class TransportationPublicInfoFragment extends Fragment 
 {
 	private TextView description;
-	private static final String idea = "We load in information about hours, rates, and wait times for CAT and UTS."
-			+ "Maybe recommend TransLoc for UTS.";
+	private static final String idea = "Load in information about CAT and maybe UTS; Link to sources for current info";
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// If the activity is being recreated, restore previous version
