@@ -86,8 +86,7 @@ public class DiscoverItemFragment extends Fragment {
 	private void updateDiscoverItem(Bundle args) {
 		// Retrieve the data from the args bundle
 		//int id = args.getInt("column_ID");
-		int id = 20;
-		Uri uri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
+		Uri uri = args.getParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE);
 		
 		Log.d("ITEM FRAG", "Loading data from "+uri);
 		

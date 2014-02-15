@@ -344,43 +344,12 @@ public class MainActivity extends FragmentActivity implements
 		// code...
 		Fragment newFragment = new DiscoverItemFragment();
 		Bundle args = new Bundle();
-
-		TextView title = (TextView) v.findViewById(R.id.venue_title);
-		String organizationTitle = (String)title.getText();
-		ArtVenue clickedVenue = null;
 		
-		for (Item i : venueItemList)
-		{
-			if (i instanceof ArtVenue){
-				ArtVenue temp = (ArtVenue)i;
-				if (temp.getOrganizationName().trim().equals(organizationTitle.trim())){
-					clickedVenue = temp;
-					break;
-				}
-			}
-		}
-				
-		/**String name = (String) v.getTag(R.id.venue_title);
-		String type = (String) v.getTag(R.id.type);
-		String imagePath = (String) v.getTag(R.id.image);
-		String description = (String) v.getTag(R.id.description);
-		String address = (String) v.getTag(R.id.address);*/
-		if (clickedVenue != null)
-		{
-			args.putString("title", clickedVenue.getOrganizationName());
-			args.putString("type", clickedVenue.getPrimaryCategory());
-			args.putString("imagePath", clickedVenue.getImagePath());
-			args.putString("description", clickedVenue.getDescription());
-			args.putString("address", clickedVenue.getStreetAddress());
-		}
-		else
-		{
-			Log.d("Discover", "No Matching Venue found in venueItemList");
-		}
+		Uri venueUri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
+		args.putParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE, venueUri);
 
 		newFragment.setArguments(args);
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
 		// Replace the fragment in fragment_container with the new fragment
 		// Add the transaction to the back stack to allow for navigation with

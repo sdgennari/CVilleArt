@@ -48,8 +48,7 @@ public class DiscoverListFragment extends ListFragment implements
 		 * @param position
 		 *            The position of the view in the list
 		 * */
-		public void onDiscoverViewSelected(ListView l, View v, int position,
-				long id);
+		public void onDiscoverViewSelected(ListView l, View v, int position, long id);
 		public ArrayList<Item> getVenueItemList();
 	}
 
@@ -69,8 +68,7 @@ public class DiscoverListFragment extends ListFragment implements
 		try {
 			mCallback = (OnDiscoverViewSelectedListener) activity;
 		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnViewSelectedListener");
+			throw new ClassCastException(activity.toString() + " must implement OnViewSelectedListener");
 		}
 	}
 
