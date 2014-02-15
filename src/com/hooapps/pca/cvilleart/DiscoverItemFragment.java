@@ -8,15 +8,19 @@
 package com.hooapps.pca.cvilleart;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Bitmap.Config;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v8.renderscript.Allocation;
 import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +29,9 @@ import android.widget.TextView;
 
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
+import com.hooapps.pca.cvilleart.DataElems.PCADatabaseHelper;
+import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
@@ -73,39 +80,59 @@ public class DiscoverItemFragment extends Fragment {
 	
 	/**
 	 * Updates the views on the fragment with information about the venue.
-	 * 
+	 * TODO UPDATE THIS DESCRIPTION
 	 * @param args The Bundle passed to the fragment
 	 */
 	private void updateDiscoverItem(Bundle args) {
 		// Retrieve the data from the args bundle
-		String title = args.getString("title");
-		//String type = args.getString("type");
-		String description = args.getString("description");
-		String address = args.getString("address");
-		String imagePath = args.getString("imagePath");
+		//int id = args.getInt("column_ID");
+		int id = 20;
+		Uri uri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
 		
-		// Retrieve the views from the layout
-		Activity a = this.getActivity();
-		TextView titleView = (TextView)a.findViewById(R.id.venue_name);
-		TextView descriptionView = (TextView)a.findViewById(R.id.description);
-		TextView addressView = (TextView)a.findViewById(R.id.address);
-		imageView = (ImageView)a.findViewById(R.id.venue_image);
+		Log.d("ITEM FRAG", "Loading data from "+uri);
 		
-		// Add the data to the views accordingly
-		titleView.setText(title);
-		descriptionView.setText(description);
-		addressView.setText("Address: " + address);
+		String[] projection = {
+				VenueTable.ORGANIZATION_NAME,
+				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
+				VenueTable.DIRECTORY_DESCRIPTION_LONG,
+				VenueTable.ADDRESS_HOME_STREET,
+				VenueTable.IMAGE_URLS };
 		
-		imageLoader.loadImage(imagePath, new SimpleImageLoadingListener() {
-		    @Override
-		    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-		        // Do whatever you want with Bitmap
-		    	if(imageView != null) {
-		    		imageView.setImageBitmap(createImage(loadedImage));	
-		    	}
-		    }
-		});
+		Cursor cursor = this.getActivity().getContentResolver().query(uri, projection, null, null, null);
 		
+		if (cursor != null) {
+			cursor.moveToFirst();
+			
+			// Get the data from the cursor
+			String name = cursor.getString(cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME));
+			String type = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
+			String description = cursor.getString(cursor.getColumnIndex(VenueTable.DIRECTORY_DESCRIPTION_LONG));
+			String address = cursor.getString(cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET));
+			String imagePath = cursor.getString(cursor.getColumnIndex(VenueTable.IMAGE_URLS));
+			
+			// Retrieve the views from the layout
+			Activity a = this.getActivity();
+			TextView titleView = (TextView)a.findViewById(R.id.venue_name);
+			TextView descriptionView = (TextView)a.findViewById(R.id.description);
+			TextView addressView = (TextView)a.findViewById(R.id.address);
+			imageView = (ImageView)a.findViewById(R.id.venue_image);
+			
+			titleView.setText(name);
+			descriptionView.setText(description);
+			addressView.setText(address);
+			
+			imageLoader.loadImage(imagePath, new SimpleImageLoadingListener() {
+			    @Override
+			    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+			        // Do whatever you want with Bitmap
+			    	if(imageView != null) {
+			    		//imageView.setImageBitmap(createImage(loadedImage));	
+			    	}
+			    }
+			});
+			
+			cursor.close();
+		}
 	}
 	
 	/**

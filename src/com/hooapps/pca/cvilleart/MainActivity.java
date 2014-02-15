@@ -19,6 +19,8 @@ import java.util.List;
 import jxl.*;
 
 import com.hooapps.pca.cvilleart.DataElems.AlarmReceiver;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
+import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.ListViewElems.ArtVenue;
 import com.hooapps.pca.cvilleart.ListViewElems.BookmarkItem;
 import com.hooapps.pca.cvilleart.ListViewElems.HeaderItem;
@@ -30,8 +32,10 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -66,6 +70,8 @@ public class MainActivity extends FragmentActivity implements
 	private ListView rightNavDrawerList;
 	private Integer lastBackgroundImage;
 	private ArrayList<Item> venueItemList;
+	
+	private Uri venueUri;
 
 	public Integer getLastBackgroundImage() {
 		return lastBackgroundImage;
@@ -444,16 +450,36 @@ public class MainActivity extends FragmentActivity implements
 			if (sheet.getCell(0,row).getContents().trim().equals("")){
 				break;
 			}
-			for (int col = 0; col < 12; col++)
+			for (int col = 0; col < 13; col++)
 			{
 				Cell temp = sheet.getCell(col, row);
 				stringHolder.add(temp.getContents().trim());
 			}
+			
+			ContentValues values = new ContentValues();
+			values.put(VenueTable.ORGANIZATION_NAME, stringHolder.get(0));
+			values.put(VenueTable.EMAIL_ADDRESS, stringHolder.get(1));
+			values.put(VenueTable.HOME_PAGE_URL, stringHolder.get(2));
+			values.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, stringHolder.get(3));
+			values.put(VenueTable.PHONE_NUMBER_PRIMARY, stringHolder.get(4));
+			values.put(VenueTable.ADDRESS_HOME_STREET, stringHolder.get(5));
+			values.put(VenueTable.ADDRESS_HOME_CITY, stringHolder.get(6));
+			values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, stringHolder.get(7));
+			values.put(VenueTable.ADDRESS_HOME_STATE, stringHolder.get(8));
+			values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, stringHolder.get(9));
+			values.put(VenueTable.SECONDARY_CATEGORY, stringHolder.get(10));
+			values.put(VenueTable.LAT_LNG_STRING, stringHolder.get(11));
+			values.put(VenueTable.IMAGE_URLS, stringHolder.get(12));
+			
+			venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
+			
+			/*
 			venueItemList.add(new ArtVenue(stringHolder.get(0), stringHolder.get(1), stringHolder.get(2), 
 					stringHolder.get(3), stringHolder.get(4), stringHolder.get(5), stringHolder.get(6), 
 					stringHolder.get(7), stringHolder.get(8), stringHolder.get(9), stringHolder.get(10), 
 					stringHolder.get(11)));
-			Log.d("Error", "Venue Added");
+			*/
+			Log.d("MAIN ACTIVITY", "Venue added to "+venueUri);
 			stringHolder.clear();
 		}
 		workbook.close();

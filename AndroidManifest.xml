@@ -45,8 +45,10 @@
             android:exported="false" />
         
         <provider
-            android:authorities="com.hooapps.pca.cvilleart.DataElems.DataProvider"
-            android:name="com.hooapps.pca.cvilleart.DataElems.DataProvider" />
+            android:name=".DataElems.PCAContentProvider"
+            android:authorities="com.hooapps.pca.cvilleart.DataElems"
+            android:exported="true" >
+        </provider>
         
         <receiver
             android:name=".DataElems.AlarmReceiver" />

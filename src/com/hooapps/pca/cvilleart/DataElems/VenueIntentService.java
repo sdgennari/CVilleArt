@@ -23,12 +23,12 @@ public class VenueIntentService extends IntentService {
 		
 		// Sample data below to test service, provider, data, etc.
 		ContentValues data = new ContentValues();
-		data.put(PCADatabase.VENUE_NAME, "name");
-		data.put(PCADatabase.VENUE_DESCRIPTION, "description");
-		data.put(PCADatabase.VENUE_IMG_URL, "https://lh4.googleusercontent.com/-NEkAkCdt41E/AAAAAAAAAAI/AAAAAAAAAAA/n0NL-BQik0k/photo.jpg");
-		data.put(PCADatabase.VENUE_TYPE, "type");
-		data.put(PCADatabase.VENUE_ADDRESS, "address");
+		data.put(VenueTable.ORGANIZATION_NAME, "name");
+		data.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, "description");
+		data.put(VenueTable.IMAGE_URLS, "https://lh4.googleusercontent.com/-NEkAkCdt41E/AAAAAAAAAAI/AAAAAAAAAAA/n0NL-BQik0k/photo.jpg");
+		data.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, "type");
+		data.put(VenueTable.ADDRESS_HOME_STREET, "street address");
 		
-		this.getContentResolver().insert(DataProvider.VENUE_CONTENT_URI, data);
+		this.getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, data);
 	}
 }

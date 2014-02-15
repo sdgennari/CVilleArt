@@ -2,7 +2,7 @@ package com.hooapps.pca.cvilleart.ListViewElems;
 
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
-import com.hooapps.pca.cvilleart.DataElems.PCADatabase;
+import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
@@ -48,11 +48,11 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 	@Override
 	public void bindView(View v, Context context, Cursor cursor) {
 		// Retrieve the columns indexes from the cursor
-		int colName = cursor.getColumnIndex(PCADatabase.VENUE_NAME);
-		int colType = cursor.getColumnIndex(PCADatabase.VENUE_TYPE);
-		int colImgUrl = cursor.getColumnIndex(PCADatabase.VENUE_IMG_URL);
-		int colAddress = cursor.getColumnIndex(PCADatabase.VENUE_ADDRESS);
-		int colDescription = cursor.getColumnIndex(PCADatabase.VENUE_DESCRIPTION);
+		int colName = cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME);
+		int colType = cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES);
+		int colImgUrl = cursor.getColumnIndex(VenueTable.IMAGE_URLS);
+		int colAddress = cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET);
+		int colDescription = cursor.getColumnIndex(VenueTable.DIRECTORY_DESCRIPTION_LONG);
 		
 		// Retrieve the data from the cursor
 		String name = cursor.getString(colName);
@@ -81,7 +81,7 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		imageLoader.loadImage(imagePath, new SimpleImageLoadingListener() {
 		    @Override
 		    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-				imageView.setImageBitmap(loadedImage);
+				//imageView.setImageBitmap(loadedImage);
 		    }
 		});
 	}
