@@ -40,6 +40,8 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -410,10 +412,12 @@ public class MainActivity extends FragmentActivity implements
 			JSONArray jArray = new JSONArray(result);
 			ContentValues values;
 			JSONObject jObject;
+			String[] name = new String[1];
 			for (int i = 0; i < jArray.length(); i++) {
 				jObject = jArray.getJSONObject(i);
 				values = new ContentValues();
 				
+				// Populate the ContentValues
 				values.put(VenueTable.ORGANIZATION_NAME, jObject.getString("Organization_Name"));
 				values.put(VenueTable.EMAIL_ADDRESS, jObject.getString("Email_Address"));
 				values.put(VenueTable.HOME_PAGE_URL, jObject.getString("Home_Page_URL"));
@@ -428,11 +432,22 @@ public class MainActivity extends FragmentActivity implements
 				values.put(VenueTable.LAT_LNG_STRING, jObject.getString("LatLngString ifNoAddress"));
 				values.put(VenueTable.IMAGE_URLS, jObject.getString("Image URLs"));
 				
-				venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
+				// Check to see if the item is already in the database
+				name[0] = values.getAsString(VenueTable.ORGANIZATION_NAME);
+				Cursor c = getContentResolver().query(PCAContentProvider.VENUE_CONTENT_URI, null, 
+						VenueTable.ORGANIZATION_NAME+" = "+DatabaseUtils.sqlEscapeString(name[0]), null, null);
 				
-				Log.d("storeJSONData", "JSON Venue added to "+venueUri);
+				// Insert if new object, otherwise update
+				if (c.getCount() == 0) {
+					venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
+					Log.d("storeJSONData", "JSON Venue added to "+venueUri);
+				} else {
+					getContentResolver().update(PCAContentProvider.VENUE_CONTENT_URI, values, VenueTable.ORGANIZATION_NAME+" = ?", name);
+					Log.d("storeJSONData", "JSON Venue updated: " + name);
+				}
+				
+				c.close();
 			}
-			
 		} catch (JSONException e) {
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
