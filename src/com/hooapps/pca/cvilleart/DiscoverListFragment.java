@@ -107,7 +107,6 @@ public class DiscoverListFragment extends ListFragment implements
 				columns, to);
 
 		this.setListAdapter(dataAdapter);
-		//this.setListAdapter(new ItemArrayAdapter(this.getActivity(), mCallback.getVenueItemList()));
 		this.getActivity().getSupportLoaderManager().initLoader(0, null, this);
 	}
 

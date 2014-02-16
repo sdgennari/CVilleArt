@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Bitmap.Config;
 import android.net.Uri;
@@ -143,7 +144,6 @@ public class DiscoverItemFragment extends Fragment {
 	 * @return The finished bitmap with all elements combined
 	 */
 	private Bitmap createImage(Bitmap bmp) {
-		
 		// Retrieve the blurred background image
 		Bitmap background = processBackgroundImage(bmp);
 		

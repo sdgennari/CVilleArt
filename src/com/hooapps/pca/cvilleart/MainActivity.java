@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import jxl.*;
 
 import com.hooapps.pca.cvilleart.DataElems.AlarmReceiver;
@@ -32,6 +36,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -63,8 +68,12 @@ import android.view.View;
  */
 
 public class MainActivity extends FragmentActivity implements
-		DiscoverListFragment.OnDiscoverViewSelectedListener, AsyncExcelLoader.AsyncExcelLoaderListener {
-
+		DiscoverListFragment.OnDiscoverViewSelectedListener,
+		AsyncExcelLoader.AsyncExcelLoaderListener,
+		AsyncJSONLoader.AsyncJSONLoaderListener {
+	
+	private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
 	private ListView rightNavDrawerList;
@@ -143,9 +152,14 @@ public class MainActivity extends FragmentActivity implements
 		}
 		
 		//Will only execute when savedInstanceState == null
+		/*
 		AsyncExcelLoader excelLoader = new AsyncExcelLoader();
 		excelLoader.setActivity(this);
 		excelLoader.execute(new File(this.getFilesDir(),"PCAExcelData"));
+		*/
+		AsyncJSONLoader JSONLoader = new AsyncJSONLoader();
+		JSONLoader.setActivity(this);
+		JSONLoader.execute(path);
 		
 		// Schedule the services to update the data
 		//Will only execute when savedInstanceState == null
@@ -366,6 +380,7 @@ public class MainActivity extends FragmentActivity implements
 	 * database.
 	 */
 	private void scheduleServices() {
+		/*
 		Context context = this.getApplicationContext();
 		Intent intent = new Intent(context, AlarmReceiver.class);
 		PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0,
@@ -387,10 +402,45 @@ public class MainActivity extends FragmentActivity implements
 		// Repeat the alarm every minute to debug
 		// alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
 		// calendar.getTimeInMillis(), 60*1000, alarmIntent);
+		*/
+	}
+	
+	public void storeJSONData(String result) {
+		try {
+			JSONArray jArray = new JSONArray(result);
+			ContentValues values;
+			JSONObject jObject;
+			for (int i = 0; i < jArray.length(); i++) {
+				jObject = jArray.getJSONObject(i);
+				values = new ContentValues();
+				
+				values.put(VenueTable.ORGANIZATION_NAME, jObject.getString("Organization_Name"));
+				values.put(VenueTable.EMAIL_ADDRESS, jObject.getString("Email_Address"));
+				values.put(VenueTable.HOME_PAGE_URL, jObject.getString("Home_Page_URL"));
+				values.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, jObject.getString("Directory_Description_Long"));
+				values.put(VenueTable.PHONE_NUMBER_PRIMARY, jObject.getString("Phone_Number_Primary"));
+				values.put(VenueTable.ADDRESS_HOME_STREET, jObject.getString("Address_Home_Street"));
+				values.put(VenueTable.ADDRESS_HOME_CITY, jObject.getString("Address_Home_City"));
+				values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, jObject.getString("Address_Home_Postal_Code"));
+				values.put(VenueTable.ADDRESS_HOME_STATE, jObject.getString("Address_Home_State"));
+				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, jObject.getString("Category_Art_Community_Categories"));
+				values.put(VenueTable.SECONDARY_CATEGORY, jObject.getString("Secondary Category"));
+				values.put(VenueTable.LAT_LNG_STRING, jObject.getString("LatLngString ifNoAddress"));
+				values.put(VenueTable.IMAGE_URLS, jObject.getString("Image URLs"));
+				
+				venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
+				
+				Log.d("storeJSONData", "JSON Venue added to "+venueUri);
+			}
+			
+		} catch (JSONException e) {
+			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
+		}
 	}
 	
 	public void loadInData(File f)
 	{
+		
 		Log.d("Error",f.length()+"");
 		venueItemList = new ArrayList<Item>();
 		//File excelTable = new File("/Users/alexramey/Desktop/test");
@@ -442,12 +492,6 @@ public class MainActivity extends FragmentActivity implements
 			
 			venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
 			
-			/*
-			venueItemList.add(new ArtVenue(stringHolder.get(0), stringHolder.get(1), stringHolder.get(2), 
-					stringHolder.get(3), stringHolder.get(4), stringHolder.get(5), stringHolder.get(6), 
-					stringHolder.get(7), stringHolder.get(8), stringHolder.get(9), stringHolder.get(10), 
-					stringHolder.get(11)));
-			*/
 			Log.d("MAIN ACTIVITY", "Venue added to "+venueUri);
 			stringHolder.clear();
 		}

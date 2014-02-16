@@ -40,7 +40,8 @@ public class AsyncExcelLoader extends AsyncTask<File, Void, File> {
 		File file = writeable[0];
 		try
 	        {
-	        	String path = "https://dl.dropboxusercontent.com/s/0ukmtjijx32llbb/PCA%20Data.xls?dl=1&token_hash=AAETCWNPuftXVriFELeOKP1IDdAoTiC4AfhTd8-A2HxL-Q";
+	        	//String path = "https://dl.dropboxusercontent.com/s/0ukmtjijx32llbb/PCA%20Data.xls?dl=1&token_hash=AAETCWNPuftXVriFELeOKP1IDdAoTiC4AfhTd8-A2HxL-Q";
+				String path = "https://dl.dropboxusercontent.com/s/6w5rhb9x3869h3d/PCA_Data.json?dl=1&token_hash=AAG35eFmh_iwUTGQac-mrwlrFh-6oFeAZvLr7JNX0urGFg";
 	            URL url = new URL(path);
 
 	            URLConnection ucon = url.openConnection();
