@@ -81,7 +81,7 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		Picasso.with(context).setDebugging(true);
 		if(imagePath != null && !imagePath.isEmpty()) {
 			Picasso.with(context).load(imagePath).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().placeholder(R.drawable.film).error(R.drawable.dance).into(imageView);
-		}else {
+		} else {
 			// Load a placeholder image if no url is provided
 			Picasso.with(context).load(R.drawable.theatre).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().into(imageView);
 		}

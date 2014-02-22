@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import jxl.*;
 
 import com.hooapps.pca.cvilleart.DataElems.AlarmReceiver;
+import com.hooapps.pca.cvilleart.DataElems.EventTable;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.ListViewElems.ArtVenue;
@@ -74,7 +75,8 @@ public class MainActivity extends FragmentActivity implements
 		AsyncExcelLoader.AsyncExcelLoaderListener,
 		AsyncJSONLoader.AsyncJSONLoaderListener {
 	
-	private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	//private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	private String path = "https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -409,6 +411,57 @@ public class MainActivity extends FragmentActivity implements
 	
 	public void storeJSONData(String result) {
 		try {
+			JSONObject jObject = new JSONObject(result);
+			String category = jObject.getString("summary");
+			JSONArray jArray = jObject.getJSONArray("items");
+			ContentValues values = new ContentValues();
+			String[] id = new String[1];
+			JSONObject event;
+			Uri eventUri;
+			
+			for(int i = 0; i < jArray.length(); i++) {
+				event = jArray.getJSONObject(i);
+				values.clear();
+				
+				// Populate the ContentValues
+				values.put(EventTable.EVENT_ID, event.getString("id"));
+				values.put(EventTable.UPDATED, event.getString("updated")); // TODO CONVERT TO UNIX TIME
+				values.put(EventTable.SUMMARY, event.getString("summary"));
+				
+				if(event.has("description")) {
+					values.put(EventTable.DESCRIPTION, event.getString("description"));
+				}
+				
+				values.put(EventTable.LOCATION, event.getString("location"));
+				values.put(EventTable.START_TIME, event.getJSONObject("start").getString("dateTime")); // TODO CONVERT TO UNIX TIME
+				values.put(EventTable.END_TIME, event.getJSONObject("end").getString("dateTime")); // TODO CONVERT TO UNIX TIME
+				values.put(EventTable.CATEGORY, category);
+				
+				// Check to see if the item is already in the database
+				id[0] = values.getAsString(EventTable.EVENT_ID);
+				Cursor c = getContentResolver().query(PCAContentProvider.EVENT_CONTENT_URI, null, 
+						EventTable.EVENT_ID+" = "+DatabaseUtils.sqlEscapeString(id[0]), null, null);
+				
+				// Insert if new object, otherwise update
+				if (c.getCount() == 0) {
+					eventUri = getContentResolver().insert(PCAContentProvider.EVENT_CONTENT_URI, values);
+					Log.d("storeJSONData", "JSON Event added to "+id);
+				} else {
+					getContentResolver().update(PCAContentProvider.EVENT_CONTENT_URI, values, EventTable.EVENT_ID+" = ?", id);
+					Log.d("storeJSONData", "JSON Event updated: " + id);
+				}
+				
+				c.close();
+				
+			}
+		} catch (JSONException e) {
+			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
+		}
+	}
+	
+	/*
+	public void storeJSONData(String result) {
+		try {
 			JSONArray jArray = new JSONArray(result);
 			ContentValues values;
 			JSONObject jObject;
@@ -452,7 +505,7 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	
+	*/
 	public void loadInData(File f)
 	{
 		

@@ -60,19 +60,29 @@ public class PCAContentProvider extends ContentProvider {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
 		// Make sure the columns are valid
-		checkColumns(projection);
+		//checkColumns(projection);
 
 		// Set the table
 		// TODO Update this based on the table being used
 		// Possible use uriType to detect table called
-		queryBuilder.setTables(VenueTable.TABLE_VENUES);
-		
 		int uriType = sURIMatcher.match(uri);
+		
+		if(uriType >= VENUE_ITEMS && uriType < EVENT_ITEMS) {
+			queryBuilder.setTables(VenueTable.TABLE_VENUES);
+		} else {
+			queryBuilder.setTables(EventTable.TABLE_EVENTS);
+		}
+		
 		switch (uriType) {
 		case VENUE_ITEMS:
 			break;
 		case VENUE_ITEM_ID:
 			queryBuilder.appendWhere(VenueTable.COLUMN_ID+"="+uri.getLastPathSegment());
+			break;
+		case EVENT_ITEMS:
+			break;
+		case EVENT_ITEM_ID:
+			queryBuilder.appendWhere(EventTable.COLUMN_ID+"="+uri.getLastPathSegment());
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI: "+uri);
@@ -100,12 +110,19 @@ public class PCAContentProvider extends ContentProvider {
 		case VENUE_ITEMS:
 			id = sqlDB.insert(VenueTable.TABLE_VENUES, null, values);
 			break;
+		case EVENT_ITEMS:
+			id = sqlDB.insert(EventTable.TABLE_EVENTS, null, values);
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI: "+uri);
 		}
 		
 		getContext().getContentResolver().notifyChange(uri, null);
-		return Uri.parse(BASE_PATH_VENUES+"/"+id);
+		if(uriType >= VENUE_ITEMS && uriType < EVENT_ITEMS) {
+			return Uri.parse(BASE_PATH_VENUES+"/"+id);
+		} else {
+			return Uri.parse(BASE_PATH_EVENTS+"/"+id);
+		}
 	}
 	
 	@Override
@@ -113,17 +130,29 @@ public class PCAContentProvider extends ContentProvider {
 		int uriType = sURIMatcher.match(uri);
 		SQLiteDatabase sqlDB = database.getWritableDatabase();
 		int rowsDeleted = 0;
+		String id;
 		
 		switch (uriType) {
 		case VENUE_ITEMS:
 			rowsDeleted = sqlDB.delete(VenueTable.TABLE_VENUES, selection, selectionArgs);
 			break;
 		case VENUE_ITEM_ID:
-			String id = uri.getLastPathSegment();
+			id = uri.getLastPathSegment();
 			if(TextUtils.isEmpty(selection)) {
 				rowsDeleted = sqlDB.delete(VenueTable.TABLE_VENUES, VenueTable.COLUMN_ID+"="+id, null);
 			} else {
 				rowsDeleted = sqlDB.delete(VenueTable.TABLE_VENUES, VenueTable.COLUMN_ID+"="+id+" AND "+selection, selectionArgs);
+			}
+			break;
+		case EVENT_ITEMS:
+			rowsDeleted = sqlDB.delete(EventTable.TABLE_EVENTS, selection, selectionArgs);
+			break;
+		case EVENT_ITEM_ID:
+			id = uri.getLastPathSegment();
+			if(TextUtils.isEmpty(selection)) {
+				rowsDeleted = sqlDB.delete(EventTable.TABLE_EVENTS, EventTable.COLUMN_ID+"="+id, null);
+			} else {
+				rowsDeleted = sqlDB.delete(EventTable.TABLE_EVENTS, EventTable.COLUMN_ID+"="+id+" AND "+selection, selectionArgs);
 			}
 			break;
 		default:
@@ -139,19 +168,31 @@ public class PCAContentProvider extends ContentProvider {
 		int uriType = sURIMatcher.match(uri);
 		SQLiteDatabase sqlDB = database.getWritableDatabase();
 		int rowsUpdated = 0;
+		String id;
 		
 		switch (uriType) {
 		case VENUE_ITEMS:
 			rowsUpdated = sqlDB.update(VenueTable.TABLE_VENUES, values, selection, selectionArgs);
 			break;
 		case VENUE_ITEM_ID:
-			String id = uri.getLastPathSegment();
+			id = uri.getLastPathSegment();
 			if(TextUtils.isEmpty(selection)) {
 				rowsUpdated = sqlDB.update(VenueTable.TABLE_VENUES, values, VenueTable.COLUMN_ID+"="+id, null);
 			} else {
 				rowsUpdated = sqlDB.update(VenueTable.TABLE_VENUES, values, VenueTable.COLUMN_ID+"="+id+" AND "+selection, selectionArgs);
 			}
 			break;
+		case EVENT_ITEMS:
+			rowsUpdated = sqlDB.update(EventTable.TABLE_EVENTS, values, selection, selectionArgs);
+			break;
+		case EVENT_ITEM_ID:
+			id = uri.getLastPathSegment();
+			if(TextUtils.isEmpty(selection)) {
+				rowsUpdated = sqlDB.update(EventTable.TABLE_EVENTS, values, EventTable.COLUMN_ID+"="+id, null);
+			} else {
+				rowsUpdated = sqlDB.update(EventTable.TABLE_EVENTS, values, EventTable.COLUMN_ID+"="+id+" AND "+selection, selectionArgs);
+			}
+			break;	
 		default:
 			throw new IllegalArgumentException("Unknown URI: "+uri);
 		}

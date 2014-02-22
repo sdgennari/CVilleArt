@@ -8,6 +8,7 @@
 package com.hooapps.pca.cvilleart;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -29,12 +30,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hooapps.pca.cvilleart.R;
+import com.hooapps.pca.cvilleart.CustomElems.BlurTransformation;
 import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCADatabaseHelper;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.squareup.picasso.Picasso;
 
 // TODO Update the JavaDoc description as the functionality increases
 
@@ -48,8 +51,8 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class DiscoverItemFragment extends Fragment {
 	
-	private ImageView imageView;
-	private ImageLoader imageLoader = ImageLoader.getInstance();
+	//private ImageView imageView;
+	//private ImageLoader imageLoader = ImageLoader.getInstance();
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,8 +92,6 @@ public class DiscoverItemFragment extends Fragment {
 		//int id = args.getInt("column_ID");
 		Uri uri = args.getParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE);
 		
-		Log.d("ITEM FRAG", "Loading data from "+uri);
-		
 		String[] projection = {
 				VenueTable.ORGANIZATION_NAME,
 				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
@@ -115,12 +116,29 @@ public class DiscoverItemFragment extends Fragment {
 			TextView titleView = (TextView)a.findViewById(R.id.venue_name);
 			TextView descriptionView = (TextView)a.findViewById(R.id.description);
 			TextView addressView = (TextView)a.findViewById(R.id.address);
-			imageView = (ImageView)a.findViewById(R.id.venue_image);
+			ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
+			ImageView bgImageView = (ImageView)a.findViewById(R.id.venue_image_background);
 			
 			titleView.setText(name);
 			descriptionView.setText(description);
 			addressView.setText(address);
 			
+			// Process the images
+			// TODO FIND A WAY TO USE getWidth() AND getHeight() for ImageViews
+			// LOOK INTO ViewTreeObserver
+			Context context = this.getActivity().getApplicationContext();
+			BlurTransformation blur = new BlurTransformation(context);
+			double screenDensity = context.getResources().getDisplayMetrics().density;
+			
+			if (imagePath != null && !imagePath.isEmpty()) {
+				Picasso.with(context).load(imagePath).resize((int)(336*screenDensity), (int)(112*screenDensity)).transform(blur).into(bgImageView);
+				Picasso.with(context).load(imagePath).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().into(imageView);
+			} else {
+				Picasso.with(context).load(R.drawable.film).resize((int)(336*screenDensity), (int)(112*screenDensity)).transform(blur).into(bgImageView);
+				Picasso.with(context).load(R.drawable.theatre).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().into(imageView);
+			}
+			
+			/*
 			imageLoader.loadImage(imagePath, new SimpleImageLoadingListener() {
 			    @Override
 			    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -130,6 +148,7 @@ public class DiscoverItemFragment extends Fragment {
 			    	}
 			    }
 			});
+			*/
 			
 			cursor.close();
 		}
@@ -143,6 +162,7 @@ public class DiscoverItemFragment extends Fragment {
 	 * @param bmp The source bitmap
 	 * @return The finished bitmap with all elements combined
 	 */
+	/*
 	private Bitmap createImage(Bitmap bmp) {
 		// Retrieve the blurred background image
 		Bitmap background = processBackgroundImage(bmp);
@@ -164,6 +184,7 @@ public class DiscoverItemFragment extends Fragment {
 		
 		return output;
 	}
+	*/
 	
 	/**
 	 * Modifies the source bitmap to crop, scale, and blur it to form the 
@@ -172,6 +193,7 @@ public class DiscoverItemFragment extends Fragment {
 	 * @param bmp The unmodified source bitmap image
 	 * @return A cropped and blurred version of the bitmap
 	 */
+	/*
 	private Bitmap processBackgroundImage(Bitmap bmp) {
 		int width = imageView.getWidth();
 		int height = imageView.getHeight();
@@ -207,6 +229,7 @@ public class DiscoverItemFragment extends Fragment {
 		
 		return dest;
 	}
+	*/
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

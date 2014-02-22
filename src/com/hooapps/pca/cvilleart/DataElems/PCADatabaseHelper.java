@@ -16,12 +16,12 @@ public class PCADatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		VenueTable.onCreate(db);
-		//EventTable.onCreate(db);
+		EventTable.onCreate(db);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		VenueTable.onUpgrade(db, oldVersion, newVersion);
-		//EventTable.onUpgrade(db, oldVersion, newVersion);
+		EventTable.onUpgrade(db, oldVersion, newVersion);
 	}
 }
