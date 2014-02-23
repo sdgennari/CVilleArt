@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:orientation="horizontal"
-    android:gravity="center_vertical" >
+    android:gravity="center_vertical"
+    android:background="@color/item_bg" >
 
     <ImageView
         android:id="@+id/image"
@@ -19,9 +20,8 @@
         android:layout_marginLeft="8dp" >
 
         <TextView
+            style="@style/header_text"
             android:id="@+id/venue_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:textColor="#585858"
             android:ellipsize="end"
             android:maxLines="1"
@@ -29,10 +29,8 @@
             android:textSize="18dp" />
 
         <TextView
+            style="@style/body_text"
             android:id="@+id/type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#585858"
             android:textSize="14dp" />
     </LinearLayout>
 

@@ -50,8 +50,6 @@ public class TextItem implements Item {
 		
 		TextView item = (TextView) view.findViewById(R.id.item);
 		item.setText(this.text);
-		TextView arrow = (TextView) view.findViewById(R.id.arrow);
-		arrow.setText(">");
 		
 		return view;
 	}

@@ -9,9 +9,16 @@
         android:layout_height="112dp" >
 
         <ImageView
-            android:id="@+id/venue_image"
+            android:id="@+id/venue_image_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+        
+        <ImageView
+            android:id="@+id/venue_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_centerHorizontal="true" />
 
         <TextView
             android:id="@+id/venue_name"
