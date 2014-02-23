@@ -17,7 +17,11 @@ public class PCAContentProvider extends ContentProvider {
 
 	// Reference to the database
 	private PCADatabaseHelper database;
-
+	
+	// Define ids for the CursorAdapter
+	public static final int VENUE_ADAPTER_ID = 0;
+	public static final int EVENT_ADAPTER_ID = 1;
+	
 	// Define the URIs
 	private static final String BASE_PATH_VENUES = "venues";
 	private static final String BASE_PATH_EVENTS = "events";

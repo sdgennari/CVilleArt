@@ -119,6 +119,7 @@ public class DiscoverItemFragment extends Fragment {
 			ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
 			ImageView bgImageView = (ImageView)a.findViewById(R.id.venue_image_background);
 			
+			// Set the fields
 			titleView.setText(name);
 			descriptionView.setText(description);
 			addressView.setText(address);

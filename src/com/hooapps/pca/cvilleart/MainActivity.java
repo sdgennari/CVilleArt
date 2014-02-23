@@ -72,11 +72,12 @@ import android.view.View;
 
 public class MainActivity extends FragmentActivity implements
 		DiscoverListFragment.OnDiscoverViewSelectedListener,
+		EventListFragment.OnEventViewSelectedListener,
 		AsyncExcelLoader.AsyncExcelLoaderListener,
 		AsyncJSONLoader.AsyncJSONLoaderListener {
 	
-	//private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
-	private String path = "https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	//private String path = "https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -306,7 +307,7 @@ public class MainActivity extends FragmentActivity implements
 			break;
 		// EventFragment
 		case 10:
-			newFragment = new EventFragment();
+			newFragment = new EventListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
@@ -378,6 +379,22 @@ public class MainActivity extends FragmentActivity implements
 		// Commit the transaction
 		transaction.commit();
 	}
+	
+	public void OnEventViewSelected(ListView l, View v, int position, long id) {
+		Fragment newFragment = new EventItemFragment();
+		Bundle args = new Bundle();
+		
+		Uri eventUri = Uri.parse(PCAContentProvider.EVENT_CONTENT_URI+"/"+id);
+		args.putParcelable(PCAContentProvider.EVENT_CONTENT_ITEM_TYPE, eventUri);
+		
+		newFragment.setArguments(args);
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		
+		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.addToBackStack(null);
+		
+		transaction.commit();
+	}
 
 	/**
 	 * Helper method to schedule services at the appropriate time to update the
@@ -409,6 +426,7 @@ public class MainActivity extends FragmentActivity implements
 		*/
 	}
 	
+	/*
 	public void storeJSONData(String result) {
 		try {
 			JSONObject jObject = new JSONObject(result);
@@ -458,8 +476,9 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
+	*/
 	
-	/*
+	
 	public void storeJSONData(String result) {
 		try {
 			JSONArray jArray = new JSONArray(result);
@@ -505,7 +524,7 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	*/
+	
 	public void loadInData(File f)
 	{
 		

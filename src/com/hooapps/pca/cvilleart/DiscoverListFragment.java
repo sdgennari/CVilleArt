@@ -45,8 +45,7 @@ public class DiscoverListFragment extends ListFragment implements
 		/**
 		 * Called by DiscoverListFragment when a view is selected
 		 * 
-		 * @param position
-		 *            The position of the view in the list
+		 * @param position The position of the view in the list
 		 * */
 		public void onDiscoverViewSelected(ListView l, View v, int position, long id);
 		public ArrayList<Item> getVenueItemList();
@@ -95,19 +94,17 @@ public class DiscoverListFragment extends ListFragment implements
 		String[] columns = new String[] {
 				VenueTable.ORGANIZATION_NAME,
 				VenueTable.DIRECTORY_DESCRIPTION_LONG,
-				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
 				VenueTable.IMAGE_URLS,
+				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
 				VenueTable.ADDRESS_HOME_STREET
 		};
 		
 		int[] to = new int[] { R.id.venue_name, R.id.type, R.id.image };
 
-		dataAdapter = new DiscoverCursorAdapter(this.getActivity()
-				.getApplicationContext(), R.layout.discover_list_item, null,
-				columns, to);
+		dataAdapter = new DiscoverCursorAdapter(this.getActivity(), R.layout.discover_list_item, null, columns, to);
 
 		this.setListAdapter(dataAdapter);
-		this.getActivity().getSupportLoaderManager().initLoader(0, null, this);
+		this.getActivity().getSupportLoaderManager().initLoader(PCAContentProvider.VENUE_ADAPTER_ID, null, this);
 	}
 
 	@Override

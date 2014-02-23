@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <shape
+            android:shape="rectangle">
+            <!-- ORANGE	<solid android:color="#FFD14A24" /> -->
+            <!-- PURPLE	<solid android:color="#FFA53670" /> -->
+            <!-- BLUE	<solid android:color="#FF2B819E" /> -->
+            <solid android:color="#FF298E17" />
+        </shape>
+    </item>
+    
+    <item android:bottom="2dp">
+        <shape
+            android:shape="rectangle">
+            <!-- ORANGE	<solid android:color="#FFEB5328" /> -->
+            <!-- PURPLE	<solid android:color="#FFBF3E81" /> -->
+            <!-- BLUE	<solid android:color="#FF3296B8" /> -->
+            <solid android:color="#FF30A81B" />
+        </shape>
+    </item>
+
+</layer-list>
