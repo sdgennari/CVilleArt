@@ -52,6 +52,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
@@ -77,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
 		AsyncExcelLoader.AsyncExcelLoaderListener,
 		AsyncJSONLoader.AsyncJSONLoaderListener {
 	
-	//private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
 	private String musicPath =		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String theatrePath =	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String filmPath = 		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
@@ -172,11 +173,15 @@ public class MainActivity extends FragmentActivity implements
 		//JSONLoader.execute(theatrePath);
 		//JSONLoader.execute(filmPath);
 		//JSONLoader.execute(dancePath);
-		JSONLoader.execute(galleryPath);
+		//JSONLoader.execute(galleryPath);
+		JSONLoader.execute(path);
 		
 		// Schedule the services to update the data
 		//Will only execute when savedInstanceState == null
 		scheduleServices();
+		
+		// Adjust the settings for the ActionBar
+		this.getActionBar().setHomeButtonEnabled(true);
 	}
 
 	/**
@@ -271,6 +276,34 @@ public class MainActivity extends FragmentActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			if (drawerLayout.isDrawerOpen(leftNavDrawerList)) {
+				drawerLayout.closeDrawer(leftNavDrawerList);
+			}
+			if (drawerLayout.isDrawerOpen(rightNavDrawerList)) {
+				drawerLayout.closeDrawer(rightNavDrawerList);
+			} else {
+				drawerLayout.openDrawer(rightNavDrawerList);
+			}
+			return true;
+		case android.R.id.home:
+			if (drawerLayout.isDrawerOpen(rightNavDrawerList)) {
+				drawerLayout.closeDrawer(rightNavDrawerList);
+			}
+			if (drawerLayout.isDrawerOpen(leftNavDrawerList)) {
+				drawerLayout.closeDrawer(leftNavDrawerList);
+			} else {
+				drawerLayout.openDrawer(leftNavDrawerList);
+			}
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	/**
@@ -464,7 +497,7 @@ public class MainActivity extends FragmentActivity implements
 		// calendar.getTimeInMillis(), 60*1000, alarmIntent);
 		*/
 	}
-	
+	/*
 	public void storeJSONData(String result) {
 		try {
 			JSONObject jObject = new JSONObject(result);
@@ -516,7 +549,7 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	
+	*/
 	private int parseUnixFromDate(String date) {
 		// DATE FORM 2014-01-19T04:00:00-05:00
 		int year = Integer.parseInt(date.substring(0, 4));
@@ -540,7 +573,7 @@ public class MainActivity extends FragmentActivity implements
 		return unixTime;
 	}
 	
-	/*
+	
 	public void storeJSONData(String result) {
 		try {
 			JSONArray jArray = new JSONArray(result);
@@ -586,7 +619,7 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	*/
+	
 	public void loadInData(File f)
 	{
 		
