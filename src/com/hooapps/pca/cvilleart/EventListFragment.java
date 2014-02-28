@@ -101,7 +101,7 @@ public class EventListFragment extends ListFragment implements
 			EventTable.START_TIME
 		};
 		
-		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), PCAContentProvider.EVENT_CONTENT_URI, projection, null, null, null);
+		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), PCAContentProvider.EVENT_CONTENT_URI, projection, null, null, EventTable.START_TIME + " ASC");
 		return cursorLoader;
 	}
 	

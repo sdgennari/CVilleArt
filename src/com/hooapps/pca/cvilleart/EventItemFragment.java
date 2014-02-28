@@ -1,5 +1,7 @@
 package com.hooapps.pca.cvilleart;
 
+import java.util.Calendar;
+
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 
@@ -52,8 +54,8 @@ public class EventItemFragment extends Fragment {
 			// Get the data from the cursor
 			String summary = cursor.getString(cursor.getColumnIndex(EventTable.SUMMARY));
 			String description = cursor.getString(cursor.getColumnIndex(EventTable.DESCRIPTION));
-			String startTime = cursor.getString(cursor.getColumnIndex(EventTable.START_TIME));
-			String endTime = cursor.getString(cursor.getColumnIndex(EventTable.END_TIME));
+			int startTime = cursor.getInt(cursor.getColumnIndex(EventTable.START_TIME));
+			int endTime = cursor.getInt(cursor.getColumnIndex(EventTable.END_TIME));
 			String location = cursor.getString(cursor.getColumnIndex(EventTable.LOCATION));
 			String eventId = cursor.getString(cursor.getColumnIndex(EventTable.EVENT_ID));
 			

@@ -76,8 +76,12 @@ public class MainActivity extends FragmentActivity implements
 		AsyncExcelLoader.AsyncExcelLoaderListener,
 		AsyncJSONLoader.AsyncJSONLoaderListener {
 	
-	private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
-	//private String path = "https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	//private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	private String musicPath =		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String theatrePath =	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String filmPath = 		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String dancePath = 		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String galleryPath = 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -164,7 +168,11 @@ public class MainActivity extends FragmentActivity implements
 		*/
 		AsyncJSONLoader JSONLoader = new AsyncJSONLoader();
 		JSONLoader.setActivity(this);
-		JSONLoader.execute(path);
+		//JSONLoader.execute(musicPath);
+		//JSONLoader.execute(theatrePath);
+		//JSONLoader.execute(filmPath);
+		//JSONLoader.execute(dancePath);
+		JSONLoader.execute(galleryPath);
 		
 		// Schedule the services to update the data
 		//Will only execute when savedInstanceState == null
@@ -426,7 +434,6 @@ public class MainActivity extends FragmentActivity implements
 		*/
 	}
 	
-	/*
 	public void storeJSONData(String result) {
 		try {
 			JSONObject jObject = new JSONObject(result);
@@ -436,6 +443,8 @@ public class MainActivity extends FragmentActivity implements
 			String[] id = new String[1];
 			JSONObject event;
 			Uri eventUri;
+			String start = "";
+			String end = "";
 			
 			for(int i = 0; i < jArray.length(); i++) {
 				event = jArray.getJSONObject(i);
@@ -451,8 +460,8 @@ public class MainActivity extends FragmentActivity implements
 				}
 				
 				values.put(EventTable.LOCATION, event.getString("location"));
-				values.put(EventTable.START_TIME, event.getJSONObject("start").getString("dateTime")); // TODO CONVERT TO UNIX TIME
-				values.put(EventTable.END_TIME, event.getJSONObject("end").getString("dateTime")); // TODO CONVERT TO UNIX TIME
+				values.put(EventTable.START_TIME, parseUnixFromDate(event.getJSONObject("start").getString("dateTime")));
+				values.put(EventTable.END_TIME, parseUnixFromDate(event.getJSONObject("end").getString("dateTime")));
 				values.put(EventTable.CATEGORY, category);
 				
 				// Check to see if the item is already in the database
@@ -476,9 +485,31 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	*/
 	
+	private int parseUnixFromDate(String date) {
+		// DATE FORM 2014-01-19T04:00:00-05:00
+		int year = Integer.parseInt(date.substring(0, 4));
+		int month = Integer.parseInt(date.substring(5,7));
+		int day = Integer.parseInt(date.substring(8, 10));
+		int hour = Integer.parseInt(date.substring(11, 13));
+		int minute = Integer.parseInt(date.substring(14, 16));
+		int timeZoneMod = Integer.parseInt(date.substring(19,21));
+		
+		Calendar c = Calendar.getInstance();
+		c.set(year, month-1, day, hour-timeZoneMod, minute);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		
+		int unixTime = (int) (c.getTimeInMillis() / 1000L);
+		
+		Log.d("TIME", date);
+		Log.d("TIME", year + " " + month + " " + day + " " + hour + " " + minute);
+		Log.d("TIME", ""+unixTime);
+		
+		return unixTime;
+	}
 	
+	/*
 	public void storeJSONData(String result) {
 		try {
 			JSONArray jArray = new JSONArray(result);
@@ -524,7 +555,7 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	
+	*/
 	public void loadInData(File f)
 	{
 		
