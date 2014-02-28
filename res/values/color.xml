@@ -16,4 +16,20 @@
     <color name="base_font">#FF3E3E3E</color>
     <color name="select">#FFE4E4E4</color>
     
+    <!-- Theme colors -->
+    <color name="blue">#FF3296B8</color>
+    <color name="dark_blue">#FF2B819E</color>
+    
+    <color name="green">#FF30A81B</color>
+    <color name="dark_green">#FF298E17</color>
+    
+    <color name="orange">#FFEB5328</color>
+    <color name="dark_orange">#FFD14A24</color>
+    
+    <color name="teal">#FF28EBB3</color>
+    <color name="dark_teal">#FF24D1A0</color>
+    
+    <color name="purple">#FFBF3E81</color>
+    <color name="dark_purple">#FFA53670</color>
+    
 </resources>

@@ -15,4 +15,9 @@
     <string name="other">Other</string>
     <string name="theatre">Theatre</string>
     
+    <string name="map">Map</string>
+    <string name="venues">Venues</string>
+    <string name="events">Events</string>
+    <string name="transportation">Transportation</string>
+    
 </resources>

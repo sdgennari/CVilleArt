@@ -73,6 +73,7 @@ import android.view.View;
 public class MainActivity extends FragmentActivity implements
 		DiscoverListFragment.OnDiscoverViewSelectedListener,
 		EventListFragment.OnEventViewSelectedListener,
+		HomeScreenFragment.OnHomeScreenButtonSelectedListener,
 		AsyncExcelLoader.AsyncExcelLoaderListener,
 		AsyncJSONLoader.AsyncJSONLoaderListener {
 	
@@ -156,8 +157,7 @@ public class MainActivity extends FragmentActivity implements
 			firstFragment.setArguments(getIntent().getExtras());
 
 			// Add the fragment to the fragment_container FrameLayout
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, firstFragment).commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
 		}
 		
 		//Will only execute when savedInstanceState == null
@@ -321,7 +321,39 @@ public class MainActivity extends FragmentActivity implements
 			break;
 
 		}
+		
+		launchFragment(newFragment, args);
+	}
 
+	public void onRightDrawerViewSelected(int position) {
+		switch (position) {
+		// TODO: add functionality
+		}
+	}
+	
+	public void onHomeScreenButtonSelected(View v) {
+		Fragment newFragment = null;
+		Bundle args = new Bundle();
+		
+		switch((HomeScreenFragment.Buttons) v.getTag()) {
+		case MAP:
+			newFragment = new NearMeFragment();
+			break;
+		case VENUES:
+			newFragment = new DiscoverListFragment();
+			break;
+		case EVENTS:
+			newFragment = new EventListFragment();
+			break;
+		case TRANSPORTATION:
+			newFragment = new TransportationFragment();
+			break;
+		}
+		
+		launchFragment(newFragment, args);
+	}
+	
+	private void launchFragment(Fragment newFragment, Bundle args) {
 		// Abort the mission if the fragment or args is still null to avoid
 		// NullPointerException
 		if (newFragment == null || args == null) {
@@ -329,8 +361,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 		newFragment.setArguments(args);
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
 		// Replace the fragment in fragment_container with the new fragment
 		// Add the transaction to the back stack to allow for navigation with
@@ -348,13 +379,7 @@ public class MainActivity extends FragmentActivity implements
 		// Commit the transaction
 		transaction.commit();
 	}
-
-	public void onRightDrawerViewSelected(int position) {
-		switch (position) {
-		// TODO: add functionality
-		}
-	}
-
+	
 	/**
 	 * Called when a user selects an item in the DiscoverFragment. This list is
 	 * dynamic and needs to be handled accordingly. When an item is clicked, a
@@ -374,7 +399,9 @@ public class MainActivity extends FragmentActivity implements
 		
 		Uri venueUri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
 		args.putParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE, venueUri);
-
+		
+		launchFragment(newFragment, args);
+		/*
 		newFragment.setArguments(args);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -386,6 +413,7 @@ public class MainActivity extends FragmentActivity implements
 
 		// Commit the transaction
 		transaction.commit();
+		*/
 	}
 	
 	public void OnEventViewSelected(ListView l, View v, int position, long id) {
@@ -395,6 +423,8 @@ public class MainActivity extends FragmentActivity implements
 		Uri eventUri = Uri.parse(PCAContentProvider.EVENT_CONTENT_URI+"/"+id);
 		args.putParcelable(PCAContentProvider.EVENT_CONTENT_ITEM_TYPE, eventUri);
 		
+		launchFragment(newFragment, args);
+		/*
 		newFragment.setArguments(args);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		
@@ -402,6 +432,7 @@ public class MainActivity extends FragmentActivity implements
 		transaction.addToBackStack(null);
 		
 		transaction.commit();
+		*/
 	}
 
 	/**
