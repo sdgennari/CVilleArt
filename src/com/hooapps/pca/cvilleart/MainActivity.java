@@ -22,7 +22,8 @@ import org.json.JSONObject;
 
 import jxl.*;
 
-import com.hooapps.pca.cvilleart.DataElems.AlarmReceiver;
+import com.hooapps.pca.cvilleart.DataElems.AlarmScheduleReceiver;
+import com.hooapps.pca.cvilleart.DataElems.DataIntentService;
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
@@ -46,6 +47,7 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -58,6 +60,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.view.View;
 
 //TODO Update the JavaDoc description as the functionality increases
@@ -74,16 +77,16 @@ import android.view.View;
 public class MainActivity extends FragmentActivity implements
 		DiscoverListFragment.OnDiscoverViewSelectedListener,
 		EventListFragment.OnEventViewSelectedListener,
-		HomeScreenFragment.OnHomeScreenButtonSelectedListener,
-		AsyncExcelLoader.AsyncExcelLoaderListener,
-		AsyncJSONLoader.AsyncJSONLoaderListener {
+		HomeScreenFragment.OnHomeScreenButtonSelectedListener//,
+		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
+		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
 	
-	private String path = "http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
-	private String musicPath =		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String theatrePath =	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String filmPath = 		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String dancePath = 		"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String galleryPath = 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	private String musicPath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String theatrePath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String filmPath		= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String dancePath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String galleryPath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -167,14 +170,14 @@ public class MainActivity extends FragmentActivity implements
 		excelLoader.setActivity(this);
 		excelLoader.execute(new File(this.getFilesDir(),"PCAExcelData"));
 		*/
-		AsyncJSONLoader JSONLoader = new AsyncJSONLoader();
-		JSONLoader.setActivity(this);
+		//AsyncJSONLoader JSONLoader = new AsyncJSONLoader();
+		//JSONLoader.setActivity(this);
 		//JSONLoader.execute(musicPath);
 		//JSONLoader.execute(theatrePath);
 		//JSONLoader.execute(filmPath);
 		//JSONLoader.execute(dancePath);
 		//JSONLoader.execute(galleryPath);
-		JSONLoader.execute(path);
+		//JSONLoader.execute(path);
 		
 		// Schedule the services to update the data
 		//Will only execute when savedInstanceState == null
@@ -473,28 +476,62 @@ public class MainActivity extends FragmentActivity implements
 	 * database.
 	 */
 	private void scheduleServices() {
-		/*
-		Context context = this.getApplicationContext();
-		Intent intent = new Intent(context, AlarmReceiver.class);
-		PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0,
-				intent, 0);
-		AlarmManager alarmMgr = (AlarmManager) context
-				.getSystemService(Context.ALARM_SERVICE);
-
-		// Set the alarm to a specific time (00:00:00 in this case)
+		AlarmManager alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(this, AlarmScheduleReceiver.class);
+		PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+		
+		// Set the alarm to start at [specified time]
 		Calendar calendar = Calendar.getInstance();
+		int min = calendar.get(Calendar.MINUTE);
 		calendar.setTimeInMillis(System.currentTimeMillis());
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.HOUR_OF_DAY, 1);
+		calendar.set(Calendar.MINUTE, 5);
+		
+		/*
+		alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30 * 1000, alarmIntent);
+		Log.d("ALARM", "Alarm set for 60 seconds from now...");
+		*/
+		
+		Log.d("ALARM", "Alarm scheduled at " + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE));
+		alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+		Log.d("ALARM", "Repeating set every day");
+		
+		/*
+		Log.d("SERVICES", "Scheduling services...");
+		// Make an intent for each feed
+		Intent venueIntent = new Intent(this, DataIntentService.class);
+		venueIntent.putExtra("url", this.venuePath);
+		venueIntent.putExtra("type", PCAContentProvider.VENUE_ADAPTER_ID);
+		
+		Intent danceIntent = new Intent(this, DataIntentService.class);
+		danceIntent.putExtra("url", this.dancePath);
+		danceIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
+		
+		Intent filmIntent = new Intent(this, DataIntentService.class);
+		filmIntent.putExtra("url", this.filmPath);
+		filmIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
+		
+		Intent galleryIntent = new Intent(this, DataIntentService.class);
+		galleryIntent.putExtra("url", this.galleryPath);
+		galleryIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
+		
+		Intent musicIntent = new Intent(this, DataIntentService.class);
+		musicIntent.putExtra("url", this.musicPath);
+		musicIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
+		
+		Intent theatreIntent = new Intent(this, DataIntentService.class);
+		theatreIntent.putExtra("url", this.theatrePath);
+		theatreIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
+		
+		// Start the service by queuing up the intents
+		this.startService(venueIntent);
+		this.startService(danceIntent);
+		this.startService(filmIntent);
+		this.startService(galleryIntent);
+		this.startService(musicIntent);
+		this.startService(theatreIntent);
 
-		// Repeat the alarm every day
-		alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-				calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY,
-				alarmIntent);
-
-		// Repeat the alarm every minute to debug
-		// alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-		// calendar.getTimeInMillis(), 60*1000, alarmIntent);
+		Log.d("SERVICES", "Services scheduled.");
 		*/
 	}
 	/*
@@ -550,6 +587,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 	}
 	*/
+	/*
 	private int parseUnixFromDate(String date) {
 		// DATE FORM 2014-01-19T04:00:00-05:00
 		int year = Integer.parseInt(date.substring(0, 4));
@@ -572,8 +610,8 @@ public class MainActivity extends FragmentActivity implements
 		
 		return unixTime;
 	}
-	
-	
+	*/
+	/*
 	public void storeJSONData(String result) {
 		try {
 			JSONArray jArray = new JSONArray(result);
@@ -619,7 +657,8 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
 	}
-	
+	*/
+	/*
 	public void loadInData(File f)
 	{
 		
@@ -679,6 +718,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 		workbook.close();
 	}
+	*/
 
 	public void onBookmarkClick(View v) {
 		int id = v.getId();

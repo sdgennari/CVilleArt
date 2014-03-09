@@ -57,15 +57,11 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		int colName = cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME);
 		int colType = cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES);
 		int colImgUrl = cursor.getColumnIndex(VenueTable.IMAGE_URLS);
-		int colAddress = cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET);
-		int colDescription = cursor.getColumnIndex(VenueTable.DIRECTORY_DESCRIPTION_LONG);
 
 		// Retrieve the data from the cursor
 		String name = cursor.getString(colName);
 		String type = cursor.getString(colType);
 		String imagePath = cursor.getString(colImgUrl);
-		String address = cursor.getString(colAddress);
-		String description = cursor.getString(colDescription);
 
 		// Display the data on the views in the list
 		TextView titleView = (TextView)v.findViewById(R.id.venue_title);
@@ -80,10 +76,10 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		// Make sure that the url is valid
 		Picasso.with(context).setDebugging(true);
 		if(imagePath != null && !imagePath.isEmpty()) {
-			Picasso.with(context).load(imagePath).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().placeholder(R.drawable.film).error(R.drawable.dance).into(imageView);
+			Picasso.with(context).load(imagePath).placeholder(R.drawable.film).error(R.drawable.dance).into(imageView);
 		} else {
 			// Load a placeholder image if no url is provided
-			Picasso.with(context).load(R.drawable.theatre).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().into(imageView);
+			Picasso.with(context).load(R.drawable.theatre).into(imageView);
 		}
 	}
 }

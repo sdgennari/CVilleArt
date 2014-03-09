@@ -38,6 +38,7 @@ import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 // TODO Update the JavaDoc description as the functionality increases
 
@@ -62,13 +63,17 @@ public class DiscoverItemFragment extends Fragment {
 			// TODO Code to restore prior version here  
 		}
 		
+		Log.d("ON_CREATE_VIEW", "View created");
+		
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.discover_item_view, container, false);
 	}
 	
+	
 	@Override
 	public void onStart() {
 		super.onStart();
+		
 		
 		// During startup, check if there are arguments passed to the fragment.
         // onStart is a good place to do this because the layout has already been
@@ -125,18 +130,15 @@ public class DiscoverItemFragment extends Fragment {
 			addressView.setText(address);
 			
 			// Process the images
-			// TODO FIND A WAY TO USE getWidth() AND getHeight() for ImageViews
-			// LOOK INTO ViewTreeObserver
 			Context context = this.getActivity().getApplicationContext();
 			BlurTransformation blur = new BlurTransformation(context);
-			double screenDensity = context.getResources().getDisplayMetrics().density;
 			
 			if (imagePath != null && !imagePath.isEmpty()) {
-				Picasso.with(context).load(imagePath).resize((int)(336*screenDensity), (int)(112*screenDensity)).transform(blur).into(bgImageView);
-				Picasso.with(context).load(imagePath).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().into(imageView);
+				Picasso.with(context).load(imagePath).resize(800, 400).transform(blur).into(bgImageView);
+				//Picasso.with(context).load(imagePath).into(imageView);
 			} else {
-				Picasso.with(context).load(R.drawable.film).resize((int)(336*screenDensity), (int)(112*screenDensity)).transform(blur).into(bgImageView);
-				Picasso.with(context).load(R.drawable.theatre).resize((int)(48*screenDensity), (int)(48*screenDensity)).centerCrop().into(imageView);
+				Picasso.with(context).load(R.drawable.film).transform(blur).into(bgImageView);
+				//Picasso.with(context).load(R.drawable.theatre).into(imageView);
 			}
 			
 			/*

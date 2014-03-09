@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 public class EventCursorAdapter extends SimpleCursorAdapter {
 	
+	private static int SECONDS_PER_DAY = 60 * 60 * 24;
+	
 	private LayoutInflater layoutInflater;
 	private Context context;
 	private int layout;
@@ -40,6 +42,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 	
 	@Override
 	public void bindView(View v, Context context, Cursor cursor) {
+		
 		// Retrieve the column indexes from the cursor
 		int colEventId = cursor.getColumnIndex(EventTable.EVENT_ID);
 		int colCategory = cursor.getColumnIndex(EventTable.CATEGORY);
@@ -65,9 +68,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		int hours = c.get(Calendar.HOUR_OF_DAY);
 		int minutes = c.get(Calendar.MINUTE);
 		
-		// TODO REMOVE AFTER DEBUGGING
-		categoryView.setText(""+c.get(Calendar.DAY_OF_MONTH));
-		
+		// Update the timeView
 		TextView timeView = (TextView) v.findViewById(R.id.time);
 		timeView.setText(String.format("% 2d", hours%12) + ":" + String.format("%02d", minutes));
 		
@@ -78,6 +79,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 			timePeriodView.setText("PM");
 		}
 		
+		// TODO CONSIDER MAKING STATIC VARIABLES FOR THE CATEGORIES IN PCAContentProvider
 		// Set background color of the timeContainer
 		RelativeLayout timeContainer = (RelativeLayout) v.findViewById(R.id.time_container);
 		if (category.equalsIgnoreCase("music")) {
@@ -97,13 +99,112 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		// Check to see if a header is needed
 		RelativeLayout headerContainer = (RelativeLayout) v.findViewById(R.id.header_container);
 		TextView header = (TextView) v.findViewById(R.id.header);
-		Log.d("HEADER", "Check 0");
+		headerContainer.setVisibility(View.GONE);
+		
+		// Set the header to the date
 		int position = cursor.getPosition();
-		if (position - 1 < 0) {
-			Log.d("HEADER", "Check 1");
+		if (position == 0) {
 			headerContainer.setVisibility(View.VISIBLE);
-			Log.d("HEADER", "Check 2");
-			header.setText(""+c.get(Calendar.DAY_OF_WEEK));
+			header.setText(createDateString(c));
+		} else {
+			
+			// Get the current date
+			int curDate = c.get(Calendar.DAY_OF_MONTH);
+			
+			// Get the previous date
+			cursor.moveToPrevious();
+			int prevStartTime = cursor.getInt(colStartTime);
+			c.setTimeInMillis(prevStartTime * 1000L);
+			int prevDate = c.get(Calendar.DAY_OF_MONTH);
+			
+			// Reset the calendar to the correct time
+			c.setTimeInMillis(startTime * 1000L);
+			
+			if (prevDate != curDate) {
+				headerContainer.setVisibility(View.VISIBLE);
+				header.setText(createDateString(c));	
+			}
 		}
+		
+	}
+	
+	private String createDateString(Calendar c) {
+		String result = "";
+		
+		// Find the day of the week
+		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+		switch (dayOfWeek) {
+		case Calendar.MONDAY:
+			result += "Monday";
+			break;
+		case Calendar.TUESDAY:
+			result += "Tuesday";
+			break;
+		case Calendar.WEDNESDAY:
+			result += "Wednesday";
+			break;
+		case Calendar.THURSDAY:
+			result += "Thursday";
+			break;
+		case Calendar.FRIDAY:
+			result += "Friday";
+			break;
+		case Calendar.SATURDAY:
+			result += "Saturday";
+			break;
+		case Calendar.SUNDAY:
+			result += "Sunday";
+			break;
+		}
+		
+		result += ", ";
+		
+		// Find the month
+		int month = c.get(Calendar.MONTH);
+		switch (month) {
+		case Calendar.JANUARY:
+			result += "January";
+			break;
+		case Calendar.FEBRUARY:
+			result += "February";
+			break;
+		case Calendar.MARCH:
+			result += "March";
+			break;
+		case Calendar.APRIL:
+			result += "April";
+			break;
+		case Calendar.MAY:
+			result += "May";
+			break;
+		case Calendar.JUNE:
+			result += "June";
+			break;
+		case Calendar.JULY:
+			result += "July";
+			break;
+		case Calendar.AUGUST:
+			result += "August";
+			break;
+		case Calendar.SEPTEMBER:
+			result += "September";
+			break;
+		case Calendar.OCTOBER:
+			result += "October";
+			break;
+		case Calendar.NOVEMBER:
+			result += "November";
+			break;
+		case Calendar.DECEMBER:
+			result += "December";
+			break;
+		}
+		
+		result += " ";
+		
+		// Add the date
+		result += c.get(Calendar.DAY_OF_MONTH);
+		
+		return result;
 	}
 }

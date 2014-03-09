@@ -21,11 +21,7 @@ public class VenueTable {
 	public static final String LAT = "lat";			// Extra col for numeric lat
 	public static final String LON = "lon";			// Extra col for numeric lon
 	public static final String IMAGE_URLS = "image_urls";
-	//public static final String OTHER_INFO = "other_info";
-	//public static final String LAST_NAME_FIRST_NAME = "last_name_first_name";
 	public static final String DIRECTORY_DESCRIPTION_LONG = "directory_description_long";
-	//public static final String DIRECTORY_DESCRIPTION_SHORT = "directory_description_short";
-	//public static final String DIRECTORY_PRIMARY_IMAGE_FILE_NAME = "directory_primay_image_file_name";
 
 	// Possible extra fields for image paths
 	public static final String IMAGE_THUMB_PATH = "image_thumb_path";
@@ -51,10 +47,6 @@ public class VenueTable {
 		+ LAT + " INTEGER, "
 		+ LON + " INTEGER, "
 		+ IMAGE_URLS + " VARCHAR(255), "
-		//+ OTHER_INFO + " VARCHAR(255), "
-		//+ LAST_NAME_FIRST_NAME + " VARCHAR(255), "
-		//+ DIRECTORY_DESCRIPTION_SHORT + " TEXT "
-		//+ DIRECTORY_PRIMARY_IMAGE_FILE_NAME + " VARCHAR(255), "
 		+ IMAGE_THUMB_PATH + " VARCHAR(255), "
 		+ IMAGE_MAIN_PATH + " VARCHAR(255) "
 		+ ");";
