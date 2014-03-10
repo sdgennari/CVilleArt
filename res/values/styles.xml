@@ -29,11 +29,12 @@
     <style name="font_base">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/base_font</item>
+        <item name="android:textColor">@color/dark_gray</item>
     </style>
     
     <style name="body_text" parent="font_base">
         <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">16sp</item>
     </style>
     
     <style name="header_text" parent="font_base">
@@ -45,7 +46,46 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">20dp</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textColor">@color/item_bg</item>
+        <item name="android:textColor">@color/white</item>
     </style>
+    
+    <style name="divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/light_gray</item>
+    </style>
+    
+    <!-- Styles for the modules in Discover and Event -->
+    
+    <style name="module_container">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@drawable/white_bg</item>
+    </style>
+    
+    <style name="module_header_text" parent="header_text" >
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    
+    <style name="module_body_text" parent="body_text">
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+    
+    <style name="module_button" parent="body_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:background">@drawable/white_item_bg</item>
+    </style>
+
 
 </resources>

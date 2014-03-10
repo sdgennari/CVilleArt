@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -51,7 +52,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		
 		// Retrieve the data from the cursor
 		String eventId = cursor.getString(colEventId);
-		String category = cursor.getString(colCategory);
+		String categoryString = cursor.getString(colCategory);
 		String summary = cursor.getString(colSummary);
 		int startTime = cursor.getInt(colStartTime);
 		
@@ -60,7 +61,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		titleView.setText(summary);
 		
 		TextView categoryView = (TextView) v.findViewById(R.id.category);
-		categoryView.setText(category);
+		categoryView.setText(categoryString);
 		
 		// Convert the startTime to hours and minutes
 		Calendar c = Calendar.getInstance();
@@ -73,7 +74,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		timeView.setText(String.format("% 2d", hours%12) + ":" + String.format("%02d", minutes));
 		
 		TextView timePeriodView = (TextView) v.findViewById(R.id.time_period);
-		if (hours%12 == 0) {
+		if (hours/12 == 0) {
 			timePeriodView.setText("AM");
 		} else {
 			timePeriodView.setText("PM");
@@ -82,18 +83,19 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		// TODO CONSIDER MAKING STATIC VARIABLES FOR THE CATEGORIES IN PCAContentProvider
 		// Set background color of the timeContainer
 		RelativeLayout timeContainer = (RelativeLayout) v.findViewById(R.id.time_container);
-		if (category.equalsIgnoreCase("music")) {
-			timeContainer.setBackgroundResource(R.drawable.orange_bg);
-		} else if (category.equalsIgnoreCase("theatre")) {
-			timeContainer.setBackgroundResource(R.drawable.purple_bg);
-		} else if (category.equalsIgnoreCase("film")) {
-			timeContainer.setBackgroundResource(R.drawable.teal_bg);
-		} else if (category.equalsIgnoreCase("dance")) {
-			timeContainer.setBackgroundResource(R.drawable.green_bg);
-		} else if (category.equalsIgnoreCase("visual arts")) {
-			timeContainer.setBackgroundResource(R.drawable.blue_bg);
-		} else {	// Other category
-			// TODO MAKE MORE COLORS
+		Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase());
+		switch (category) {
+		case DANCE: timeContainer.setBackgroundResource(R.drawable.purple_bg);
+			break;
+		case MUSIC: timeContainer.setBackgroundResource(R.drawable.orange_bg);
+			break;
+		case THEATRE: timeContainer.setBackgroundResource(R.drawable.teal_bg);
+		break;
+		case VISUAL_ARTS: timeContainer.setBackgroundResource(R.drawable.blue_bg);
+			break;
+		case VENUES:
+		default: timeContainer.setBackgroundResource(R.drawable.green_bg);
+			break;
 		}
 		
 		// Check to see if a header is needed

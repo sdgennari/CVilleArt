@@ -19,7 +19,7 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/item_bg"
+        android:background="@color/white"
         android:choiceMode="singleChoice"
         android:divider="@color/gray"
         android:dividerHeight="1px" >
@@ -34,7 +34,7 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="@color/item_bg"
+        android:background="@color/white"
         android:choiceMode="singleChoice"
         android:divider="@color/gray"
         android:dividerHeight="1px" >

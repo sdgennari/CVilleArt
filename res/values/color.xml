@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#ffffffff</color>
     <color name="black">#ff000000</color>
     <color name="gray">#ff888888</color>
     
+    <!--
     <color name="gallery">#FF3296B8</color>
     <color name="theatre">#FF26235C</color>
     <color name="other">#FF30A81B</color>
     <color name="film">#FFEB5328</color>
     <color name="music">#FFBF3E81</color>
-    <color name="dnace">#FFC2DB39</color>
+    <color name="dance">#FFC2DB39</color>
+    -->
     
     <!-- Colors for the NavDrawer -->
-    <color name="item_bg">#FFFFFFFF</color>
-    <color name="base_font">#FF3E3E3E</color>
-    <color name="select">#FFE4E4E4</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black_overlay">#AA000000</color>
+    <color name="dark_gray">#FF3E3E3E</color>
+    <color name="light_gray">#FFE4E4E4</color>
+    <color name="shadow">#33000000</color>
+    <color name="transparent">#00000000</color>
     
     <!-- Theme colors -->
     <color name="blue">#FF3296B8</color>
@@ -26,8 +30,8 @@
     <color name="orange">#FFEB5328</color>
     <color name="dark_orange">#FFD14A24</color>
     
-    <color name="teal">#FF28EBB3</color>
-    <color name="dark_teal">#FF24D1A0</color>
+    <color name="indigo">#FF26235C</color>
+    <color name="dark_indigo">#FF1B1942</color>
     
     <color name="purple">#FFBF3E81</color>
     <color name="dark_purple">#FFA53670</color>

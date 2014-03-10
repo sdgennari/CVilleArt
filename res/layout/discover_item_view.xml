@@ -1,71 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="@color/light_gray" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="140dp" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp" >
 
-        <ImageView
-            android:id="@+id/venue_image_background"
+        <!-- ImageView and TextView overlay -->
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+            android:layout_height="140dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/white_bg" >
+
+            <ImageView
+                android:id="@+id/venue_image_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <!--
+            <ImageView
+                android:id="@+id/venue_image"
+                android:layout_width="wrap_content"
+                android:layout_height="96dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:scaleType="fitCenter" />
+            -->
+
+            <TextView
+                android:id="@+id/venue_name"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/black_overlay"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:textColor="#F2F2F2"
+                android:textSize="20sp" />
+        </RelativeLayout>
         
-        <ImageView
-            android:id="@+id/venue_image"
-            android:layout_width="wrap_content"
-            android:layout_height="96dp"
-            android:layout_marginTop="8dp"
-            android:layout_centerHorizontal="true"
-            android:scaleType="fitCenter" />
+        <!-- Upcoming Events -->
+        <LinearLayout style="@style/module_container"
+            android:id="@+id/event_container" >
+            
+            <TextView style="@style/module_header_text"
+                android:text="@string/upcoming_events" />
+            
+        </LinearLayout>
+        <!-- Address -->
 
-        <TextView
-            android:id="@+id/venue_name"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:background="#AA000000"
-            android:gravity="center"
-            android:textColor="#F2F2F2"
-            android:textSize="20dp" />
-    </RelativeLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp" >
+        <LinearLayout style="@style/module_container"
+            android:id="@+id/address_container" >
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/description"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/need_to_know"
-                android:textSize="16sp" />
+                style="@style/module_header_text"
+                android:text="@string/address" />
 
             <TextView
                 android:id="@+id/address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </ScrollView>
+                style="@style/module_body_text" />
 
-</LinearLayout>
+            <View style="@style/divider" />
+
+            <Button
+                style="@style/module_button"
+                android:text="@string/view_on_map" />
+        </LinearLayout>
+
+        <!-- Description -->
+
+        <LinearLayout style="@style/module_container"
+            android:id="@+id/description_container" >
+
+            <TextView
+                style="@style/module_header_text"
+                android:text="@string/description" />
+
+            <TextView
+                android:id="@+id/description"
+                style="@style/module_body_text" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

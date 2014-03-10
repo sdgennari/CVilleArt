@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hooapps.pca.cvilleart.R;
@@ -121,13 +122,28 @@ public class DiscoverItemFragment extends Fragment {
 			TextView titleView = (TextView)a.findViewById(R.id.venue_name);
 			TextView descriptionView = (TextView)a.findViewById(R.id.description);
 			TextView addressView = (TextView)a.findViewById(R.id.address);
-			ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
+			//ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
 			ImageView bgImageView = (ImageView)a.findViewById(R.id.venue_image_background);
+			
+			// Retrieve the view containers from the layout
+			LinearLayout addressContainer = (LinearLayout)a.findViewById(R.id.address_container);
+			LinearLayout eventContainer = (LinearLayout)a.findViewById(R.id.event_container);
 			
 			// Set the fields
 			titleView.setText(name);
 			descriptionView.setText(description);
-			addressView.setText(address);
+			
+			// Hide the address container if no address is provided
+			if (address == null || address.isEmpty()) {
+				addressContainer.setVisibility(View.GONE);
+			} else {
+				addressView.setText(address);
+			}
+			
+			// TODO ADD EVENTS ACCORDINGLY
+			if (true) {
+				eventContainer.setVisibility(View.GONE);
+			}
 			
 			// Process the images
 			Context context = this.getActivity().getApplicationContext();

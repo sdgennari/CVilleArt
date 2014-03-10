@@ -14,7 +14,11 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 public class PCAContentProvider extends ContentProvider {
-
+	
+	public enum Categories {
+		THEATRE, DANCE, MUSIC, VISUAL_ARTS, VENUES
+	}
+	
 	// Reference to the database
 	private PCADatabaseHelper database;
 	

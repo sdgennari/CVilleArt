@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="12dp"
-    android:background="@drawable/drawer_list_bg" >
+    android:background="@drawable/white_item_bg" >
 
     <TextView
         style="@style/body_text"

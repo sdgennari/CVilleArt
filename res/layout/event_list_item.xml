@@ -9,7 +9,7 @@
         android:id="@+id/header_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/base_font"
+        android:background="@color/dark_gray"
         android:padding="12dp"
         android:visibility="gone" >
 
@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:fontFamily="sans-serif-light"
-            android:textColor="@color/item_bg"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:text="HEADER" />
     </RelativeLayout>
@@ -28,7 +28,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="@color/item_bg"
+        android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
@@ -47,12 +47,14 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="#585858"
-                android:textSize="18dp" />
+                android:textSize="18dp"
+                android:text="TITLE" />
 
             <TextView
                 android:id="@+id/category"
                 style="@style/body_text"
-                android:textSize="14dp" />
+                android:textSize="14dp"
+                android:text="CATEGORY" />
         </LinearLayout>
 
         <RelativeLayout
@@ -74,7 +76,7 @@
                 android:layout_alignParentTop="true"
                 android:fontFamily="sans-serif"
                 android:text="7:30"
-                android:textColor="@color/item_bg"
+                android:textColor="@color/white"
                 android:textSize="22dp"
                 android:textStyle="bold" />
 
@@ -86,7 +88,7 @@
                 android:layout_toRightOf="@id/time"
                 android:fontFamily="sans-serif-condensed"
                 android:text="PM"
-                android:textColor="@color/item_bg"
+                android:textColor="@color/white"
                 android:textSize="16dp"
                 android:textStyle="bold" />
         </RelativeLayout>
