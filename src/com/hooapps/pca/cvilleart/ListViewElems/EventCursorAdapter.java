@@ -1,6 +1,7 @@
 package com.hooapps.pca.cvilleart.ListViewElems;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
@@ -83,18 +84,18 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		// TODO CONSIDER MAKING STATIC VARIABLES FOR THE CATEGORIES IN PCAContentProvider
 		// Set background color of the timeContainer
 		RelativeLayout timeContainer = (RelativeLayout) v.findViewById(R.id.time_container);
-		Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase());
+		Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
 		switch (category) {
-		case DANCE: timeContainer.setBackgroundResource(R.drawable.purple_bg);
+		case DANCE: timeContainer.setBackgroundResource(R.drawable.green_bg);
 			break;
 		case MUSIC: timeContainer.setBackgroundResource(R.drawable.orange_bg);
 			break;
-		case THEATRE: timeContainer.setBackgroundResource(R.drawable.teal_bg);
+		case THEATRE: timeContainer.setBackgroundResource(R.drawable.purple_bg);
 		break;
 		case VISUAL_ARTS: timeContainer.setBackgroundResource(R.drawable.blue_bg);
 			break;
-		case VENUES:
-		default: timeContainer.setBackgroundResource(R.drawable.green_bg);
+		case VENUE:
+		default: timeContainer.setBackgroundResource(R.drawable.teal_bg);
 			break;
 		}
 		

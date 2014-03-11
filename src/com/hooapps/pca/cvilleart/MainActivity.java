@@ -15,6 +15,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,12 +82,14 @@ public class MainActivity extends FragmentActivity implements
 		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
 		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
 	
+	/*
 	private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
 	private String musicPath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String theatrePath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String filmPath		= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String dancePath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String galleryPath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	*/
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -480,245 +483,20 @@ public class MainActivity extends FragmentActivity implements
 		Intent intent = new Intent(this, AlarmScheduleReceiver.class);
 		PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 		
-		// Set the alarm to start at [specified time]
 		Calendar calendar = Calendar.getInstance();
-		int min = calendar.get(Calendar.MINUTE);
+		
+		// Set the current time to tomorrow
+		//calendar.setTimeInMillis(System.currentTimeMillis() + AlarmManager.INTERVAL_DAY);
+		
+		// TODO DISABLE AFTER DEBUGGING
 		calendar.setTimeInMillis(System.currentTimeMillis());
+		
+		// Set the alarm to start at 1:XX AM tomorrow
 		calendar.set(Calendar.HOUR_OF_DAY, 1);
-		calendar.set(Calendar.MINUTE, 5);
 		
-		/*
-		alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30 * 1000, alarmIntent);
-		Log.d("ALARM", "Alarm set for 60 seconds from now...");
-		*/
-		
-		Log.d("ALARM", "Alarm scheduled at " + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE));
 		alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
-		Log.d("ALARM", "Repeating set every day");
-		
-		/*
-		Log.d("SERVICES", "Scheduling services...");
-		// Make an intent for each feed
-		Intent venueIntent = new Intent(this, DataIntentService.class);
-		venueIntent.putExtra("url", this.venuePath);
-		venueIntent.putExtra("type", PCAContentProvider.VENUE_ADAPTER_ID);
-		
-		Intent danceIntent = new Intent(this, DataIntentService.class);
-		danceIntent.putExtra("url", this.dancePath);
-		danceIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
-		
-		Intent filmIntent = new Intent(this, DataIntentService.class);
-		filmIntent.putExtra("url", this.filmPath);
-		filmIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
-		
-		Intent galleryIntent = new Intent(this, DataIntentService.class);
-		galleryIntent.putExtra("url", this.galleryPath);
-		galleryIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
-		
-		Intent musicIntent = new Intent(this, DataIntentService.class);
-		musicIntent.putExtra("url", this.musicPath);
-		musicIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
-		
-		Intent theatreIntent = new Intent(this, DataIntentService.class);
-		theatreIntent.putExtra("url", this.theatrePath);
-		theatreIntent.putExtra("type", PCAContentProvider.EVENT_ADAPTER_ID);
-		
-		// Start the service by queuing up the intents
-		this.startService(venueIntent);
-		this.startService(danceIntent);
-		this.startService(filmIntent);
-		this.startService(galleryIntent);
-		this.startService(musicIntent);
-		this.startService(theatreIntent);
-
-		Log.d("SERVICES", "Services scheduled.");
-		*/
 	}
-	/*
-	public void storeJSONData(String result) {
-		try {
-			JSONObject jObject = new JSONObject(result);
-			String category = jObject.getString("summary");
-			JSONArray jArray = jObject.getJSONArray("items");
-			ContentValues values = new ContentValues();
-			String[] id = new String[1];
-			JSONObject event;
-			Uri eventUri;
-			String start = "";
-			String end = "";
-			
-			for(int i = 0; i < jArray.length(); i++) {
-				event = jArray.getJSONObject(i);
-				values.clear();
-				
-				// Populate the ContentValues
-				values.put(EventTable.EVENT_ID, event.getString("id"));
-				values.put(EventTable.UPDATED, event.getString("updated")); // TODO CONVERT TO UNIX TIME
-				values.put(EventTable.SUMMARY, event.getString("summary"));
-				
-				if(event.has("description")) {
-					values.put(EventTable.DESCRIPTION, event.getString("description"));
-				}
-				
-				values.put(EventTable.LOCATION, event.getString("location"));
-				values.put(EventTable.START_TIME, parseUnixFromDate(event.getJSONObject("start").getString("dateTime")));
-				values.put(EventTable.END_TIME, parseUnixFromDate(event.getJSONObject("end").getString("dateTime")));
-				values.put(EventTable.CATEGORY, category);
-				
-				// Check to see if the item is already in the database
-				id[0] = values.getAsString(EventTable.EVENT_ID);
-				Cursor c = getContentResolver().query(PCAContentProvider.EVENT_CONTENT_URI, null, 
-						EventTable.EVENT_ID+" = "+DatabaseUtils.sqlEscapeString(id[0]), null, null);
-				
-				// Insert if new object, otherwise update
-				if (c.getCount() == 0) {
-					eventUri = getContentResolver().insert(PCAContentProvider.EVENT_CONTENT_URI, values);
-					Log.d("storeJSONData", "JSON Event added to "+id);
-				} else {
-					getContentResolver().update(PCAContentProvider.EVENT_CONTENT_URI, values, EventTable.EVENT_ID+" = ?", id);
-					Log.d("storeJSONData", "JSON Event updated: " + id);
-				}
-				
-				c.close();
-				
-			}
-		} catch (JSONException e) {
-			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
-		}
-	}
-	*/
-	/*
-	private int parseUnixFromDate(String date) {
-		// DATE FORM 2014-01-19T04:00:00-05:00
-		int year = Integer.parseInt(date.substring(0, 4));
-		int month = Integer.parseInt(date.substring(5,7));
-		int day = Integer.parseInt(date.substring(8, 10));
-		int hour = Integer.parseInt(date.substring(11, 13));
-		int minute = Integer.parseInt(date.substring(14, 16));
-		int timeZoneMod = Integer.parseInt(date.substring(19,21));
-		
-		Calendar c = Calendar.getInstance();
-		c.set(year, month-1, day, hour-timeZoneMod, minute);
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
-		
-		int unixTime = (int) (c.getTimeInMillis() / 1000L);
-		
-		Log.d("TIME", date);
-		Log.d("TIME", year + " " + month + " " + day + " " + hour + " " + minute);
-		Log.d("TIME", ""+unixTime);
-		
-		return unixTime;
-	}
-	*/
-	/*
-	public void storeJSONData(String result) {
-		try {
-			JSONArray jArray = new JSONArray(result);
-			ContentValues values;
-			JSONObject jObject;
-			String[] name = new String[1];
-			for (int i = 0; i < jArray.length(); i++) {
-				jObject = jArray.getJSONObject(i);
-				values = new ContentValues();
-				
-				// Populate the ContentValues
-				values.put(VenueTable.ORGANIZATION_NAME, jObject.getString("Organization_Name"));
-				values.put(VenueTable.EMAIL_ADDRESS, jObject.getString("Email_Address"));
-				values.put(VenueTable.HOME_PAGE_URL, jObject.getString("Home_Page_URL"));
-				values.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, jObject.getString("Directory_Description_Long"));
-				values.put(VenueTable.PHONE_NUMBER_PRIMARY, jObject.getString("Phone_Number_Primary"));
-				values.put(VenueTable.ADDRESS_HOME_STREET, jObject.getString("Address_Home_Street"));
-				values.put(VenueTable.ADDRESS_HOME_CITY, jObject.getString("Address_Home_City"));
-				values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, jObject.getString("Address_Home_Postal_Code"));
-				values.put(VenueTable.ADDRESS_HOME_STATE, jObject.getString("Address_Home_State"));
-				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, jObject.getString("Category_Art_Community_Categories"));
-				values.put(VenueTable.SECONDARY_CATEGORY, jObject.getString("Secondary Category"));
-				values.put(VenueTable.LAT_LNG_STRING, jObject.getString("LatLngString ifNoAddress"));
-				values.put(VenueTable.IMAGE_URLS, jObject.getString("Image URLs"));
-				
-				// Check to see if the item is already in the database
-				name[0] = values.getAsString(VenueTable.ORGANIZATION_NAME);
-				Cursor c = getContentResolver().query(PCAContentProvider.VENUE_CONTENT_URI, null, 
-						VenueTable.ORGANIZATION_NAME+" = "+DatabaseUtils.sqlEscapeString(name[0]), null, null);
-				
-				// Insert if new object, otherwise update
-				if (c.getCount() == 0) {
-					venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
-					Log.d("storeJSONData", "JSON Venue added to "+venueUri);
-				} else {
-					getContentResolver().update(PCAContentProvider.VENUE_CONTENT_URI, values, VenueTable.ORGANIZATION_NAME+" = ?", name);
-					Log.d("storeJSONData", "JSON Venue updated: " + name);
-				}
-				
-				c.close();
-			}
-		} catch (JSONException e) {
-			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
-		}
-	}
-	*/
-	/*
-	public void loadInData(File f)
-	{
-		
-		Log.d("Error",f.length()+"");
-		venueItemList = new ArrayList<Item>();
-		//File excelTable = new File("/Users/alexramey/Desktop/test");
-		
-		Workbook workbook = null;
-		try{
-			workbook = Workbook.getWorkbook(f);
-		}
-		catch (Exception e)
-		{
-			Log.d("Error", e.toString());
-		}
-		
-		if (workbook == null)
-		{
-			Log.d("Error", "null workbook");
-			return;
-		}
-		Sheet sheet = workbook.getSheet(0);
-		
-		ArrayList<String> stringHolder = new ArrayList<String>();
-		for (int row = 1; row < sheet.getRows(); row++)
-		{
-			//In case blank rows at end are being counted by getRows() method
-			//Breaks once row is encountered with first cell blank
-			if (sheet.getCell(0,row).getContents().trim().equals("")){
-				break;
-			}
-			for (int col = 0; col < 13; col++)
-			{
-				Cell temp = sheet.getCell(col, row);
-				stringHolder.add(temp.getContents().trim());
-			}
-			
-			ContentValues values = new ContentValues();
-			values.put(VenueTable.ORGANIZATION_NAME, stringHolder.get(0));
-			values.put(VenueTable.EMAIL_ADDRESS, stringHolder.get(1));
-			values.put(VenueTable.HOME_PAGE_URL, stringHolder.get(2));
-			values.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, stringHolder.get(3));
-			values.put(VenueTable.PHONE_NUMBER_PRIMARY, stringHolder.get(4));
-			values.put(VenueTable.ADDRESS_HOME_STREET, stringHolder.get(5));
-			values.put(VenueTable.ADDRESS_HOME_CITY, stringHolder.get(6));
-			values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, stringHolder.get(7));
-			values.put(VenueTable.ADDRESS_HOME_STATE, stringHolder.get(8));
-			values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, stringHolder.get(9));
-			values.put(VenueTable.SECONDARY_CATEGORY, stringHolder.get(10));
-			values.put(VenueTable.LAT_LNG_STRING, stringHolder.get(11));
-			values.put(VenueTable.IMAGE_URLS, stringHolder.get(12));
-			
-			venueUri = getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, values);
-			
-			Log.d("MAIN ACTIVITY", "Venue added to "+venueUri);
-			stringHolder.clear();
-		}
-		workbook.close();
-	}
-	*/
+	
 
 	public void onBookmarkClick(View v) {
 		int id = v.getId();

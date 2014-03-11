@@ -7,6 +7,8 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -28,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hooapps.pca.cvilleart.R;
@@ -36,6 +39,7 @@ import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCADatabaseHelper;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.squareup.picasso.Picasso;
@@ -112,7 +116,7 @@ public class DiscoverItemFragment extends Fragment {
 			
 			// Get the data from the cursor
 			String name = cursor.getString(cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME));
-			String type = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
+			String categoryString = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
 			String description = cursor.getString(cursor.getColumnIndex(VenueTable.DIRECTORY_DESCRIPTION_LONG));
 			String address = cursor.getString(cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET));
 			String imagePath = cursor.getString(cursor.getColumnIndex(VenueTable.IMAGE_URLS));
@@ -122,12 +126,13 @@ public class DiscoverItemFragment extends Fragment {
 			TextView titleView = (TextView)a.findViewById(R.id.venue_name);
 			TextView descriptionView = (TextView)a.findViewById(R.id.description);
 			TextView addressView = (TextView)a.findViewById(R.id.address);
-			//ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
+			ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
 			ImageView bgImageView = (ImageView)a.findViewById(R.id.venue_image_background);
 			
 			// Retrieve the view containers from the layout
 			LinearLayout addressContainer = (LinearLayout)a.findViewById(R.id.address_container);
 			LinearLayout eventContainer = (LinearLayout)a.findViewById(R.id.event_container);
+			RelativeLayout imageContainer = (RelativeLayout)a.findViewById(R.id.image_container);
 			
 			// Set the fields
 			titleView.setText(name);
@@ -149,25 +154,41 @@ public class DiscoverItemFragment extends Fragment {
 			Context context = this.getActivity().getApplicationContext();
 			BlurTransformation blur = new BlurTransformation(context);
 			
-			if (imagePath != null && !imagePath.isEmpty()) {
-				Picasso.with(context).load(imagePath).resize(800, 400).transform(blur).into(bgImageView);
-				//Picasso.with(context).load(imagePath).into(imageView);
-			} else {
-				Picasso.with(context).load(R.drawable.film).transform(blur).into(bgImageView);
-				//Picasso.with(context).load(R.drawable.theatre).into(imageView);
+			// Set the color based on the category
+			int colorResId = 0;
+			int drawableResId = 0;
+			Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
+			switch (category) {
+			case DANCE: colorResId = R.color.green;
+				drawableResId = R.drawable.dance;
+				break;
+			case MUSIC: colorResId = R.color.orange;
+				drawableResId = R.drawable.music;
+				break;
+			case THEATRE: colorResId = R.color.purple;
+				drawableResId = R.drawable.theatre;
+				break;
+			case VISUAL_ARTS: colorResId = R.color.blue;
+				drawableResId = R.drawable.gallery;
+				break;
+			case VENUE:
+			default: colorResId = R.color.indigo;
+				drawableResId = R.drawable.other;
+				break;
 			}
 			
-			/*
-			imageLoader.loadImage(imagePath, new SimpleImageLoadingListener() {
-			    @Override
-			    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			        // Do whatever you want with Bitmap
-			    	if(imageView != null) {
-			    		//imageView.setImageBitmap(createImage(loadedImage));	
-			    	}
-			    }
-			});
-			*/
+			// Set the default color of the image container background
+			imageContainer.setBackgroundResource(colorResId);
+			
+			// If an image exists, load it
+			// Else load the placeholder image
+			if (imagePath != null && !imagePath.isEmpty()) {
+				Picasso.with(context).load(imagePath).resize(800, 400).transform(blur).into(bgImageView);
+			} else {
+				//Picasso.with(context).load(drawableResId).transform(blur).into(bgImageView);
+				//bgImageView.setBackgroundResource(colorResId);
+				Picasso.with(context).load(drawableResId).into(imageView);
+			}
 			
 			cursor.close();
 		}

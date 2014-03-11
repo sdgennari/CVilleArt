@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Calendar;
+import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -14,6 +15,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 
 import android.app.IntentService;
 import android.content.ContentValues;
@@ -38,19 +41,16 @@ public class DataIntentService extends IntentService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		// TODO Get the data from the intent accordingly
-		
 		// Get the data from the intent
 		String url = intent.getStringExtra("url");
 		int type = intent.getIntExtra("type", -1);
-		
-		//Log.d("I_SERVICE", "Url: " + url);
 		
 		// Process the data
 		String result = this.readJSONFeed(url);
 		switch (type) {
 		case PCAContentProvider.EVENT_ADAPTER_ID:
 			storeEventData(result);
+			deleteOldEvents();
 			break;
 		case PCAContentProvider.VENUE_ADAPTER_ID:
 			storeVenueData(result);
@@ -58,17 +58,6 @@ public class DataIntentService extends IntentService {
 		default:
 			Log.e("Error", "Invalid path type: " + type);
 		}
-		/*
-		// Sample data below to test service, provider, data, etc.
-		ContentValues data = new ContentValues();
-		data.put(VenueTable.ORGANIZATION_NAME, "name");
-		data.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, "description");
-		data.put(VenueTable.IMAGE_URLS, "https://lh4.googleusercontent.com/-NEkAkCdt41E/AAAAAAAAAAI/AAAAAAAAAAA/n0NL-BQik0k/photo.jpg");
-		data.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, "type");
-		data.put(VenueTable.ADDRESS_HOME_STREET, "street address");
-		
-		this.getContentResolver().insert(PCAContentProvider.VENUE_CONTENT_URI, data);
-		*/
 	}
 	
 	private void storeVenueData(String result) {
@@ -91,7 +80,15 @@ public class DataIntentService extends IntentService {
 				values.put(VenueTable.ADDRESS_HOME_CITY, jObject.getString("Address_Home_City"));
 				values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, jObject.getString("Address_Home_Postal_Code"));
 				values.put(VenueTable.ADDRESS_HOME_STATE, jObject.getString("Address_Home_State"));
-				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, jObject.getString("Category_Art_Community_Categories"));
+				
+				String categoryString = jObject.getString("Category_Art_Community_Categories");
+				try {
+					Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
+				} catch (IllegalArgumentException e) {
+					categoryString = "Venue";
+				}
+				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, categoryString);
+				
 				values.put(VenueTable.SECONDARY_CATEGORY, jObject.getString("Secondary Category"));
 				values.put(VenueTable.LAT_LNG_STRING, jObject.getString("LatLngString ifNoAddress"));
 				values.put(VenueTable.IMAGE_URLS, jObject.getString("Image URLs"));
@@ -120,45 +117,69 @@ public class DataIntentService extends IntentService {
 	private void storeEventData(String result) {
 		try {
 			JSONObject jObject = new JSONObject(result);
-			String category = jObject.getString("summary");
+			String categoryString = jObject.getString("summary");
 			JSONArray jArray = jObject.getJSONArray("items");
 			ContentValues values = new ContentValues();
 			String[] id = new String[1];
 			JSONObject event;
 			Uri eventUri;
-			String start = "";
-			String end = "";
+			
+			Log.d("EVENT", "Category: " + categoryString);
 			
 			for(int i = 0; i < jArray.length(); i++) {
 				event = jArray.getJSONObject(i);
 				values.clear();
 				
 				// Populate the ContentValues
+				
+				// Time the event was last updated on the calendar
+				values.put(EventTable.UPDATED, event.getString("updated"));
+				
+				// Unique id associated with the event from the Google calendar
 				values.put(EventTable.EVENT_ID, event.getString("id"));
-				values.put(EventTable.UPDATED, event.getString("updated")); // TODO CONVERT TO UNIX TIME
+				
+				// Title of the event
 				values.put(EventTable.SUMMARY, event.getString("summary"));
 				
-				if(event.has("description")) {
+				// Description of the event, if it exists
+				if (event.has("description")) {
 					values.put(EventTable.DESCRIPTION, event.getString("description"));
 				}
 				
-				values.put(EventTable.LOCATION, event.getString("location"));
-				values.put(EventTable.START_TIME, parseUnixFromDate(event.getJSONObject("start").getString("dateTime")));
-				values.put(EventTable.END_TIME, parseUnixFromDate(event.getJSONObject("end").getString("dateTime")));
-				values.put(EventTable.CATEGORY, category);
+				// Location of the event, if it exists
+				if (event.has("location")) {
+					values.put(EventTable.LOCATION, event.getString("location"));	
+				}
+				
+				// Make sure the event has a valid start and end time
+				// If not, skip adding it and continue to the other events
+				if (event.getJSONObject("start").has("dateTime") && event.getJSONObject("end").has("dateTime")) {
+					values.put(EventTable.START_TIME, parseUnixFromDate(event.getJSONObject("start").getString("dateTime")));
+					values.put(EventTable.END_TIME, parseUnixFromDate(event.getJSONObject("end").getString("dateTime")));
+				} else {
+					continue;
+				}
+				
+				Log.d("EVENT", "StartTime: " + values.getAsString(EventTable.START_TIME));
+				
+				// If the category is not one we are searching for, set it to 'Venue' and continue
+				try {
+					Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
+				} catch (IllegalArgumentException e) {
+					categoryString = "Venue";
+				}
+				values.put(EventTable.CATEGORY, categoryString);
 				
 				// Check to see if the item is already in the database
 				id[0] = values.getAsString(EventTable.EVENT_ID);
 				Cursor c = getContentResolver().query(PCAContentProvider.EVENT_CONTENT_URI, null, 
-						EventTable.EVENT_ID+" = "+DatabaseUtils.sqlEscapeString(id[0]), null, null);
+						EventTable.EVENT_ID + " = " + DatabaseUtils.sqlEscapeString(id[0]), null, null);
 				
 				// Insert if new object, otherwise update
 				if (c.getCount() == 0) {
 					eventUri = getContentResolver().insert(PCAContentProvider.EVENT_CONTENT_URI, values);
-					//Log.d("storeJSONData", "JSON Event added to "+id);
 				} else {
 					getContentResolver().update(PCAContentProvider.EVENT_CONTENT_URI, values, EventTable.EVENT_ID+" = ?", id);
-					//Log.d("storeJSONData", "JSON Event updated: " + id);
 				}
 				
 				c.close();
@@ -167,6 +188,19 @@ public class DataIntentService extends IntentService {
 		} catch (JSONException e) {
 			Log.d("storeJSONData", "Error: " + e.getLocalizedMessage());
 		}
+	}
+	
+	private void deleteOldEvents() {
+		// Get the current time
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(System.currentTimeMillis());
+		
+		// Set the calendar to the morning of the current day
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		
+		// Delete events that occured before today
+		getContentResolver().delete(PCAContentProvider.EVENT_CONTENT_URI, EventTable.START_TIME + " < " + (c.getTimeInMillis()/1000), null);
 	}
 	
 	private String readJSONFeed(String url) {

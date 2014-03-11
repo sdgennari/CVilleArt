@@ -13,6 +13,7 @@
         <!-- ImageView and TextView overlay -->
 
         <RelativeLayout
+            android:id="@+id/image_container"
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:layout_marginBottom="10dp"
@@ -24,26 +25,27 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
 
-            <!--
             <ImageView
                 android:id="@+id/venue_image"
                 android:layout_width="wrap_content"
                 android:layout_height="96dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="8dp"
                 android:scaleType="fitCenter" />
-            -->
 
             <TextView
                 android:id="@+id/venue_name"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_alignParentBottom="true"
                 android:background="@color/black_overlay"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:textColor="#F2F2F2"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:maxLines="3"
+                android:padding="4dp"
+                android:ellipsize="end" />
         </RelativeLayout>
         
         <!-- Upcoming Events -->

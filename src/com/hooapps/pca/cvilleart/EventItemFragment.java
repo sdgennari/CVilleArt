@@ -1,6 +1,7 @@
 package com.hooapps.pca.cvilleart;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
@@ -8,6 +9,7 @@ import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 import com.hooapps.pca.cvilleart.R.color;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +39,6 @@ public class EventItemFragment extends Fragment {
 	private String location;
 	private int startTime;
 	private int endTime;
-	private int colorResId;		// Store the resId of the color based on the category
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,18 +99,25 @@ public class EventItemFragment extends Fragment {
 			String categoryString = cursor.getString(cursor.getColumnIndex(EventTable.CATEGORY));
 			
 			// Set the color based on the category
-			Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase());
+			int colorResId = 0;
+			int drawableResId = 0;
+			Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
 			switch (category) {
-			case DANCE: colorResId = R.color.purple;
+			case DANCE: colorResId = R.color.green;
+				drawableResId = R.drawable.dance;
 				break;
 			case MUSIC: colorResId = R.color.orange;
+				drawableResId = R.drawable.music;
 				break;
-			case THEATRE: colorResId = R.color.indigo;
+			case THEATRE: colorResId = R.color.purple;
+				drawableResId = R.drawable.theatre;
 				break;
 			case VISUAL_ARTS: colorResId = R.color.blue;
+				drawableResId = R.drawable.gallery;
 				break;
-			case VENUES:
-			default: colorResId = R.color.green;
+			case VENUE:
+			default: colorResId = R.color.indigo;
+				drawableResId = R.drawable.other;
 				break;
 			}
 			
@@ -118,6 +127,7 @@ public class EventItemFragment extends Fragment {
 			TextView descriptionView = (TextView) a.findViewById(R.id.description);
 			TextView addressView = (TextView) a.findViewById(R.id.address);
 			TextView timeView = (TextView) a.findViewById(R.id.date_time);
+			ImageView imageView = (ImageView) a.findViewById(R.id.event_image);
 			
 			// Retrieve the containers
 			RelativeLayout imageContainer = (RelativeLayout) a.findViewById(R.id.image_container);
@@ -140,6 +150,7 @@ public class EventItemFragment extends Fragment {
 			addressView.setText(location);
 			timeView.setText(dateRange + "\n" + timeRange);
 			
+			imageView.setImageResource(drawableResId);
 			imageContainer.setBackgroundResource(colorResId);
 			
 			cursor.close();

@@ -20,14 +20,6 @@
 	    />
          
         <ToggleButton 
-	    android:id="@+id/filmtoggle"
-	    android:background = "@drawable/film"
-	    android:layout_width = "0dp"
-	    android:layout_height = "match_parent"
-	    android:layout_weight = ".1666"
-	    />
-         
-        <ToggleButton 
 	    android:id="@+id/gallerytoggle"
 	    android:layout_width = "0dp"
 	    android:background = "@drawable/gallery"

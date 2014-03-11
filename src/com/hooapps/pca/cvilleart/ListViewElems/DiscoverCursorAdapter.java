@@ -2,11 +2,13 @@ package com.hooapps.pca.cvilleart.ListViewElems;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.apache.http.client.HttpClient;
 
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
@@ -60,7 +62,7 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 
 		// Retrieve the data from the cursor
 		String name = cursor.getString(colName);
-		String type = cursor.getString(colType);
+		String categoryString = cursor.getString(colType);
 		String imagePath = cursor.getString(colImgUrl);
 
 		// Display the data on the views in the list
@@ -68,18 +70,35 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		titleView.setText(name);
 
 		TextView typeView = (TextView)v.findViewById(R.id.type);
-		typeView.setText(type);
+		typeView.setText(categoryString);
 
 		final ImageView imageView = (ImageView) v.findViewById(R.id.image);
 		Log.d("IMAGE", "url: " + imagePath);
 		
-		// Make sure that the url is valid
 		Picasso.with(context).setDebugging(true);
+		
+		// Set the image based on category
+		int drawableResId = 0;
+		Categories category = Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
+		switch (category) {
+		case DANCE: drawableResId = R.drawable.dance;
+			break;
+		case MUSIC: drawableResId = R.drawable.music;
+			break;
+		case THEATRE: drawableResId = R.drawable.theatre;
+			break;
+		case VISUAL_ARTS: drawableResId = R.drawable.gallery;
+			break;
+		case VENUE:
+		default: drawableResId = R.drawable.other;
+			break;
+		}
+		
 		if(imagePath != null && !imagePath.isEmpty()) {
-			Picasso.with(context).load(imagePath).placeholder(R.drawable.film).error(R.drawable.dance).into(imageView);
+			Picasso.with(context).load(imagePath).placeholder(drawableResId).into(imageView);
 		} else {
 			// Load a placeholder image if no url is provided
-			Picasso.with(context).load(R.drawable.theatre).into(imageView);
+			Picasso.with(context).load(drawableResId).into(imageView);
 		}
 	}
 }

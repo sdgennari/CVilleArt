@@ -225,7 +225,7 @@ OnCheckedChangeListener {
 		toggles = new ArrayList<ToggleButton>();
 		
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.dancetoggle)));
-		toggles.add((ToggleButton)(this.getView().findViewById(R.id.filmtoggle)));
+		//toggles.add((ToggleButton)(this.getView().findViewById(R.id.filmtoggle)));
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.gallerytoggle)));
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.musictoggle)));
 		toggles.add((ToggleButton)(this.getView().findViewById(R.id.othertoggle)));
@@ -352,10 +352,12 @@ OnCheckedChangeListener {
 		{
 			setUpMap(0);
 		}
+		/*
 		else if (buttonView.getId() == R.id.filmtoggle)
 		{
 			setUpMap(1);
 		}
+		*/
 		else if (buttonView.getId() == R.id.gallerytoggle)
 		{
 			setUpMap(2);
