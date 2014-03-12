@@ -170,27 +170,27 @@ public class ArtVenue implements Item
 	{
 		if (this.primaryCategory.equals("Film"))
 		{
-			return R.drawable.filmmarker;
+			return R.drawable.other_marker;
 		}
 		else if (this.primaryCategory.equals("Gallery"))
 		{
-			return R.drawable.gallerymarker;
+			return R.drawable.gallery_marker;
 		}
 		else if (this.primaryCategory.equals("Music"))
 		{
-			return R.drawable.musicmarker;
+			return R.drawable.music_marker;
 		}
 		else if (this.primaryCategory.equals("Theatre"))
 		{
-			return R.drawable.theatremarker;
+			return R.drawable.theatre_marker;
 		}
 		else if (this.primaryCategory.equals("Venue"))
 		{
-			return R.drawable.othermarker;
+			return R.drawable.other_marker;
 		}
 		else
 		{
-			return R.drawable.dancemarker;
+			return R.drawable.dance_marker;
 		}
 	}
 	

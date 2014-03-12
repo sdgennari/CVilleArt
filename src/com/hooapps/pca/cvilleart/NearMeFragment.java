@@ -16,8 +16,13 @@
 package com.hooapps.pca.cvilleart;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -33,7 +38,10 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -42,11 +50,22 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hooapps.pca.cvilleart.R;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
+import com.hooapps.pca.cvilleart.DataElems.VenueTable;
+import com.hooapps.pca.cvilleart.DiscoverListFragment.OnDiscoverViewSelectedListener;
+import com.hooapps.pca.cvilleart.ListViewElems.Item;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 // TODO Update the JavaDoc description as the functionality increases
 
@@ -70,9 +89,24 @@ import com.hooapps.pca.cvilleart.R;
 
 //TODO: Sometimes the app crashes when leaving NearMeFragment b/c Acitvity gets destroyed?
 
-public class NearMeFragment extends Fragment implements
-GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener,
-OnCheckedChangeListener {
+public class NearMeFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
+	GooglePlayServicesClient.OnConnectionFailedListener,
+	OnCheckedChangeListener {
+	
+	public interface OnInfoWindowSelectedListener {
+		/**
+		 * Called by NearMeFragment when an InfoWindow is selected
+		 * 
+		 * @param id The id of the venue in the database
+		 * */
+		public void onInfoWindowSelected(int id);
+	}
+	
+	private OnInfoWindowSelectedListener mCallback;
+	
+	private LayoutInflater inflater;
+	private Context context;
+	private HashMap<Marker, VenueHolder> venueMap;
 	
 	private GoogleMap mMap;
 	private SupportMapFragment fragment;
@@ -92,6 +126,9 @@ OnCheckedChangeListener {
 	{
 		super.onCreate(savedInstanceState);
 		
+		venueMap = new HashMap<Marker, VenueHolder>();
+		context = this.getActivity().getApplicationContext();
+		
 		toggleStates = new boolean[6];
 
 		fragment = new SupportMapFragment();
@@ -110,12 +147,27 @@ OnCheckedChangeListener {
 	}
 	
 	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		// Make sure that the activity implements OnViewSelectedListener
+		// If not, throw an exception
+		try {
+			mCallback = (OnInfoWindowSelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement OnInfoWindowSelectedListener");
+		}
+	}
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// If the activity is being recreated, restore previous version
 		// Mostly, this is needed in a two-pane layout
 		if (savedInstanceState != null) {
 			// TODO Code to restore prior version here  
 		}
+		
+		this.inflater = inflater;
 		
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.near_me_view, container, false);
@@ -134,6 +186,38 @@ OnCheckedChangeListener {
 		}
 	}
 	
+	private void saveMapCenterToPrefs() {
+		CameraPosition camera = mMap.getCameraPosition();
+		int lat = (int)(camera.target.latitude * 1000000);
+		int lon = (int)(camera.target.longitude * 1000000);
+		
+		SharedPreferences prefs = this.getActivity().getSharedPreferences("com.hooapps.pca", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt(VenueTable.LAT, lat);
+		editor.putInt(VenueTable.LON, lon);
+		editor.commit();
+	}
+	
+	private LatLng retrieveMapCenterFromPrefs() {
+		SharedPreferences prefs = this.getActivity().getSharedPreferences("com.hooapps.pca", Context.MODE_PRIVATE);
+		int lat = prefs.getInt(VenueTable.LAT, -1);
+		int lon = prefs.getInt(VenueTable.LON, -1);
+		
+		if (lat == -1 || lon == -1) {
+			return null;
+		}
+		
+		return new LatLng(lat/1000000.0, lon/1000000.0);
+	}
+	
+	private void clearMapCenterFromPrefs() {
+		SharedPreferences prefs = this.getActivity().getSharedPreferences("com.hooapps.pca", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove(VenueTable.LAT);
+		editor.remove(VenueTable.LON);
+		editor.commit();
+	}
+	
 	/**Clears map, toggles the appropriate boolean value in the toggleStates array, and redraws markers based on the toggle states */
 	//TODO: Replace Test Code with code that traverses a given set of data and either makes a marker for every piece of data in the set
 	// if there will be sets for each venue type or makes a marker for each object in the set whose venue field is the appropriate type
@@ -146,65 +230,110 @@ OnCheckedChangeListener {
 	
 	public void setUpMap(int markerType)
 	{
-		if (mMap == null)
+		if (mMap == null) {
 			return;
+		}
 		mMap.clear();
 		
-		toggleStates[markerType] = !toggleStates[markerType];
+		String[] projection = {
+				VenueTable.COLUMN_ID,
+				VenueTable.ORGANIZATION_NAME,
+				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
+				VenueTable.ADDRESS_HOME_STREET,
+				VenueTable.LAT,
+				VenueTable.LON,
+				VenueTable.IMAGE_URLS
+		};
 		
-		//Dance
-		if (toggleStates[0])
-		{
-			MarkerOptions test = new MarkerOptions().title("Dance").position(new LatLng(38.031,-78.481))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.dancemarker)).anchor((float).50,(float).50);
-			mMap.addMarker(test);
-		}
-		//Film
-		if (toggleStates[1])
-		{
-			MarkerOptions test = new MarkerOptions().title("Film").position(new LatLng(38.032,-78.482))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.filmmarker)).anchor((float).50,(float) .50);;
-			mMap.addMarker(test);
-		}
-		//Gallery
-		if (toggleStates[2])
-		{
-			MarkerOptions test = new MarkerOptions().title("Gallery").position(new LatLng(38.030,-78.480))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.gallerymarker)).anchor((float).50,(float) .50);;
-			mMap.addMarker(test);
-		}
-		//Music
-		if (toggleStates[3])
-		{
-			Address address = null;
-			try{
-				address = addressStringToAddressObject.getFromLocationName(jefTheaterAddress,1).get(0);
+		Cursor cursor = this.getActivity().getContentResolver().query(PCAContentProvider.VENUE_CONTENT_URI, projection, null, null, null);
+		
+		while (cursor != null && cursor.moveToNext()) {
+			int id = cursor.getInt(cursor.getColumnIndex(VenueTable.COLUMN_ID));
+			String name = cursor.getString(cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME));
+			String address = cursor.getString(cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET));
+			double lat = (cursor.getInt(cursor.getColumnIndex(VenueTable.LAT)) / 1000000.0);
+			double lon = (cursor.getInt(cursor.getColumnIndex(VenueTable.LON)) / 1000000.0);
+			String categoryString = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
+			String imageUrl = cursor.getString(cursor.getColumnIndex(VenueTable.IMAGE_URLS));
+			
+			int resId = 0;
+			Categories category = Categories.valueOf(categoryString.toUpperCase(Locale.getDefault()));
+			switch (category) {
+			case DANCE: resId = R.drawable.dance_marker;
+				break;
+			case MUSIC: resId = R.drawable.music_marker;
+				break;
+			case THEATRE: resId = R.drawable.theatre_marker;
+			break;
+			case VISUAL_ARTS: resId = R.drawable.gallery_marker;
+				break;
+			case VENUE:
+			default: resId = R.drawable.other_marker;
+				break;
 			}
-			catch (Exception e)
-			{
-				Log.d("Checkpoints","Address Exception");
+						
+			MarkerOptions test = new MarkerOptions().title(name).snippet(address).position(new LatLng(lat, lon)).icon(BitmapDescriptorFactory.fromResource(resId)).anchor(0.50F, 1.0F);
+			Marker m = mMap.addMarker(test);
+			
+			VenueHolder holder = new VenueHolder(name, imageUrl, category, id);
+			venueMap.put(m, holder);
+		}
+		
+		// Set up the InfoWindows displayed when a marker is clicked
+		mMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+			@Override
+			public View getInfoWindow(Marker marker) {
+			    // Getting view from the layout file
+			    View v = inflater.inflate(R.layout.info_window, null);
+			    
+			    TextView title = (TextView) v.findViewById(R.id.venue_title);
+			    title.setText(marker.getTitle());
+
+			    TextView address = (TextView) v.findViewById(R.id.address);
+			    address.setText(marker.getSnippet());
+			    
+			    ImageView imageView = (ImageView) v.findViewById(R.id.image);
+			    String imagePath = venueMap.get(marker).imagePath;
+			    int drawableResId = 0;
+			    switch (venueMap.get(marker).category) {
+			    case DANCE: drawableResId = R.drawable.dance;
+			    	break;
+			    case MUSIC: drawableResId = R.drawable.music;
+			    	break;
+			    case THEATRE: drawableResId = R.drawable.theatre;
+			    	break;
+			    case VISUAL_ARTS: drawableResId = R.drawable.gallery;
+			    	break;
+			    case VENUE:
+			    default: drawableResId = R.drawable.other;
+			    	break;
+			    }
+			    
+			    if(imagePath != null && !imagePath.isEmpty()) {
+			    	// TODO CONSIDER USING A CALLBACK HERE ONCE THE IMAGE LOADS
+					Picasso.with(context).load(imagePath).placeholder(drawableResId).into(imageView);
+				} else {
+					// Load a placeholder image if no url is provided
+					Picasso.with(context).load(drawableResId).placeholder(drawableResId).into(imageView);
+				}
+
+			    return v;
 			}
-			if (address != null){
-				LatLng JefTheater = new LatLng(address.getLatitude(), address.getLongitude());
-				MarkerOptions test2 = new MarkerOptions().title("Jefferson Theater").position(JefTheater)
-						.icon(BitmapDescriptorFactory.fromResource(R.drawable.musicmarker)).anchor((float).50,(float) .50);
-				mMap.addMarker(test2);
+
+			@Override
+			public View getInfoContents(Marker arg0) {
+			    return null;
 			}
-		}
-		//Other
-		if (toggleStates[4])
-		{
-			MarkerOptions test = new MarkerOptions().title("Other").position(new LatLng(38.029,-78.479))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.othermarker)).anchor((float).50,(float) .50);;
-			mMap.addMarker(test);
-		}
-		//Theatre
-		if (toggleStates[5])
-		{
-			MarkerOptions test = new MarkerOptions().title("Theatre").position(new LatLng(38.033,-78.483))
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.theatremarker)).anchor((float).50,(float) .50);
-			mMap.addMarker(test);
-		}
+		});
+		
+		// Set up the OnClickListener for the InfoWindows
+		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				mCallback.onInfoWindowSelected(venueMap.get(marker).id);
+			}
+		});
 	}
 	
 	@Override
@@ -215,6 +344,8 @@ OnCheckedChangeListener {
         // onStart is a good place to do this because the layout has already been
         // applied to the fragment at this point so we can safely call methods that
 		// rely upon the layout having already been set up
+		
+		Log.d("MAP", "onStart()");
 		
 		toggleHolder = (LinearLayout) this.getView().findViewById(R.id.toggleholder);
 		LayoutParams params = toggleHolder.getLayoutParams();
@@ -265,6 +396,8 @@ OnCheckedChangeListener {
 	{
 		super.onResume();
 		
+		Log.d("MAP", "onResume()");
+		
 		if (servicesConnected() && !mLocationClient.isConnected())
 		{
 			mLocationClient.connect();
@@ -276,6 +409,13 @@ OnCheckedChangeListener {
 	public void onPause()
 	{
 		super.onPause();
+		
+		Log.d("MAP", "onPause()");
+		
+		if (mMap != null) {
+			saveMapCenterToPrefs();
+		}
+		
 		if (mLocationClient.isConnected())
 		{
 			mLocationClient.disconnect();
@@ -285,6 +425,8 @@ OnCheckedChangeListener {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		
+		Log.d("MAP", "onSaveInstanceState()");
 		
 		// TODO Save important info form the fragment here
 		// Use the format 'outState.put[String/Boolean/Int/etc.](key, value);'
@@ -313,24 +455,34 @@ OnCheckedChangeListener {
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		Log.d("Checkpoints","LocationClient Connected");
 		Location mCurLoc = mLocationClient.getLastLocation();
 		double mCurLat = mCurLoc.getLatitude();
 		double mCurLong = mCurLoc.getLongitude();
 		
+		Log.d("MAP", "onConnected()");
+		
 		float[] distanceFromJefTheater = new float[1];
 		Location.distanceBetween(mCurLat,mCurLong,jefTheaterLocation.latitude,jefTheaterLocation.longitude,distanceFromJefTheater);
 		
-		if (distanceFromJefTheater[0] < 16093) //16093 meters = 10 miles
-		{
+		LatLng center = retrieveMapCenterFromPrefs();
+		
+		if (distanceFromJefTheater[0] < 16093) { //16093 meters = 10 miles
 			LatLng mCurrentLocation = new LatLng(mCurLat, mCurLong);
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLocation, 18));
-		}
-		else
-		{
+		} else if (center != null) {
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 18));
+		} else {
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(jefTheaterLocation, 18));
 		}
 		
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		// Clear saved map center from shared preferences
+		clearMapCenterFromPrefs();
 	}
 
 	@Override
@@ -373,6 +525,20 @@ OnCheckedChangeListener {
 		else if (buttonView.getId() == R.id.theatretoggle)
 		{
 			setUpMap(5);
+		}
+	}
+	
+	private class VenueHolder {
+		public String name;
+		public String imagePath;
+		public Categories category;
+		public int id;
+		
+		public VenueHolder (String name, String imagePath, Categories category, int id) {
+			this.name = name;
+			this.imagePath = imagePath;
+			this.category = category;
+			this.id = id;
 		}
 	}
 }

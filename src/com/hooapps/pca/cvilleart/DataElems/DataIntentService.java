@@ -71,17 +71,17 @@ public class DataIntentService extends IntentService {
 				values = new ContentValues();
 				
 				// Populate the ContentValues
-				values.put(VenueTable.ORGANIZATION_NAME, jObject.getString("Organization_Name"));
-				values.put(VenueTable.EMAIL_ADDRESS, jObject.getString("Email_Address"));
-				values.put(VenueTable.HOME_PAGE_URL, jObject.getString("Home_Page_URL"));
-				values.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, jObject.getString("Directory_Description_Long"));
-				values.put(VenueTable.PHONE_NUMBER_PRIMARY, jObject.getString("Phone_Number_Primary"));
-				values.put(VenueTable.ADDRESS_HOME_STREET, jObject.getString("Address_Home_Street"));
-				values.put(VenueTable.ADDRESS_HOME_CITY, jObject.getString("Address_Home_City"));
-				values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, jObject.getString("Address_Home_Postal_Code"));
-				values.put(VenueTable.ADDRESS_HOME_STATE, jObject.getString("Address_Home_State"));
+				values.put(VenueTable.ORGANIZATION_NAME, jObject.getString("Organization Name"));
+				values.put(VenueTable.EMAIL_ADDRESS, jObject.getString("Email Address"));
+				values.put(VenueTable.HOME_PAGE_URL, jObject.getString("Home Page URL"));
+				values.put(VenueTable.DIRECTORY_DESCRIPTION_LONG, jObject.getString("Description"));
+				values.put(VenueTable.PHONE_NUMBER_PRIMARY, jObject.getString("Phone"));
+				values.put(VenueTable.ADDRESS_HOME_STREET, jObject.getString("Street Address"));
+				values.put(VenueTable.ADDRESS_HOME_CITY, jObject.getString("City"));
+				values.put(VenueTable.ADDRESS_HOME_POSTAL_CODE, jObject.getString("Zip"));
+				values.put(VenueTable.ADDRESS_HOME_STATE, jObject.getString("State"));
 				
-				String categoryString = jObject.getString("Category_Art_Community_Categories");
+				String categoryString = jObject.getString("Primary Category");
 				try {
 					Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
 				} catch (IllegalArgumentException e) {
@@ -90,8 +90,20 @@ public class DataIntentService extends IntentService {
 				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, categoryString);
 				
 				values.put(VenueTable.SECONDARY_CATEGORY, jObject.getString("Secondary Category"));
-				values.put(VenueTable.LAT_LNG_STRING, jObject.getString("LatLngString ifNoAddress"));
-				values.put(VenueTable.IMAGE_URLS, jObject.getString("Image URLs"));
+				
+				
+				// Retrieve the lat & lon as a string
+				String latLngString = jObject.getString("LatLng");
+				
+				// Parse the lat & lon as integers (10^6 * value) to store in database
+				int lat = (int)(1000000 * Double.parseDouble(latLngString.split(",")[0].trim()));
+				int lng = (int)(1000000 * Double.parseDouble(latLngString.split(",")[1].trim()));
+				values.put(VenueTable.LAT_LNG_STRING, latLngString);
+				values.put(VenueTable.LAT, lat);
+				values.put(VenueTable.LON, lng);
+				Log.d("LAT_LON", lat + ", " + lng);
+				
+				values.put(VenueTable.IMAGE_URLS, jObject.getString("Image URL"));
 				
 				// Check to see if the item is already in the database
 				name[0] = values.getAsString(VenueTable.ORGANIZATION_NAME);
@@ -106,6 +118,8 @@ public class DataIntentService extends IntentService {
 					getContentResolver().update(PCAContentProvider.VENUE_CONTENT_URI, values, VenueTable.ORGANIZATION_NAME+" = ?", name);
 					//Log.d("storeJSONData", "JSON Venue updated: " + name);
 				}
+				
+				// TODO ADD 'isDeleted' and 'UNIX Timestamp'
 				
 				c.close();
 			}
@@ -160,7 +174,6 @@ public class DataIntentService extends IntentService {
 					continue;
 				}
 				
-				Log.d("EVENT", "StartTime: " + values.getAsString(EventTable.START_TIME));
 				
 				// If the category is not one we are searching for, set it to 'Venue' and continue
 				try {

@@ -78,7 +78,8 @@ import android.view.View;
 public class MainActivity extends FragmentActivity implements
 		DiscoverListFragment.OnDiscoverViewSelectedListener,
 		EventListFragment.OnEventViewSelectedListener,
-		HomeScreenFragment.OnHomeScreenButtonSelectedListener//,
+		HomeScreenFragment.OnHomeScreenButtonSelectedListener,
+		NearMeFragment.OnInfoWindowSelectedListener//,
 		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
 		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
 	
@@ -512,5 +513,20 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("Testing","Image Button 5");
 		else if (id == R.id.bookmark6)
 			Log.d("Testing","Image Button 6");
+	}
+
+	@Override
+	public void onInfoWindowSelected(int id) {
+		// Create a fragment based on the item that was clicked and swap to that
+		// fragment
+		// TODO Make sure that this is not stacking up fragments within the
+		// code...
+		Fragment newFragment = new DiscoverItemFragment();
+		Bundle args = new Bundle();
+		
+		Uri venueUri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
+		args.putParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE, venueUri);
+		
+		launchFragment(newFragment, args);
 	}
 }

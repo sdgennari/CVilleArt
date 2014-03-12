@@ -27,7 +27,8 @@ public class AlarmScheduleReceiver extends BroadcastReceiver {
 	private final String TIME_MIN = "T00%3A00%3A00Z&timeMin=";
 	private final String API_KEY = "T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	
-	private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	//private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	private String venuePath = "https://dl.dropboxusercontent.com/s/on4se3xlrwmk1o6/CVilleArtsData.json?dl=1&token_hash=AAFWST-3q6cgXnIcIUugr7fdHgKuFqc8Ajpa7wTmCdbWIg";
 	private String familyBasePath	=	"charlottesvillearts.org_1d75dtbvjd8adgei0borv0dp30@group.calendar.google.com";
 	private String musicBasePath	=	"charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc@group.calendar.google.com";
 	private String theatreBasePath	=	"charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0@group.calendar.google.com";
