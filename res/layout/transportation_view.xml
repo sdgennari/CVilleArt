@@ -1,31 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Adapted from http://java.dzone.com/articles/scrolling-tabs-android -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/light_gray" >
 
-<android.support.v4.app.FragmentTabHost xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/tabhost"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
-		
-		<HorizontalScrollView android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:fillViewport="true"
-			android:scrollbars="none">
-			
-			<TabWidget android:id="@android:id/tabs"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"/>
-			
-		</HorizontalScrollView>
-	
-		<FrameLayout android:id="@android:id/tabcontent"
-			android:layout_width="match_parent"
-			android:layout_height="fill_parent"/>
-		
-		
-	</LinearLayout>
-	
-</android.support.v4.app.FragmentTabHost>
+    <LinearLayout
+        android:id="@+id/address_container"
+        style="@style/module_container" >
+        
+        <TextView
+            style="@style/module_header_text"
+            android:text="Directions" />
+        
+        <AutoCompleteTextView
+            style="@style/module_body_text"
+            android:id="@+id/start_auto_comp"
+            android:hint="Starting point" />
+
+        <AutoCompleteTextView
+            style="@style/module_body_text"
+            android:id="@+id/destination_auto_comp"
+            android:hint="Destination" />
+
+        <View style="@style/divider" />
+
+        <Button
+            android:id="@+id/get_directions_button"
+            style="@style/module_button"
+            android:text="Get Directions" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/module_container" >
+        
+        <TextView
+            style="@style/module_header_text"
+            android:text="Notice" />
+        
+        <TextView 
+            style="@style/module_body_text" 
+            android:text="This application launches Google Maps for directions."/>
+        
+    </LinearLayout>
+
+</LinearLayout>

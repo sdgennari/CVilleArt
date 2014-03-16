@@ -7,16 +7,27 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.util.HashMap;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TabHost.TabSpec;
 
 import com.hooapps.pca.cvilleart.R;
+import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
+import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.Transportation.TransportationParkingFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationPublicFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationTaxiFragment;
@@ -40,7 +51,14 @@ import com.hooapps.pca.cvilleart.Transportation.TransportationTaxiFragment;
  */
 
 public class TransportationFragment extends Fragment {
-	private FragmentTabHost tabHost;
+	
+	private static final String GOOGLE_MAP_BASE = "http://maps.google.com/maps?";
+	private static final String GOOGLE_MAP_START = "saddr=";
+	private static final String GOOGLE_MAP_END = "daddr=";
+	
+	private HashMap<String, String> venueMap;
+	AutoCompleteTextView startAutoComp;
+	AutoCompleteTextView endAutoComp;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,30 +68,7 @@ public class TransportationFragment extends Fragment {
 			// TODO Code to restore prior version here  
 		}
 		
-		
-		View rootView = inflater.inflate(R.layout.transportation_view, container, false);
-		
-		tabHost = (FragmentTabHost) rootView.findViewById(R.id.tabhost);
-		Log.d("Test","A");
-		
-		tabHost.setup(this.getActivity(),this.getChildFragmentManager(), android.R.id.tabcontent);
-		Log.d("Test","B");
-		
-		
-		TabSpec publicTrans = tabHost.newTabSpec("Public Transportation");
-		publicTrans.setIndicator("Public Transportation");
-		
-		TabSpec parking = tabHost.newTabSpec("Parking");
-		parking.setIndicator("Parking");
-		
-		TabSpec taxi = tabHost.newTabSpec("Taxi");
-		taxi.setIndicator("Taxi");
-		
-		tabHost.addTab(publicTrans,TransportationPublicFragment.class, null);
-		tabHost.addTab(parking, TransportationParkingFragment.class, null);
-		tabHost.addTab(taxi, TransportationTaxiFragment.class, null);
-		
-		return rootView;
+		return inflater.inflate(R.layout.transportation_view, container, false);
 	}
 	
 	@Override
@@ -91,6 +86,42 @@ public class TransportationFragment extends Fragment {
 			// TODO Setup the fragment according to other specifications
 		}
 		
+		loadVenueMap();
+		bindListeners();
+		
+		
+	}
+	
+	private void bindListeners() {
+		Button getDirectionsButton = (Button) this.getActivity().findViewById(R.id.get_directions_button);
+		getDirectionsButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				String startAddress = startAutoComp.getText().toString();
+				String endAddress = endAutoComp.getText().toString();
+				
+				createGoogleMapIntent(startAddress, endAddress);
+			}
+		});
+		
+		// Prepare the autocomplete textviews
+		startAutoComp = (AutoCompleteTextView) this.getActivity().findViewById(R.id.start_auto_comp);
+		endAutoComp = (AutoCompleteTextView) this.getActivity().findViewById(R.id.destination_auto_comp);
+		String[] venues = new String[venueMap.keySet().size()];
+		
+		// Get the venues from the map keyset
+		int i = 0;
+		for (Object o : venueMap.keySet().toArray()) {
+			venues[i] = o.toString();
+			i++;
+		}
+		
+		// Set the adapters for the AutoCompleteTextViews
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, venues);
+		startAutoComp.setAdapter(adapter);
+		endAutoComp.setAdapter(adapter);
 	}
 	
 	@Override
@@ -105,6 +136,49 @@ public class TransportationFragment extends Fragment {
 	public void onDestroyView()
 	{
 		super.onDestroyView();
-		tabHost = null;
+		//tabHost = null;
+	}
+	
+	private void createGoogleMapIntent(String startAddress, String endAddress) {
+		
+		// Check to see if a better address is provided
+		if (venueMap.get(startAddress) != null) {
+			startAddress = venueMap.get(startAddress);
+		}
+		if (venueMap.get(endAddress) != null) {
+			endAddress = venueMap.get(endAddress);
+		}
+		
+		// Encode the uri
+		String uri = GOOGLE_MAP_BASE;
+		uri += GOOGLE_MAP_START + Uri.encode(startAddress);
+		uri += "&" + GOOGLE_MAP_END + Uri.encode(endAddress);
+		
+		Log.d("TRANS", uri);
+		
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+		intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+		startActivity(intent);
+		
+	}
+	
+	private void loadVenueMap() {
+		
+		venueMap = new HashMap<String, String>();
+		
+		// TODO CONSIDER USING LAT, LON
+		String[] projection = {
+				VenueTable.ORGANIZATION_NAME,
+				VenueTable.ADDRESS_HOME_STREET };
+		
+		Cursor cursor = this.getActivity().getContentResolver().query(PCAContentProvider.VENUE_CONTENT_URI, projection, null, null, null);
+		
+		if (cursor != null) {
+			while (cursor.moveToNext()) {
+				String name = cursor.getString(cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME));
+				String address = cursor.getString(cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET));
+				venueMap.put(name, address);
+			}
+		}
 	}
 }
