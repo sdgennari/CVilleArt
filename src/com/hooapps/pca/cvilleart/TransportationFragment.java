@@ -7,6 +7,7 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Intent;
@@ -15,22 +16,41 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.Transportation.TransportationParkingFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationPublicFragment;
 import com.hooapps.pca.cvilleart.Transportation.TransportationTaxiFragment;
+import com.squareup.picasso.Picasso;
 
 // TODO Update the JavaDoc description as the functionality increases
 
@@ -56,6 +76,18 @@ public class TransportationFragment extends Fragment {
 	private static final String GOOGLE_MAP_START = "saddr=";
 	private static final String GOOGLE_MAP_END = "daddr=";
 	
+	public static final LatLng center = new LatLng(38.030656,-78.481205);
+	
+	private ArrayList<Marker> markers = new ArrayList<Marker>();
+	private LatLng waterStreetGarage = new LatLng(38.029357, -78.480873);
+	private LatLng waterStreetLot = new LatLng(38.029534, -78.481688);
+	private LatLng marketStreetGarage = new LatLng(38.030210, -78.477815);
+	float density;
+	
+	private LayoutInflater inflater;
+	private MapView mapView;
+	private GoogleMap mMap;
+	private View parentView;
 	private HashMap<String, String> venueMap;
 	AutoCompleteTextView startAutoComp;
 	AutoCompleteTextView endAutoComp;
@@ -68,17 +100,24 @@ public class TransportationFragment extends Fragment {
 			// TODO Code to restore prior version here  
 		}
 		
-		return inflater.inflate(R.layout.transportation_view, container, false);
+		this.inflater = inflater;
+		
+		parentView = inflater.inflate(R.layout.transportation_view, container, false);
+		
+		// Load the mapView here to prevent null pointer exceptions
+		mapView = (MapView) parentView.findViewById(R.id.map_view);
+		mapView.onCreate(savedInstanceState);
+		return parentView;
 	}
 	
 	@Override
 	public void onStart() {
 		super.onStart();
-		
+
 		// During startup, check if there are arguments passed to the fragment.
-        // onStart is a good place to do this because the layout has already been
-        // applied to the fragment at this point so we can safely call the method
-        // below that sets the article text.
+		// onStart is a good place to do this because the layout has already been
+		// applied to the fragment at this point so we can safely call the method
+		// below that sets the article text.
 		Bundle args = getArguments();
 		if (args != null) {
 			// TODO Modify fragment according to settings
@@ -86,14 +125,26 @@ public class TransportationFragment extends Fragment {
 			// TODO Setup the fragment according to other specifications
 		}
 		
+		// Get the density of the screen
+		DisplayMetrics metrics = new DisplayMetrics();
+		this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		density = metrics.density;
+
+		// Initialize the map
+		try {
+			MapsInitializer.initialize(this.getActivity().getApplicationContext());
+		} catch (GooglePlayServicesNotAvailableException e) {
+			e.printStackTrace();
+		}
+
 		loadVenueMap();
-		bindListeners();
-		
-		
+		configureViews();
+
 	}
 	
-	private void bindListeners() {
-		Button getDirectionsButton = (Button) this.getActivity().findViewById(R.id.get_directions_button);
+	private void configureViews() {		
+		// Bind listeners for buttons
+		Button getDirectionsButton = (Button) parentView.findViewById(R.id.get_directions_button);
 		getDirectionsButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -107,8 +158,8 @@ public class TransportationFragment extends Fragment {
 		});
 		
 		// Prepare the autocomplete textviews
-		startAutoComp = (AutoCompleteTextView) this.getActivity().findViewById(R.id.start_auto_comp);
-		endAutoComp = (AutoCompleteTextView) this.getActivity().findViewById(R.id.destination_auto_comp);
+		startAutoComp = (AutoCompleteTextView) parentView.findViewById(R.id.start_auto_comp);
+		endAutoComp = (AutoCompleteTextView) parentView.findViewById(R.id.destination_auto_comp);
 		String[] venues = new String[venueMap.keySet().size()];
 		
 		// Get the venues from the map keyset
@@ -122,21 +173,108 @@ public class TransportationFragment extends Fragment {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, venues);
 		startAutoComp.setAdapter(adapter);
 		endAutoComp.setAdapter(adapter);
+		
+		// Configure the MapView
+		mMap = mapView.getMap();
+		
+		mMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+			@Override
+			public View getInfoWindow(Marker marker) {
+				// Getting view from the layout file
+				View v = inflater.inflate(R.layout.garage_info_window, null);
+
+				TextView title = (TextView) v.findViewById(R.id.garage_name);
+				title.setText(marker.getTitle());
+				
+				return v;
+			}
+
+			@Override
+			public View getInfoContents(Marker arg0) {
+				return null;
+			}
+		});
+		
+		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				endAutoComp.setText(marker.getTitle());
+				marker.hideInfoWindow();
+			}
+		});
+		
+		mMap.getUiSettings().setAllGesturesEnabled(false);
+		mMap.getUiSettings().setScrollGesturesEnabled(true);
+		
+		// Add the three garages
+		MarkerOptions options = new MarkerOptions().title("Water Street Garage").position(waterStreetGarage).icon(BitmapDescriptorFactory.fromResource(R.drawable.theatre_marker)).anchor(0.50F, 1.0F);
+		venueMap.put("Water Street Garage", waterStreetGarage.latitude + ", " + waterStreetGarage.longitude);
+		markers.add(mMap.addMarker(options));
+		
+		options = new MarkerOptions().title("Water Street Lot").position(waterStreetLot).icon(BitmapDescriptorFactory.fromResource(R.drawable.theatre_marker)).anchor(0.50F, 1.0F);
+		venueMap.put("Water Street Lot", waterStreetLot.latitude + ", " + waterStreetLot.longitude);
+		markers.add(mMap.addMarker(options));
+
+		options = new MarkerOptions().title("Market Street Garage").position(marketStreetGarage).icon(BitmapDescriptorFactory.fromResource(R.drawable.theatre_marker)).anchor(0.50F, 1.0F);
+		venueMap.put("Market Street Garage", marketStreetGarage.latitude + ", " + marketStreetGarage.longitude);
+		markers.add(mMap.addMarker(options));
+
+		// Center the map on the three garages
+		// Call this method after the mapView has loaded properly
+		mapView.getViewTreeObserver().addOnGlobalLayoutListener( new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				// If you need this to be called again, then run again addOnGlobalLayoutListener.
+				moveToMapCenter();
+			}
+		});
+	}
+	
+	private void moveToMapCenter() {
+		
+		LatLngBounds.Builder boundsBuilder = LatLngBounds.builder();
+		
+		for (Marker m : markers) {
+			boundsBuilder.include(m.getPosition());
+		}
+		
+		mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), (int)(50 * density)));
 	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		mapView.onSaveInstanceState(outState);
 		
 		// TODO Save important info form the fragment here
 		// Use the format 'outState.put[String/Boolean/Int/etc.](key, value);'
 	}
+
 	
 	@Override
-	public void onDestroyView()
+	public void onResume() {
+		mapView.onResume();
+		super.onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		mapView.onPause();
+		super.onPause();
+	}
+	
+	@Override
+	public void onDestroy()
 	{
-		super.onDestroyView();
-		//tabHost = null;
+		mapView.onDestroy();
+		super.onDestroy();
+	}
+	
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		mapView.onLowMemory();
 	}
 	
 	private void createGoogleMapIntent(String startAddress, String endAddress) {

@@ -99,7 +99,7 @@ public class DiscoverListFragment extends ListFragment implements
 				VenueTable.ADDRESS_HOME_STREET
 		};
 		
-		int[] to = new int[] { R.id.venue_name, R.id.type, R.id.image };
+		int[] to = new int[] { R.id.venue_name, /*R.id.type,*/ R.id.image };
 
 		dataAdapter = new DiscoverCursorAdapter(this.getActivity(), R.layout.discover_list_item, null, columns, to);
 
@@ -116,10 +116,12 @@ public class DiscoverListFragment extends ListFragment implements
 				VenueTable.DIRECTORY_DESCRIPTION_LONG,
 				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
 				VenueTable.IMAGE_URLS,
-				VenueTable.ADDRESS_HOME_STREET
+				VenueTable.ADDRESS_HOME_STREET,
+				VenueTable.IMAGE_THUMB_PATH
 		};
 
-		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), PCAContentProvider.VENUE_CONTENT_URI, projection, null, null, null);
+		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), PCAContentProvider.VENUE_CONTENT_URI, projection, null, null,
+				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES + " ASC, UPPER(" + VenueTable.ORGANIZATION_NAME + ") ASC");
 		return cursorLoader;
 	}
 

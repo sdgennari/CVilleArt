@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/white"
+    android:padding="8dp" >
+    
+        <TextView
+            style="@style/header_text"
+            android:id="@+id/garage_name"
+            android:layout_width="wrap_content"
+            android:maxWidth="200dp"
+            android:textColor="#585858"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textSize="16sp" />
+
+</LinearLayout>

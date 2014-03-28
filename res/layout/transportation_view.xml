@@ -1,48 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp"
     android:background="@color/light_gray" >
 
     <LinearLayout
-        android:id="@+id/address_container"
-        style="@style/module_container" >
-        
-        <TextView
-            style="@style/module_header_text"
-            android:text="Directions" />
-        
-        <AutoCompleteTextView
-            style="@style/module_body_text"
-            android:id="@+id/start_auto_comp"
-            android:hint="Starting point" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp" >
 
-        <AutoCompleteTextView
-            style="@style/module_body_text"
-            android:id="@+id/destination_auto_comp"
-            android:hint="Destination" />
+        <LinearLayout
+            android:id="@+id/address_container"
+            style="@style/module_container" >
 
-        <View style="@style/divider" />
+            <TextView
+                style="@style/module_header_text"
+                android:text="@string/directions" />
 
-        <Button
-            android:id="@+id/get_directions_button"
-            style="@style/module_button"
-            android:text="Get Directions" />
+            <AutoCompleteTextView
+                android:id="@+id/start_auto_comp"
+                style="@style/module_body_text"
+                android:hint="@string/starting_point" />
+
+            <AutoCompleteTextView
+                android:id="@+id/destination_auto_comp"
+                style="@style/module_body_text"
+                android:hint="@string/destination" />
+
+            <View style="@style/divider" />
+
+            <Button
+                android:id="@+id/get_directions_button"
+                style="@style/module_button"
+                android:text="@string/get_directions" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/module_container" >
+            
+            <TextView
+                style="@style/module_header_text"
+                android:text="@string/parking_garages" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="10dp" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/module_container" >
+
+            <TextView
+                style="@style/module_header_text"
+                android:text="@string/notice" />
+
+            <TextView
+                style="@style/module_body_text"
+                android:text="@string/map_notice" />
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        style="@style/module_container" >
-        
-        <TextView
-            style="@style/module_header_text"
-            android:text="Notice" />
-        
-        <TextView 
-            style="@style/module_body_text" 
-            android:text="This application launches Google Maps for directions."/>
-        
-    </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

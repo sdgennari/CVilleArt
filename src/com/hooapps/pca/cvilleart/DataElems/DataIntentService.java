@@ -1,6 +1,8 @@
 package com.hooapps.pca.cvilleart.DataElems;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Calendar;
@@ -17,12 +19,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
+import com.squareup.picasso.Picasso.LoadedFrom;
+import com.squareup.picasso.Target;
 
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 
@@ -85,7 +91,11 @@ public class DataIntentService extends IntentService {
 				try {
 					Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));
 				} catch (IllegalArgumentException e) {
-					categoryString = "Venue";
+					if (categoryString.equals("Gallery")) {
+						categoryString = "Visual Arts";
+					} else {
+						categoryString = "Venue";
+					}
 				}
 				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, categoryString);
 				

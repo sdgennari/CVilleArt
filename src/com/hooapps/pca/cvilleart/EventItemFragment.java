@@ -7,7 +7,6 @@ import java.util.TimeZone;
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
-import com.hooapps.pca.cvilleart.R.color;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Instances;
 import android.provider.CalendarContract.Reminders;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -34,9 +34,12 @@ import android.widget.Toast;
 
 public class EventItemFragment extends Fragment {
 	
+	private static final long MS_PER_HOUR = 60 * 60 * 1000L; 
+	
 	private String summary;
 	private String description;
 	private String location;
+	private String eventId;
 	private int startTime;
 	private int endTime;
 	
@@ -95,7 +98,7 @@ public class EventItemFragment extends Fragment {
 			startTime = cursor.getInt(cursor.getColumnIndex(EventTable.START_TIME));
 			endTime = cursor.getInt(cursor.getColumnIndex(EventTable.END_TIME));
 			location = cursor.getString(cursor.getColumnIndex(EventTable.LOCATION));
-			String eventId = cursor.getString(cursor.getColumnIndex(EventTable.EVENT_ID));
+			eventId = cursor.getString(cursor.getColumnIndex(EventTable.EVENT_ID));
 			String categoryString = cursor.getString(cursor.getColumnIndex(EventTable.CATEGORY));
 			
 			// Set the color based on the category

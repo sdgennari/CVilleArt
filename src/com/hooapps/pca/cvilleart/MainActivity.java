@@ -26,6 +26,7 @@ import jxl.*;
 import com.hooapps.pca.cvilleart.DataElems.AlarmScheduleReceiver;
 import com.hooapps.pca.cvilleart.DataElems.DataIntentService;
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
+import com.hooapps.pca.cvilleart.DataElems.ImageUtils;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.ListViewElems.ArtVenue;
@@ -79,7 +80,8 @@ public class MainActivity extends FragmentActivity implements
 		DiscoverListFragment.OnDiscoverViewSelectedListener,
 		EventListFragment.OnEventViewSelectedListener,
 		HomeScreenFragment.OnHomeScreenButtonSelectedListener,
-		NearMeFragment.OnInfoWindowSelectedListener//,
+		NearMeFragment.OnInfoWindowSelectedListener,
+		DiscoverItemFragment.OnDiscoverItemSelectedOpenMapListener//,
 		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
 		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
 	
@@ -125,7 +127,8 @@ public class MainActivity extends FragmentActivity implements
 		// this.setTheme(R.style.LightTheme);
 
 		setContentView(R.layout.home_screen);
-
+		
+		
 		// *****
 		// TODO CITE THIS IMAGE LOADER AND EMAIL AUTHOR ON GITHUB AS PER
 		// INSTRUCTIONS
@@ -134,6 +137,11 @@ public class MainActivity extends FragmentActivity implements
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				getApplicationContext()).build();
 		ImageLoader.getInstance().init(config);
+		
+		// Initialize the ImageUtils
+		ImageUtils.initialize(getApplicationContext(),
+				getExternalFilesDir(ImageUtils.THUMB_PATH),
+				getExternalFilesDir(ImageUtils.BLUR_PATH));
 
 		// Make sure that the home screen contains the fragment_container
 		if (findViewById(R.id.fragment_container) != null) {
@@ -201,21 +209,25 @@ public class MainActivity extends FragmentActivity implements
 
 		// Initialize the List of items for the ItemArrayAdapter
 		List<Item> items = new ArrayList<Item>();
-		items.add(new HeaderItem("Favorites"));
+		//items.add(new HeaderItem("Favorites"));
 		//TODO: Write BookmarkItem Constructor to receive list of image URLs to display
 		//Use sharedPreferences to keep track of what urls the user wants and what discoverItemFragment to display upon click
 		//Make it easy to add/remove bookmarks
 		//have a better default image
-		items.add(new BookmarkItem());
+		//items.add(new BookmarkItem());
 		
+		/*
 		items.add(new HeaderItem("Menu"));
 		items.add(new TextItem("Home"));
 		items.add(new TextItem("Bookmarks"));
 		items.add(new TextItem("Recent"));
-
+		*/
+		
+		//items.add(new TextItem("Home"));
 		items.add(new HeaderItem("CVille Art"));
-		items.add(new TextItem("Near Me"));
-		items.add(new TextItem("Discover"));
+		items.add(new TextItem("Home"));
+		items.add(new TextItem("Map"));
+		items.add(new TextItem("Venues"));
 		items.add(new TextItem("Transportation"));
 		items.add(new TextItem("Events"));
 
@@ -331,30 +343,30 @@ public class MainActivity extends FragmentActivity implements
 		Bundle args = null;
 		switch (position) {
 		// Home
-		case 3:
+		case 1:
 			newFragment = new HomeScreenFragment();
 			args = new Bundle();
 			break;
 		// NearMeFragment
-		case 7:
+		case 2:
 			newFragment = new NearMeFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
 		// DiscoverFragment
-		case 8:
+		case 3:
 			newFragment = new DiscoverListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
 		// TransportationFragment
-		case 9:
+		case 4:
 			newFragment = new TransportationFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
 		// EventFragment
-		case 10:
+		case 5:
 			newFragment = new EventListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
@@ -487,10 +499,10 @@ public class MainActivity extends FragmentActivity implements
 		Calendar calendar = Calendar.getInstance();
 		
 		// Set the current time to tomorrow
-		//calendar.setTimeInMillis(System.currentTimeMillis() + AlarmManager.INTERVAL_DAY);
+		calendar.setTimeInMillis(System.currentTimeMillis() + AlarmManager.INTERVAL_DAY);
 		
 		// TODO DISABLE AFTER DEBUGGING
-		calendar.setTimeInMillis(System.currentTimeMillis());
+		//calendar.setTimeInMillis(System.currentTimeMillis());
 		
 		// Set the alarm to start at 1:XX AM tomorrow
 		calendar.set(Calendar.HOUR_OF_DAY, 1);
@@ -526,6 +538,17 @@ public class MainActivity extends FragmentActivity implements
 		
 		Uri venueUri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
 		args.putParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE, venueUri);
+		
+		launchFragment(newFragment, args);
+	}
+
+	@Override
+	public void onDiscoverItemSelectedOpenMap(int id) {
+		// TODO Auto-generated method stub
+		Fragment newFragment = new NearMeFragment();
+		Bundle args = new Bundle();
+		
+		args.putInt(VenueTable.COLUMN_ID, id);
 		
 		launchFragment(newFragment, args);
 	}

@@ -7,6 +7,7 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -27,9 +28,12 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,6 +44,8 @@ import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCADatabaseHelper;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
+import com.hooapps.pca.cvilleart.DiscoverListFragment.OnDiscoverViewSelectedListener;
+import com.hooapps.pca.cvilleart.ListViewElems.Item;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.squareup.picasso.Picasso;
@@ -57,8 +63,20 @@ import com.squareup.picasso.Target;
 
 public class DiscoverItemFragment extends Fragment {
 	
+	public interface OnDiscoverItemSelectedOpenMapListener {
+		/**
+		 * Called by DiscoverItemFragment when a view is selected
+		 * 
+		 * @param id The id of the venue
+		 * */
+		public void onDiscoverItemSelectedOpenMap(int id);
+	}
+	
+	private OnDiscoverItemSelectedOpenMapListener mCallback;
+	
 	//private ImageView imageView;
 	//private ImageLoader imageLoader = ImageLoader.getInstance();
+	private int id;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,6 +92,18 @@ public class DiscoverItemFragment extends Fragment {
 		return inflater.inflate(R.layout.discover_item_view, container, false);
 	}
 	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		// Make sure that the activity implements OnViewSelectedListener
+		// If not, throw an exception
+		try {
+			mCallback = (OnDiscoverItemSelectedOpenMapListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement OnDiscoverItemSelectedOpenMapListener");
+		}
+	}
 	
 	@Override
 	public void onStart() {
@@ -87,9 +117,21 @@ public class DiscoverItemFragment extends Fragment {
 		Bundle args = getArguments();
 		if (args != null) {
 			updateDiscoverItem(args);
+			bindListeners();
 		} else {
 			// TODO Setup the fragment according to other specifications
 		}
+	}
+	
+	private void bindListeners() {
+		Button viewMapButton = (Button)this.getActivity().findViewById(R.id.view_map_button);
+		viewMapButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mCallback.onDiscoverItemSelectedOpenMap(id);
+			}
+		});
 	}
 	
 	/**
@@ -99,8 +141,8 @@ public class DiscoverItemFragment extends Fragment {
 	 */
 	private void updateDiscoverItem(Bundle args) {
 		// Retrieve the data from the args bundle
-		//int id = args.getInt("column_ID");
 		Uri uri = args.getParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE);
+		id = Integer.parseInt(uri.getLastPathSegment());
 		
 		String[] projection = {
 				VenueTable.ORGANIZATION_NAME,
@@ -183,7 +225,7 @@ public class DiscoverItemFragment extends Fragment {
 			// If an image exists, load it
 			// Else load the placeholder image
 			if (imagePath != null && !imagePath.isEmpty()) {
-				Picasso.with(context).load(imagePath).resize(800, 400).transform(blur).into(bgImageView);
+				Picasso.with(context).load(imagePath).resize(800, 400).centerCrop().transform(blur).into(bgImageView);
 			} else {
 				//Picasso.with(context).load(drawableResId).transform(blur).into(bgImageView);
 				//bgImageView.setBackgroundResource(colorResId);

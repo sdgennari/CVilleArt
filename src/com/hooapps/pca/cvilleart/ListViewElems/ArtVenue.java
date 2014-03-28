@@ -230,8 +230,10 @@ public class ArtVenue implements Item
 		
 		TextView title = (TextView) view.findViewById(R.id.venue_title);
 		title.setText(this.organizationName);
+		/*
 		TextView type = (TextView) view.findViewById(R.id.type);
 		type.setText(this.primaryCategory);
+		*/
 		
 		return view;
 	}

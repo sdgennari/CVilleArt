@@ -73,6 +73,7 @@
 
             <Button
                 style="@style/module_button"
+                android:id="@+id/view_map_button"
                 android:text="@string/view_on_map" />
         </LinearLayout>
 

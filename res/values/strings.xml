@@ -12,6 +12,13 @@
     <string name="time">Time</string>
     <string name="add_to_calendar">Add to Calendar</string>
     <string name="event_added_to_calendar">Event Added to Calendar</string>
+    <string name="directions">Directions</string>
+    <string name="starting_point">Starting point</string>
+    <string name="destination">Destination</string>
+    <string name="get_directions">Get Directions</string>
+    <string name="parking_garages">Parking Garages</string>
+    <string name="notice">Notice</string>
+    <string name="map_notice">This application launches Google Maps for directions.</string>
     
     <string name="dance">Dance</string>
     <string name="film">Film</string>

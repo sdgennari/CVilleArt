@@ -75,10 +75,6 @@
             <TextView style="@style/module_body_text"
                 android:id="@+id/address"/>
             
-            <View style="@style/divider"/>
-            
-            <Button style="@style/module_button"
-                android:text="@string/view_on_map" />
         </LinearLayout>
 
         <!-- Description -->
