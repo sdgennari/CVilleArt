@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import jxl.*;
 
 import com.hooapps.pca.cvilleart.DataElems.AlarmScheduleReceiver;
+import com.hooapps.pca.cvilleart.DataElems.AsyncDataLoader;
 import com.hooapps.pca.cvilleart.DataElems.DataIntentService;
 import com.hooapps.pca.cvilleart.DataElems.EventTable;
 import com.hooapps.pca.cvilleart.DataElems.ImageUtils;
@@ -85,14 +86,15 @@ public class MainActivity extends FragmentActivity implements
 		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
 		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
 	
-	/*
-	private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	
+	//private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
+	private String venuePath = "https://dl.dropboxusercontent.com/s/on4se3xlrwmk1o6/CVilleArtsData.json?dl=1&token_hash=AAFWST-3q6cgXnIcIUugr7fdHgKuFqc8Ajpa7wTmCdbWIg";
 	private String musicPath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String theatrePath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String filmPath		= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String dancePath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	private String galleryPath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	*/
+	
 	
 	private DrawerLayout drawerLayout;
 	private ListView leftNavDrawerList;
@@ -191,9 +193,27 @@ public class MainActivity extends FragmentActivity implements
 		//JSONLoader.execute(galleryPath);
 		//JSONLoader.execute(path);
 		
+		AsyncDataLoader musicLoader = new AsyncDataLoader(this);
+		musicLoader.execute(musicPath);
+		
+		AsyncDataLoader theatreLoader = new AsyncDataLoader(this);
+		theatreLoader.execute(theatrePath);
+		
+		AsyncDataLoader filmLoader = new AsyncDataLoader(this);
+		filmLoader.execute(filmPath);
+		
+		AsyncDataLoader danceLoader = new AsyncDataLoader(this);
+		danceLoader.execute(dancePath);
+		
+		AsyncDataLoader galleryLoader = new AsyncDataLoader(this);
+		galleryLoader.execute(galleryPath);
+		
+		AsyncDataLoader venueLoader = new AsyncDataLoader(this);
+		venueLoader.execute(venuePath);
+		
 		// Schedule the services to update the data
 		//Will only execute when savedInstanceState == null
-		scheduleServices();
+		//scheduleServices();
 		
 		// Adjust the settings for the ActionBar
 		this.getActionBar().setHomeButtonEnabled(true);
@@ -491,6 +511,7 @@ public class MainActivity extends FragmentActivity implements
 	 * Helper method to schedule services at the appropriate time to update the
 	 * database.
 	 */
+	/*
 	private void scheduleServices() {
 		AlarmManager alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(this, AlarmScheduleReceiver.class);
@@ -509,8 +530,9 @@ public class MainActivity extends FragmentActivity implements
 		
 		alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
 	}
+	*/
 	
-
+	/*
 	public void onBookmarkClick(View v) {
 		int id = v.getId();
 		if (id == R.id.bookmark1)
@@ -526,6 +548,7 @@ public class MainActivity extends FragmentActivity implements
 		else if (id == R.id.bookmark6)
 			Log.d("Testing","Image Button 6");
 	}
+	*/
 
 	@Override
 	public void onInfoWindowSelected(int id) {

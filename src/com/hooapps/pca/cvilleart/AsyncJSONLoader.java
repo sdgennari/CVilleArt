@@ -32,10 +32,12 @@ public class AsyncJSONLoader extends AsyncTask<String, Void, String> {
 		}
 	}
 	
+	@Override
 	protected String doInBackground(String... urls) {
 		return readJSONFeed(urls[0]);
 	}
 	
+	@Override
 	protected void onPostExecute(String result) {
 		try {
 			mCallback.storeJSONData(result);
