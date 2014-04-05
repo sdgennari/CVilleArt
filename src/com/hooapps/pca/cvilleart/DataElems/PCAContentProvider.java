@@ -16,7 +16,7 @@ import android.text.TextUtils;
 public class PCAContentProvider extends ContentProvider {
 	
 	public enum Categories {
-		THEATRE, DANCE, MUSIC, VISUAL_ARTS, VENUE
+		THEATRE, DANCE, MUSIC, GALLERY, VENUE
 	}
 	
 	// Reference to the database

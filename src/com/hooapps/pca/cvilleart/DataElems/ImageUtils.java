@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import com.hooapps.pca.cvilleart.CustomElems.BlurTransformation;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Picasso.LoadedFrom;
@@ -29,6 +30,8 @@ public class ImageUtils {
 	private static Context context;
 	private static File thumbDir;
 	private static File blurDir;
+	
+	private static BlurTransformation blurTrans; 
 
 	
 	/**
@@ -41,19 +44,45 @@ public class ImageUtils {
 		context = initContext;
 		thumbDir = initThumbDir;
 		blurDir = initBlurDir;
+		
+		blurTrans = new BlurTransformation(context);
+	}
+	
+	/**
+	 * Method to generate the path to the imageThumb
+	 * @param venueName The name of the venue associated with the image thumb
+	 * @return The file containing the imageThumb
+	 */
+	public File getThumbPath(String venueName) {
+		String formattedName = venueName.toLowerCase(Locale.ENGLISH).trim().replace(' ', '_');
+		File thumb = new File(thumbDir, formattedName + "_thumb.png");
+		
+		return thumb;
+	}
+	
+	/**
+	 * Method to generate the path to the blurred image
+	 * @param venueName The name of the venue associated with the blurred image
+	 * @return The file containing the blurred image
+	 */
+	public File getBlurPath(String venueName) {
+		String formattedName = venueName.toLowerCase(Locale.ENGLISH).trim().replace(' ', '_');
+		File blur = new File(blurDir, formattedName + "_blur.jpg");
+		
+		return blur;
 	}
 	
 	/**
 	 * Method to save thumbnails for each image
 	 * @param sourcePath The url of the image
-	 * @param venueName The name of the venue, used for the file path
+	 * @param venueName The name of the venue, used for the file path (the method formats it appropriately)
 	 * @param width The desired width of the image thumb
 	 * @param height The desired height of the image thumb
-	 * @return The absolute path of the saved image, null if the source was not valid
 	 */
-	public String saveImageThumb(String sourcePath, String venueName, int width, int height) {
-		String formattedName = venueName.toLowerCase(Locale.ENGLISH).trim().replace(' ', '_');
-		final File thumb = new File(thumbDir, formattedName + "_thumb.png");
+	public void saveImageThumb(String sourcePath, String venueName, int width, int height) {
+		//String formattedName = venueName.toLowerCase(Locale.ENGLISH).trim().replace(' ', '_');
+		//final File thumb = new File(thumbDir, formattedName + "_thumb.png");
+		final File thumb = getThumbPath(venueName);
 
 		Target target = new Target() {
 			@Override
@@ -75,17 +104,53 @@ public class ImageUtils {
 			}
 
 			@Override
-			public void onPrepareLoad(Drawable arg0) {
-				// TODO Auto-generated method stub
-			}
+			public void onPrepareLoad(Drawable arg0) {}
 
 		};
-
-		if(sourcePath != null && !sourcePath.isEmpty()) {
+		
+		// Only save the image if the url is valid and the thumb nail has not already been made
+		if(sourcePath != null && !sourcePath.isEmpty() && !thumb.exists()) {
 			Picasso.with(context).load(sourcePath).resize(width, height).centerCrop().into(target);
-			return thumb.getPath();
+			
+			// TODO LOG THE PROGRESS
+			Log.d("IMAGE", "Saving thumb at " + thumb.getAbsolutePath());
+			
+			//return thumb.getPath();
 		}
 		
-		return null;
+		//return null;
+	}
+	
+	public void saveImageBlur(String sourcePath, String venueName, int width, int height) {
+		final File blur = getBlurPath(venueName);
+		
+		Target target = new Target() {
+			@Override
+			public void onBitmapFailed(Drawable arg0) {
+				Log.d("FAIL", "Bitmap failed to load");
+			}
+			
+			@Override
+			public void onBitmapLoaded(Bitmap bitmap, LoadedFrom from) {
+				try {
+					FileOutputStream out = new FileOutputStream(blur);
+					bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+					out.flush();
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			@Override
+			public void onPrepareLoad(Drawable arg0) {}
+		};
+		
+		if (sourcePath != null && !sourcePath.isEmpty() && !blur.exists()) {			
+			Picasso.with(context).load(sourcePath).resize(width, height).centerCrop().transform(blurTrans).into(target);
+			
+			// TODO LOG THE PROGRESS
+			Log.d("IMAGE", "Saving blur at " + blur.getAbsolutePath());
+		}
 	}
 }

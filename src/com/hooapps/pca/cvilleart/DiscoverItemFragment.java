@@ -7,6 +7,7 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -40,6 +41,7 @@ import android.widget.TextView;
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.CustomElems.BlurTransformation;
 import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
+import com.hooapps.pca.cvilleart.DataElems.ImageUtils;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCADatabaseHelper;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
@@ -77,6 +79,7 @@ public class DiscoverItemFragment extends Fragment {
 	//private ImageView imageView;
 	//private ImageLoader imageLoader = ImageLoader.getInstance();
 	private int id;
+	private ImageUtils imageUtils;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +98,8 @@ public class DiscoverItemFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		
+		imageUtils = ImageUtils.getInstance();
 
 		// Make sure that the activity implements OnViewSelectedListener
 		// If not, throw an exception
@@ -146,9 +151,11 @@ public class DiscoverItemFragment extends Fragment {
 		
 		String[] projection = {
 				VenueTable.ORGANIZATION_NAME,
-				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
 				VenueTable.DIRECTORY_DESCRIPTION_LONG,
 				VenueTable.ADDRESS_HOME_STREET,
+				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
+				VenueTable.SECONDARY_CATEGORY,
+				VenueTable.PHONE_NUMBER_PRIMARY,
 				VenueTable.IMAGE_URLS };
 		
 		Cursor cursor = this.getActivity().getContentResolver().query(uri, projection, null, null, null);
@@ -158,10 +165,12 @@ public class DiscoverItemFragment extends Fragment {
 			
 			// Get the data from the cursor
 			String name = cursor.getString(cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME));
-			String categoryString = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
 			String description = cursor.getString(cursor.getColumnIndex(VenueTable.DIRECTORY_DESCRIPTION_LONG));
 			String address = cursor.getString(cursor.getColumnIndex(VenueTable.ADDRESS_HOME_STREET));
 			String imagePath = cursor.getString(cursor.getColumnIndex(VenueTable.IMAGE_URLS));
+			String categoryString = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
+			String secondaryCategoryString = cursor.getString(cursor.getColumnIndex(VenueTable.SECONDARY_CATEGORY));
+			String phoneNumber = cursor.getString(cursor.getColumnIndex(VenueTable.PHONE_NUMBER_PRIMARY));
 			
 			// Retrieve the views from the layout
 			Activity a = this.getActivity();
@@ -170,21 +179,42 @@ public class DiscoverItemFragment extends Fragment {
 			TextView addressView = (TextView)a.findViewById(R.id.address);
 			ImageView imageView = (ImageView)a.findViewById(R.id.venue_image);
 			ImageView bgImageView = (ImageView)a.findViewById(R.id.venue_image_background);
+			TextView categoryView = (TextView)a.findViewById(R.id.category);
+			TextView secondaryCategoryView = (TextView)a.findViewById(R.id.secondary_category);
+			TextView phoneView = (TextView)a.findViewById(R.id.phone_number);
 			
 			// Retrieve the view containers from the layout
 			LinearLayout addressContainer = (LinearLayout)a.findViewById(R.id.address_container);
 			LinearLayout eventContainer = (LinearLayout)a.findViewById(R.id.event_container);
 			RelativeLayout imageContainer = (RelativeLayout)a.findViewById(R.id.image_container);
+			LinearLayout categoryContainer = (LinearLayout)a.findViewById(R.id.category_container);
+			LinearLayout secondaryCategoryContainer = (LinearLayout)a.findViewById(R.id.secondary_category_container);
+			LinearLayout phoneContainer = (LinearLayout)a.findViewById(R.id.phone_number_container);
 			
 			// Set the fields
 			titleView.setText(name);
 			descriptionView.setText(description);
+			categoryView.setText(categoryString);
 			
 			// Hide the address container if no address is provided
 			if (address == null || address.isEmpty()) {
 				addressContainer.setVisibility(View.GONE);
 			} else {
 				addressView.setText(address);
+			}
+			
+			// Hide the Secondary Category if it does not exist
+			if (secondaryCategoryString == null || secondaryCategoryString.isEmpty()) {
+				secondaryCategoryContainer.setVisibility(View.GONE);
+			} else {
+				secondaryCategoryView.setText(secondaryCategoryString);
+			}
+			
+			// Hide the phone number if it does not exist
+			if (phoneNumber == null || phoneNumber.isEmpty()) {
+				phoneContainer.setVisibility(View.GONE);
+			} else {
+				phoneView.setText(phoneNumber.trim().replace(' ', '-'));
 			}
 			
 			// TODO ADD EVENTS ACCORDINGLY
@@ -194,7 +224,7 @@ public class DiscoverItemFragment extends Fragment {
 			
 			// Process the images
 			Context context = this.getActivity().getApplicationContext();
-			BlurTransformation blur = new BlurTransformation(context);
+			BlurTransformation blurTrans = new BlurTransformation(context);
 			
 			// Set the color based on the category
 			int colorResId = 0;
@@ -210,7 +240,7 @@ public class DiscoverItemFragment extends Fragment {
 			case THEATRE: colorResId = R.color.purple;
 				drawableResId = R.drawable.theatre;
 				break;
-			case VISUAL_ARTS: colorResId = R.color.blue;
+			case GALLERY: colorResId = R.color.blue;
 				drawableResId = R.drawable.gallery;
 				break;
 			case VENUE:
@@ -224,11 +254,18 @@ public class DiscoverItemFragment extends Fragment {
 			
 			// If an image exists, load it
 			// Else load the placeholder image
-			if (imagePath != null && !imagePath.isEmpty()) {
-				Picasso.with(context).load(imagePath).resize(800, 400).centerCrop().transform(blur).into(bgImageView);
+			File blur = imageUtils.getBlurPath(name);
+			
+			if (blur.exists()) {
+				Log.d("BLUR", "PHONE");
+				Picasso.with(context).load(blur).into(bgImageView);
+			} else if (imagePath != null && !imagePath.isEmpty()) {
+				Log.d("BLUR", "URL");
+				Picasso.with(context).load(imagePath).resize(800, 400).centerCrop().transform(blurTrans).into(bgImageView);
 			} else {
 				//Picasso.with(context).load(drawableResId).transform(blur).into(bgImageView);
 				//bgImageView.setBackgroundResource(colorResId);
+				Log.d("BLUR", "DEFAULT");
 				Picasso.with(context).load(drawableResId).into(imageView);
 			}
 			

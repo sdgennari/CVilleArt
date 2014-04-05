@@ -1,10 +1,14 @@
 package com.hooapps.pca.cvilleart.DataElems;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,8 +27,9 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
-public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
+public class AsyncDataLoader extends AsyncTask<String, Void, HashMap<String, String>>{
 	
 	Context context;
 	private static final String CALENDAR_MATCH = "www.googleapis.com/calendar/";
@@ -41,10 +46,15 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 	protected void onPreExecute() {}
 	
 	@Override
-	protected Void doInBackground(String... urls) {
+	protected HashMap<String, String> doInBackground(String... urls) {
+		
+		// TODO
 		
 		// Create a placeholder string for the result
 		String result;
+		
+		// Create a HashMap to store the name and url pairs
+		HashMap<String, String> nameUrlPairs = new HashMap<String, String>();
 		
 		// Loop through every url and download the data accordingly
 		for (int i = 0; i < urls.length; i++) {
@@ -54,28 +64,64 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 			// Based on the url, save the data in the appropriate spot
 			// If the url contains the calendar string, process the data as a list of events
 			if (urls[i].contains(CALENDAR_MATCH)) {
-				Log.d("DATA", "Storing event data");
 				this.storeEventJSONData(result);
+				this.deleteOldEvents();
+				
+				// Set the nameUrlPairs to null since no images have to be saved
+				nameUrlPairs = null;
 			}
 			// Else store the data as a list of venues
 			else {
-				Log.d("DATA", "Storing venue data");
-				this.storeVenueJSONData(result);
+				// Set the nameUrlPairs based on the venues
+				nameUrlPairs = this.storeVenueJSONData(result);
 			}
 		}
 		
-		return null;
+		return nameUrlPairs;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	protected void onPostExecute(Void result) {
+	protected void onPostExecute(HashMap<String, String> nameUrlPairs) {
 		
+		if (nameUrlPairs != null) {
+			// Save the image thumbs to the phone
+			AsyncImageSaver imageSaver = new AsyncImageSaver(context);
+			imageSaver.execute(nameUrlPairs);
+		}
 	}
 	
 	@Override
 	protected void onProgressUpdate(Void... values) {}
 	
 	// Private methods to retrieve the data
+	
+	private void deleteUnusedImages(String venueName) {
+		ImageUtils imageUtils = ImageUtils.getInstance();
+		File blur = imageUtils.getBlurPath(venueName);
+		File thumb = imageUtils.getBlurPath(venueName);
+		
+		if (blur.exists()) {
+			blur.delete();
+		}
+		
+		if (thumb.exists()) {
+			thumb.delete();
+		}
+	}
+	
+	private void deleteOldEvents() {
+		// Get the current time
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(System.currentTimeMillis());
+		
+		// Set the calendar to the morning of the current day
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		
+		// Delete events that occured before today
+		context.getContentResolver().delete(PCAContentProvider.EVENT_CONTENT_URI, EventTable.START_TIME + " < " + (c.getTimeInMillis()/1000), null);
+	}
 	
 	/**
 	 * Fetches JSON data from a specified url
@@ -126,7 +172,10 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 	/**
 	 * Parse Venue information from a JSON string and store it in the ContentProvider
 	 */
-	private void storeVenueJSONData(String result) {
+	private HashMap<String, String> storeVenueJSONData(String result) {
+		// Create a HashMap to store the name and url pairs
+		HashMap<String, String> nameUrlPairs = new HashMap<String, String>();
+		
 		// Try to parse the data from the JSON
 		try {
 			// Load the result into a JSONArray
@@ -156,6 +205,14 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 				values.put(VenueTable.SECONDARY_CATEGORY, jVenue.getString("Secondary Category"));
 				values.put(VenueTable.IMAGE_URLS, jVenue.getString("Image URL"));
 				
+				// Check to see if the venue has been deleted
+				String deleted = jVenue.getString("isDeleted");
+				if (("YES").equals(deleted)) {
+					values.put(VenueTable.IS_DELETED, 1);
+				} else {
+					values.put(VenueTable.IS_DELETED, 0);
+				}
+				
 				// Parse the category string separately for processing
 				String categoryString = jVenue.getString("Primary Category");
 				
@@ -165,11 +222,7 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 				}
 				// If cannot be cast, set the value of String accordingly and proceed
 				catch (IllegalArgumentException e) {
-					if (categoryString.equals("Gallery")) {
-						categoryString = "Visual Arts";
-					} else {
-						categoryString = "Venue";
-					}
+					categoryString = "Venue";
 				}
 				// Save the modified categoryString in the database
 				values.put(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES, categoryString);
@@ -196,12 +249,22 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 					context.getContentResolver().update(PCAContentProvider.VENUE_CONTENT_URI, values, VenueTable.ORGANIZATION_NAME+" = ?", name);
 				}
 				
+				// Add the name url pair to the map
+				nameUrlPairs.put(jVenue.getString("Organization Name"), jVenue.getString("Image URL"));
+				
+				// Delete the image on the phone if the venue has been deleted
+				if (deleted.equals("YES")) {
+					deleteUnusedImages(jVenue.getString("Organization Name"));
+				}
+				
 				c.close();
 			}
 			
 		} catch (Exception e) {
 			Log.d("JSON", "Error: " + e.getLocalizedMessage());
 		}
+		
+		return nameUrlPairs;
 	}
 	
 	/**
@@ -259,7 +322,6 @@ public class AsyncDataLoader extends AsyncTask<String, Void, Void>{
 				} else {
 					continue;
 				}
-				
 				
 				// If the category is not one we are searching for, set it to 'Venue' and continue
 				try {

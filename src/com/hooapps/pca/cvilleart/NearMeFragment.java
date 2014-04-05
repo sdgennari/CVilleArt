@@ -15,6 +15,7 @@
  */
 package com.hooapps.pca.cvilleart;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,8 +35,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
@@ -59,6 +62,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hooapps.pca.cvilleart.R;
+import com.hooapps.pca.cvilleart.DataElems.ImageUtils;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
@@ -107,7 +111,9 @@ OnCheckedChangeListener {
 	private LayoutInflater inflater;
 	private Context context;
 	private HashMap<Marker, VenueHolder> venueMap;
-
+	
+	private ImageUtils imageUtils;
+	
 	private GoogleMap mMap;
 	private SupportMapFragment fragment;
 	private LocationClient mLocationClient;
@@ -117,8 +123,7 @@ OnCheckedChangeListener {
 	Geocoder addressStringToAddressObject;
 
 	//For Testing Purposes
-	public static final LatLng jefTheaterLocation = new LatLng(38.030656,-78.481205);
-	private static final String jefTheaterAddress = "110 E Main St, Charlottesville, VA";
+	public static final LatLng CVILLE_CENTER = new LatLng(38.030608, -78.481179);
 
 
 	@Override
@@ -136,6 +141,8 @@ OnCheckedChangeListener {
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.replace(R.id.near_me_fragment_content, fragment);
 		ft.commit();
+		
+		imageUtils = ImageUtils.getInstance();
 
 		mLocationClient = new LocationClient(this.getActivity(), this, this);
 
@@ -183,6 +190,7 @@ OnCheckedChangeListener {
 		if (mMap != null) {
 			mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 			mMap.setMyLocationEnabled(true); //creates "blue dot" that is updated on map automatically as user moves
+			mMap.getUiSettings().setRotateGesturesEnabled(false);	// disable map rotation
 		}
 	}
 
@@ -230,6 +238,16 @@ OnCheckedChangeListener {
 
 	public void setUpMap(int markerType)
 	{
+		
+		Button centerButton = (Button) this.getActivity().findViewById(R.id.map_center_button);
+		centerButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(CVILLE_CENTER, 18));
+			}
+		});
+		
 		if (mMap == null) {
 			return;
 		}
@@ -258,18 +276,23 @@ OnCheckedChangeListener {
 				break;
 				case THEATRE: drawableResId = R.drawable.theatre;
 				break;
-				case VISUAL_ARTS: drawableResId = R.drawable.gallery;
+				case GALLERY: drawableResId = R.drawable.gallery;
 				break;
 				case VENUE:
 				default: drawableResId = R.drawable.other;
 				break;
 				}
-
-				if(imagePath != null && !imagePath.isEmpty()) {
-					// TODO CONSIDER USING A CALLBACK HERE ONCE THE IMAGE LOADS
+				
+				File thumb = imageUtils.getThumbPath(marker.getTitle());
+				
+				if (thumb.exists()) {
+					Log.d("THUMB", "Loading from phone...");
+					Picasso.with(context).load(thumb).placeholder(drawableResId).into(imageView);
+				} else if (imagePath != null && !imagePath.isEmpty()) {
+					Log.d("THUMB", "Loading from url...");
 					Picasso.with(context).load(imagePath).placeholder(drawableResId).into(imageView);
 				} else {
-					// Load a placeholder image if no url is provided
+					Log.d("THUMB", "Loading from default...");
 					Picasso.with(context).load(drawableResId).placeholder(drawableResId).into(imageView);
 				}
 
@@ -296,7 +319,7 @@ OnCheckedChangeListener {
 		if (center != null) {
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 18));
 		} else {
-			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(jefTheaterLocation, 18));
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CVILLE_CENTER, 18));
 		}
 		
 		// Load the information from the database
@@ -311,8 +334,8 @@ OnCheckedChangeListener {
 				VenueTable.LON,
 				VenueTable.IMAGE_URLS
 		};
-
-		Cursor cursor = this.getActivity().getContentResolver().query(PCAContentProvider.VENUE_CONTENT_URI, projection, null, null, null);
+		
+		Cursor cursor = this.getActivity().getContentResolver().query(PCAContentProvider.VENUE_CONTENT_URI, projection, VenueTable.IS_DELETED + " = 0", null, null);
 
 		while (cursor != null && cursor.moveToNext()) {
 			int id = cursor.getInt(cursor.getColumnIndex(VenueTable.COLUMN_ID));
@@ -332,7 +355,7 @@ OnCheckedChangeListener {
 			break;
 			case THEATRE: resId = R.drawable.theatre_marker;
 			break;
-			case VISUAL_ARTS: resId = R.drawable.gallery_marker;
+			case GALLERY: resId = R.drawable.gallery_marker;
 			break;
 			case VENUE:
 			default: resId = R.drawable.other_marker;
@@ -352,10 +375,6 @@ OnCheckedChangeListener {
 				m.showInfoWindow();
 			}
 		}
-		
-		// Set the map center here
-		
-
 	}
 
 	@Override

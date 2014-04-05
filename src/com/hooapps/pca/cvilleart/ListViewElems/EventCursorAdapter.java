@@ -92,7 +92,7 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 			break;
 		case THEATRE: timeContainer.setBackgroundResource(R.drawable.purple_bg);
 		break;
-		case VISUAL_ARTS: timeContainer.setBackgroundResource(R.drawable.blue_bg);
+		case GALLERY: timeContainer.setBackgroundResource(R.drawable.blue_bg);
 			break;
 		case VENUE:
 		default: timeContainer.setBackgroundResource(R.drawable.teal_bg);

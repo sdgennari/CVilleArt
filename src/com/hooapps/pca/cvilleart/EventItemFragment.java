@@ -115,7 +115,7 @@ public class EventItemFragment extends Fragment {
 			case THEATRE: colorResId = R.color.purple;
 				drawableResId = R.drawable.theatre;
 				break;
-			case VISUAL_ARTS: colorResId = R.color.blue;
+			case GALLERY: colorResId = R.color.blue;
 				drawableResId = R.drawable.gallery;
 				break;
 			case VENUE:

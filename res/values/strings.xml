@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">CVille Art</string>
+    <string name="app_name">CVille Artfinder</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
+    <string name="category">Category:</string>
+    <string name="secondary_category">Secondary Category:</string>
+    <string name="phone_number">Phone Number:</string>
     
     <string name="description">Description</string>
     <string name="address">Address</string>
@@ -31,6 +35,22 @@
     <string name="venues">Venues</string>
     <string name="events">Events</string>
     <string name="transportation">Transportation</string>
+        
+    <string name="about">About</string>
+    <string name="libraries">Libraries</string>
+    <string name="library_description">Library description</string>
     
+    <string name="about_details">Charlottesville Artfinder\'s purpose is to improve the accessibility to the arts in Charlottesville, 
+        Virginia. This app was created within the context of the Tom Tom\'s Tomtoberfest \"Apps That Matter\" competition, which is 
+        sponsored by WillowTree Apps, a leader in the industry located on the downtown mall in Charlottesville. Within the competition, 
+        HooApps, a student-run club at the University of Virginia, partnered with Piedmont Council for the Arts (PCA) to create an app to 
+        support PCA\'s mission by empowering them with a presence in the mobile industry. The data that populates the app is owned and 
+        managed by PCA.</string>
+        
+	<string name="about_pca">
+        Piedmont Council for the Arts (PCA) is the designated arts agency of Charlottesville and Albemarle. PCA encourages community-wide 
+        access to and appreciation for the arts through programs and services for artists, arts organizations, and their audiences. 
+        The PCA website provides the most comprehensive arts-related information in the area as we work to inform residents and visitors 
+        about cultural resources and to showcase the Charlottesville region as an arts destination.</string>
     
 </resources>

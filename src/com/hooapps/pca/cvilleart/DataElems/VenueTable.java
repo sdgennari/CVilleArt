@@ -22,6 +22,7 @@ public class VenueTable {
 	public static final String LON = "lon";			// Extra col for numeric lon
 	public static final String IMAGE_URLS = "image_urls";
 	public static final String DIRECTORY_DESCRIPTION_LONG = "directory_description_long";
+	public static final String IS_DELETED = "is_deleted";
 
 	// Possible extra fields for image paths
 	public static final String IMAGE_THUMB_PATH = "image_thumb_path";
@@ -48,7 +49,8 @@ public class VenueTable {
 		+ LON + " INTEGER, "
 		+ IMAGE_URLS + " VARCHAR(255), "
 		+ IMAGE_THUMB_PATH + " VARCHAR(255), "
-		+ IMAGE_MAIN_PATH + " VARCHAR(255) "
+		+ IMAGE_MAIN_PATH + " VARCHAR(255), "
+		+ IS_DELETED + " BOOL NOT NULL DEFAULT '1' "
 		+ ");";
 
 	public static void onCreate(SQLiteDatabase db) {

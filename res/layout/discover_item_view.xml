@@ -86,6 +86,60 @@
                 style="@style/module_header_text"
                 android:text="@string/description" />
 
+            <LinearLayout
+                android:id="@+id/category_container"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+                
+                <TextView
+                    style="@style/module_subheader_text"
+                    android:text="@string/category" />
+                
+                <TextView
+                    style="@style/module_body_text"
+                    android:id="@+id/category"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginBottom="5dp" />
+                
+            </LinearLayout>
+            
+			<LinearLayout
+			    android:id="@+id/secondary_category_container"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+                
+                <TextView
+                    style="@style/module_subheader_text"
+                    android:text="@string/secondary_category" />
+                
+                <TextView
+                    style="@style/module_body_text"
+                    android:id="@+id/secondary_category"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginBottom="5dp" />
+                
+            </LinearLayout>
+            
+			<LinearLayout
+			    android:id="@+id/phone_number_container"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+                
+                <TextView
+                    style="@style/module_subheader_text"
+                    android:text="@string/phone_number" />
+                
+                <TextView
+                    style="@style/module_body_text"
+                    android:id="@+id/phone_number"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginBottom="5dp" />
+                
+            </LinearLayout>
+            
             <TextView
                 android:id="@+id/description"
                 style="@style/module_body_text" />

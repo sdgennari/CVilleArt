@@ -120,8 +120,8 @@ public class DiscoverListFragment extends ListFragment implements
 				VenueTable.IMAGE_THUMB_PATH
 		};
 
-		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), PCAContentProvider.VENUE_CONTENT_URI, projection, null, null,
-				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES + " ASC, UPPER(" + VenueTable.ORGANIZATION_NAME + ") ASC");
+		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), PCAContentProvider.VENUE_CONTENT_URI, projection,
+				VenueTable.IS_DELETED + " = 0", null, VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES + " ASC, UPPER(" + VenueTable.ORGANIZATION_NAME + ") ASC");
 		return cursorLoader;
 	}
 

@@ -43,6 +43,7 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 	private Context context;
 	private int layout;
 	private double screenDensity;
+	private ImageUtils imageUtils;
 
 	public DiscoverCursorAdapter(Context context, int layout, Cursor cursor, String[] from, int[] to) {
 		super(context, layout, cursor, from, to, 0);
@@ -50,6 +51,7 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		this.layout = layout;
 		layoutInflater = LayoutInflater.from(context);
 		screenDensity = context.getResources().getDisplayMetrics().density;
+		this.imageUtils = ImageUtils.getInstance();
 	}
 
 	@Override
@@ -65,13 +67,13 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		int colName = cursor.getColumnIndex(VenueTable.ORGANIZATION_NAME);
 		int colType = cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES);
 		int colImgUrl = cursor.getColumnIndex(VenueTable.IMAGE_URLS);
-		int colImgThumb = cursor.getColumnIndex(VenueTable.IMAGE_THUMB_PATH);
+		//int colImgThumb = cursor.getColumnIndex(VenueTable.IMAGE_THUMB_PATH);
 
 		// Retrieve the data from the cursor
 		String name = cursor.getString(colName);
 		String categoryString = cursor.getString(colType);
 		String imagePath = cursor.getString(colImgUrl);
-		String thumbPath = cursor.getString(colImgThumb);
+		//String thumbPath = cursor.getString(colImgThumb);
 		
 		Log.d("BIND", "BindView for " + name);
 
@@ -98,7 +100,7 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 			break;
 		case THEATRE: drawableResId = R.drawable.theatre;
 			break;
-		case VISUAL_ARTS: drawableResId = R.drawable.gallery;
+		case GALLERY: drawableResId = R.drawable.gallery;
 			break;
 		case VENUE:
 		default: drawableResId = R.drawable.other;
@@ -108,31 +110,14 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		int width = imageView.getLayoutParams().width;
 		int height = imageView.getLayoutParams().height;
 		
-		// TODO CONSIDER CHANGING THE ORDER OF THESE METHODS OR SEPARATING THE IF STATEMENT
-		/*
-		if (thumbPath != null && !thumbPath.isEmpty()) {
-			//Log.d("THUMB", "Loading from thumb...");
-			File file = new File(thumbPath);
-			Picasso.with(context).load(file).placeholder(drawableResId).into(imageView);
-			//Log.d("---", "Path: " + file.getPath());
-			//Log.d("---", "AbsPath: " + file.getAbsolutePath());
-			
-		} else */ 
-		if (imagePath != null && !imagePath.isEmpty()) {
-			//Log.d("THUMB", "Loading from path...");
+		// Get the file for the thumbnail
+		File thumb = imageUtils.getThumbPath(name); 
+		if (thumb.exists()) {
+			//Log.d("THUMB", "Loading from phone...");
+			Picasso.with(context).load(thumb).placeholder(drawableResId).resize(width, height).centerCrop().into(imageView);
+		} else if (imagePath != null && !imagePath.isEmpty()) {
+			//Log.d("THUMB", "Loading from url...");
 			Picasso.with(context).load(imagePath).placeholder(drawableResId).resize(width, height).centerCrop().into(imageView);
-			
-			// TODO DO NOT CALL THIS IN BINDVIEW!!!
-			
-			/*
-			ImageUtils utils = ImageUtils.getInstance();
-			String path = utils.saveImageThumb(imagePath, name, width, height);
-			
-			ContentValues values = new ContentValues();
-			values.put(VenueTable.IMAGE_THUMB_PATH, path);
-			context.getContentResolver().update(PCAContentProvider.VENUE_CONTENT_URI, values, VenueTable.ORGANIZATION_NAME+" = ?", new String[] {name});
-			*/
-			
 		} else {
 			//Log.d("THUMB", "Loading from default...");
 			// Load a placeholder image if no url is provided

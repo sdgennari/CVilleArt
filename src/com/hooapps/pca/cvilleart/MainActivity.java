@@ -12,9 +12,11 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.json.JSONArray;
@@ -45,6 +47,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -86,14 +89,25 @@ public class MainActivity extends FragmentActivity implements
 		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
 		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
 	
+	private final int MILLI_PER_FOUR_WEEK = 3 * 7 * 24 * 60 * 60 * 1000;
+	private final String BASE_PATH = "https://www.googleapis.com/calendar/v3/calendars/";
+	private final String TIME_MAX = "/events?singleEvents=true&timeMax=";
+	private final String TIME_MIN = "T00%3A00%3A00Z&timeMin=";
+	private final String API_KEY = "T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	
+	private static final String IS_FIRST_LAUNCH = "is_first_launch";
+	private static final String LAST_DATA_UPDATE = "last_data_update";
+	private static final int MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 	
 	//private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
-	private String venuePath = "https://dl.dropboxusercontent.com/s/on4se3xlrwmk1o6/CVilleArtsData.json?dl=1&token_hash=AAFWST-3q6cgXnIcIUugr7fdHgKuFqc8Ajpa7wTmCdbWIg";
-	private String musicPath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String theatrePath	=	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String filmPath		= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String dancePath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
-	private String galleryPath	= 	"https://www.googleapis.com/calendar/v3/calendars/charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0%40group.calendar.google.com/events?singleEvents=true&timeMax=2014-02-28T11%3A59%3A00Z&timeMin=2014-02-19T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
+	private String venuePath = "http://charlottesvillearts.org/wp-content/uploads/2014/03/CVilleArtsData.txt";
+	private String familyBasePath	=	"charlottesvillearts.org_1d75dtbvjd8adgei0borv0dp30@group.calendar.google.com";
+	private String musicBasePath	=	"charlottesvillearts.org_9oapvu67eckm7hkbm22p8debtc@group.calendar.google.com";
+	private String theatreBasePath	=	"charlottesvillearts.org_ob2g1r475vou79aa2piljkivm0@group.calendar.google.com";
+	private String filmBasePath		= 	"charlottesvillearts.org_gmbfku7u83glhstgll6p4ikeh4@group.calendar.google.com";
+	private String danceBasePath	= 	"charlottesvillearts.org_6j3aq5pd2t3ikhm4ms563h5hrs@group.calendar.google.com";
+	private String galleryBasePath	= 	"charlottesvillearts.org_fci03o8i70o7ugjtchqll39ck0@group.calendar.google.com";
+	private String literaryBasePath	=	"charlottesvillearts.org_1nvlsks9klme3evsf1cqhe2i64@group.calendar.google.com";
 	
 	
 	private DrawerLayout drawerLayout;
@@ -129,16 +143,6 @@ public class MainActivity extends FragmentActivity implements
 		// this.setTheme(R.style.LightTheme);
 
 		setContentView(R.layout.home_screen);
-		
-		
-		// *****
-		// TODO CITE THIS IMAGE LOADER AND EMAIL AUTHOR ON GITHUB AS PER
-		// INSTRUCTIONS
-		// *****
-		// Initialize the image loader for async loading within the app
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				getApplicationContext()).build();
-		ImageLoader.getInstance().init(config);
 		
 		// Initialize the ImageUtils
 		ImageUtils.initialize(getApplicationContext(),
@@ -193,23 +197,7 @@ public class MainActivity extends FragmentActivity implements
 		//JSONLoader.execute(galleryPath);
 		//JSONLoader.execute(path);
 		
-		AsyncDataLoader musicLoader = new AsyncDataLoader(this);
-		musicLoader.execute(musicPath);
-		
-		AsyncDataLoader theatreLoader = new AsyncDataLoader(this);
-		theatreLoader.execute(theatrePath);
-		
-		AsyncDataLoader filmLoader = new AsyncDataLoader(this);
-		filmLoader.execute(filmPath);
-		
-		AsyncDataLoader danceLoader = new AsyncDataLoader(this);
-		danceLoader.execute(dancePath);
-		
-		AsyncDataLoader galleryLoader = new AsyncDataLoader(this);
-		galleryLoader.execute(galleryPath);
-		
-		AsyncDataLoader venueLoader = new AsyncDataLoader(this);
-		venueLoader.execute(venuePath);
+		this.updateData();
 		
 		// Schedule the services to update the data
 		//Will only execute when savedInstanceState == null
@@ -217,6 +205,50 @@ public class MainActivity extends FragmentActivity implements
 		
 		// Adjust the settings for the ActionBar
 		this.getActionBar().setHomeButtonEnabled(true);
+	}
+	
+	/**
+	 * Updates the data in the app if the data has not been updated for a long time
+	 */
+	private void updateData() {
+		// Retrieve the time of last data update
+		SharedPreferences prefs = this.getSharedPreferences("com.hooapps.pca", Context.MODE_PRIVATE);
+		long modifiedMillis = prefs.getLong(LAST_DATA_UPDATE, 0);
+		long currentMillis = System.currentTimeMillis();
+		
+		// If the data is more than one day old, update it
+//		if (modifiedMillis < (currentMillis - MILLIS_PER_DAY)) {
+		if (true) {
+			
+			Toast.makeText(this, "Loading data...", Toast.LENGTH_SHORT).show();
+			
+			AsyncDataLoader musicLoader = new AsyncDataLoader(this);
+			musicLoader.execute(formatTimeRange(musicBasePath));
+			
+			AsyncDataLoader theatreLoader = new AsyncDataLoader(this);
+			theatreLoader.execute(formatTimeRange(theatreBasePath));
+			
+			AsyncDataLoader filmLoader = new AsyncDataLoader(this);
+			filmLoader.execute(formatTimeRange(filmBasePath));
+			
+			AsyncDataLoader danceLoader = new AsyncDataLoader(this);
+			danceLoader.execute(formatTimeRange(danceBasePath));
+			
+			AsyncDataLoader galleryLoader = new AsyncDataLoader(this);
+			galleryLoader.execute(formatTimeRange(galleryBasePath));
+			
+			AsyncDataLoader familyLoader = new AsyncDataLoader(this);
+			familyLoader.execute(formatTimeRange(familyBasePath));
+			
+			AsyncDataLoader literaryLoader = new AsyncDataLoader(this);
+			literaryLoader.execute(formatTimeRange(literaryBasePath));
+			
+			AsyncDataLoader venueLoader = new AsyncDataLoader(this);
+			venueLoader.execute(venuePath);
+			
+			// Update the timestamp of last modified
+			prefs.edit().putLong(LAST_DATA_UPDATE, currentMillis).apply();
+		}
 	}
 
 	/**
@@ -286,15 +318,7 @@ public class MainActivity extends FragmentActivity implements
 		List<Item> items = new ArrayList<Item>();
 		items.add(new HeaderItem("Help"));
 		items.add(new TextItem("Help"));
-		items.add(new TextItem("Terms/Conditions"));
-		items.add(new TextItem("Report a Problem"));
-		items.add(new TextItem("Rate this App"));
-		items.add(new TextItem("Share this App"));
-
-		items.add(new HeaderItem("Settings"));
-		items.add(new TextItem("Theme Color"));
-		items.add(new TextItem("Sounds"));
-		items.add(new TextItem("Default Home Screen"));
+		items.add(new TextItem("About"));
 
 		// Set the ItemArrayAdapter as the ListView adapter
 		ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
@@ -302,8 +326,7 @@ public class MainActivity extends FragmentActivity implements
 
 		// Respond accordingly when an item is clicked
 		rightNavDrawerList.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				onRightDrawerViewSelected(position);
 				drawerLayout.closeDrawer(rightNavDrawerList);
 			}
@@ -398,9 +421,21 @@ public class MainActivity extends FragmentActivity implements
 	}
 
 	public void onRightDrawerViewSelected(int position) {
+		Fragment newFragment = null;
+		Bundle args = null;
 		switch (position) {
-		// TODO: add functionality
+		// Help
+		case 1:
+			//newFragment = new HelpFragment();
+			args = new Bundle();
+			break;
+		case 2:
+			newFragment = new AboutFragment();
+			args = new Bundle();
+			break;
 		}
+		
+		launchFragment(newFragment, args);
 	}
 	
 	public void onHomeScreenButtonSelected(View v) {
@@ -549,6 +584,20 @@ public class MainActivity extends FragmentActivity implements
 			Log.d("Testing","Image Button 6");
 	}
 	*/
+	
+	private String formatTimeRange(String calendarId) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+		Calendar c = Calendar.getInstance();
+		
+		c.setTimeInMillis(System.currentTimeMillis());
+		String minTime = sdf.format(c.getTime());
+		
+		c.setTimeInMillis(System.currentTimeMillis() + this.MILLI_PER_FOUR_WEEK);
+		String maxTime = sdf.format(c.getTime());
+		
+		return BASE_PATH + calendarId + TIME_MAX + maxTime + TIME_MIN + minTime + API_KEY;
+		
+	}
 
 	@Override
 	public void onInfoWindowSelected(int id) {

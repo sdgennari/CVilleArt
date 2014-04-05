@@ -74,6 +74,13 @@
         <item name="android:textSize">20sp</item>
     </style>
     
+    <style name="module_subheader_text" parent="body_text">
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    
     <style name="module_body_text" parent="body_text">
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>

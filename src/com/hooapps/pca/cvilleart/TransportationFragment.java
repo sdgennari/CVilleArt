@@ -208,15 +208,15 @@ public class TransportationFragment extends Fragment {
 		mMap.getUiSettings().setScrollGesturesEnabled(true);
 		
 		// Add the three garages
-		MarkerOptions options = new MarkerOptions().title("Water Street Garage").position(waterStreetGarage).icon(BitmapDescriptorFactory.fromResource(R.drawable.theatre_marker)).anchor(0.50F, 1.0F);
+		MarkerOptions options = new MarkerOptions().title("Water Street Garage").position(waterStreetGarage).icon(BitmapDescriptorFactory.fromResource(R.drawable.garage_marker)).anchor(0.50F, 1.0F);
 		venueMap.put("Water Street Garage", waterStreetGarage.latitude + ", " + waterStreetGarage.longitude);
 		markers.add(mMap.addMarker(options));
 		
-		options = new MarkerOptions().title("Water Street Lot").position(waterStreetLot).icon(BitmapDescriptorFactory.fromResource(R.drawable.theatre_marker)).anchor(0.50F, 1.0F);
+		options = new MarkerOptions().title("Water Street Lot").position(waterStreetLot).icon(BitmapDescriptorFactory.fromResource(R.drawable.garage_marker)).anchor(0.50F, 1.0F);
 		venueMap.put("Water Street Lot", waterStreetLot.latitude + ", " + waterStreetLot.longitude);
 		markers.add(mMap.addMarker(options));
 
-		options = new MarkerOptions().title("Market Street Garage").position(marketStreetGarage).icon(BitmapDescriptorFactory.fromResource(R.drawable.theatre_marker)).anchor(0.50F, 1.0F);
+		options = new MarkerOptions().title("Market Street Garage").position(marketStreetGarage).icon(BitmapDescriptorFactory.fromResource(R.drawable.garage_marker)).anchor(0.50F, 1.0F);
 		venueMap.put("Market Street Garage", marketStreetGarage.latitude + ", " + marketStreetGarage.longitude);
 		markers.add(mMap.addMarker(options));
 
