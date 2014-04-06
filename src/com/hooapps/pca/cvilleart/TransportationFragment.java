@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,7 +28,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -72,6 +75,8 @@ import com.squareup.picasso.Picasso;
 
 public class TransportationFragment extends Fragment {
 	
+	
+	private static final String CAT_PACKAGE_NAME = "com.cville.cattail";
 	private static final String GOOGLE_MAP_BASE = "http://maps.google.com/maps?";
 	private static final String GOOGLE_MAP_START = "saddr=";
 	private static final String GOOGLE_MAP_END = "daddr=";
@@ -229,6 +234,26 @@ public class TransportationFragment extends Fragment {
 				moveToMapCenter();
 			}
 		});
+		
+		// 
+		if (this.isCATInstalled()) {
+			LinearLayout catContainer = (LinearLayout)parentView.findViewById(R.id.cat_container);
+			catContainer.setVisibility(View.GONE);
+		}
+		
+		Button install = (Button) parentView.findViewById(R.id.download_cat_button);
+		install.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + CAT_PACKAGE_NAME));
+				    startActivity(intent);
+				} catch (android.content.ActivityNotFoundException anfe) {
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + CAT_PACKAGE_NAME));
+				    startActivity(intent);
+				}
+			}
+		});
 	}
 	
 	private void moveToMapCenter() {
@@ -279,6 +304,11 @@ public class TransportationFragment extends Fragment {
 	
 	private void createGoogleMapIntent(String startAddress, String endAddress) {
 		
+		if (endAddress == null || endAddress.isEmpty()) {
+			Toast.makeText(getActivity(), "Please enter a destination", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
 		// Check to see if a better address is provided
 		if (venueMap.get(startAddress) != null) {
 			startAddress = venueMap.get(startAddress);
@@ -286,6 +316,7 @@ public class TransportationFragment extends Fragment {
 		if (venueMap.get(endAddress) != null) {
 			endAddress = venueMap.get(endAddress);
 		}
+		
 		
 		// Encode the uri
 		String uri = GOOGLE_MAP_BASE;
@@ -318,5 +349,17 @@ public class TransportationFragment extends Fragment {
 				venueMap.put(name, address);
 			}
 		}
+	}
+
+	private boolean isCATInstalled() {
+		PackageManager pm = this.getActivity().getApplicationContext().getPackageManager();
+		boolean installed = false;
+		try {
+			pm.getPackageInfo("com.cville.cattail", PackageManager.GET_ACTIVITIES);
+			installed = true;
+		} catch (Exception e) {
+			installed = false;
+		}
+		return installed;
 	}
 }

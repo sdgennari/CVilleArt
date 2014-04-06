@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -37,7 +38,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.CustomElems.BlurTransformation;
 import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
@@ -80,6 +83,9 @@ public class DiscoverItemFragment extends Fragment {
 	//private ImageLoader imageLoader = ImageLoader.getInstance();
 	private int id;
 	private ImageUtils imageUtils;
+	private String latLngString;
+	
+	private static final String GOOGLE_MAP_BASE = "http://maps.google.com/maps?saddr=&daddr=";
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -137,6 +143,14 @@ public class DiscoverItemFragment extends Fragment {
 				mCallback.onDiscoverItemSelectedOpenMap(id);
 			}
 		});
+		
+		Button getDirectionsButton = (Button)this.getActivity().findViewById(R.id.get_directions_button);
+		getDirectionsButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				launchGoogleMapIntent();
+			}
+		});
 	}
 	
 	/**
@@ -156,6 +170,7 @@ public class DiscoverItemFragment extends Fragment {
 				VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES,
 				VenueTable.SECONDARY_CATEGORY,
 				VenueTable.PHONE_NUMBER_PRIMARY,
+				VenueTable.LAT_LNG_STRING,
 				VenueTable.IMAGE_URLS };
 		
 		Cursor cursor = this.getActivity().getContentResolver().query(uri, projection, null, null, null);
@@ -171,6 +186,7 @@ public class DiscoverItemFragment extends Fragment {
 			String categoryString = cursor.getString(cursor.getColumnIndex(VenueTable.CATEGORY_ART_COMMUNITY_CATEGORIES));
 			String secondaryCategoryString = cursor.getString(cursor.getColumnIndex(VenueTable.SECONDARY_CATEGORY));
 			String phoneNumber = cursor.getString(cursor.getColumnIndex(VenueTable.PHONE_NUMBER_PRIMARY));
+			latLngString = cursor.getString(cursor.getColumnIndex(VenueTable.LAT_LNG_STRING));
 			
 			// Retrieve the views from the layout
 			Activity a = this.getActivity();
@@ -349,6 +365,21 @@ public class DiscoverItemFragment extends Fragment {
 		return dest;
 	}
 	*/
+	
+	private void launchGoogleMapIntent() {
+		
+		// Make sure the latLngString is valid
+		if (latLngString == null || latLngString.isEmpty()) {
+			return;
+		}
+		
+		// Encode the uri
+		String uri = GOOGLE_MAP_BASE + latLngString;
+		
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+		intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+		startActivity(intent);
+	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {

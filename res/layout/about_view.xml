@@ -22,6 +22,12 @@
                 style="@style/module_body_text"
                 android:text="@string/about_details" />
             
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pca_horz_logo" />
+            
             <TextView
                 style="@style/module_body_text"
                 android:text="@string/about_pca" />
@@ -38,6 +44,13 @@
             <TextView
                 style="@style/module_body_text"
                 android:text="@string/library_description" />
+            
+            <View style="@style/divider" />
+            
+            <TextView
+                style="@style/module_body_text"
+                android:text="@string/apache_license" />
+            
         </LinearLayout>
         
     </LinearLayout>

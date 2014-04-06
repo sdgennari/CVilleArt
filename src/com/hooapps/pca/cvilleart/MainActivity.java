@@ -163,7 +163,7 @@ public class MainActivity extends FragmentActivity implements
 			// rotation, since savedInstanceState is not null in that scenario
 			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			initializeLeftNavDrawer();
-			initializeRightNavDrawer();
+			//initializeRightNavDrawer();
 
 			// Only create new fragments if the app is not being restored
 			// This prevents multiple, identical fragments from stacking up
@@ -217,8 +217,7 @@ public class MainActivity extends FragmentActivity implements
 		long currentMillis = System.currentTimeMillis();
 		
 		// If the data is more than one day old, update it
-//		if (modifiedMillis < (currentMillis - MILLIS_PER_DAY)) {
-		if (true) {
+		if (modifiedMillis < (currentMillis - MILLIS_PER_DAY)) {
 			
 			Toast.makeText(this, "Loading data...", Toast.LENGTH_SHORT).show();
 			
@@ -311,6 +310,7 @@ public class MainActivity extends FragmentActivity implements
 	 * custom ItemArrayAdapter. This adapter is then set as the adapter for the
 	 * ListView.
 	 */
+	/*
 	public void initializeRightNavDrawer() {
 		rightNavDrawerList = (ListView) findViewById(R.id.right_drawer);
 
@@ -332,6 +332,7 @@ public class MainActivity extends FragmentActivity implements
 			}
 		});
 	}
+	*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -344,6 +345,13 @@ public class MainActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
+			Fragment newFragment = new AboutFragment();
+			Bundle args = new Bundle();
+			launchFragment(newFragment, args);
+			return true;
+			
+		/*
+		case R.id.action_settings:
 			if (drawerLayout.isDrawerOpen(leftNavDrawerList)) {
 				drawerLayout.closeDrawer(leftNavDrawerList);
 			}
@@ -353,10 +361,13 @@ public class MainActivity extends FragmentActivity implements
 				drawerLayout.openDrawer(rightNavDrawerList);
 			}
 			return true;
+		*/
 		case android.R.id.home:
+			/*
 			if (drawerLayout.isDrawerOpen(rightNavDrawerList)) {
 				drawerLayout.closeDrawer(rightNavDrawerList);
 			}
+			*/
 			if (drawerLayout.isDrawerOpen(leftNavDrawerList)) {
 				drawerLayout.closeDrawer(leftNavDrawerList);
 			} else {
@@ -419,7 +430,8 @@ public class MainActivity extends FragmentActivity implements
 		
 		launchFragment(newFragment, args);
 	}
-
+	
+	/*
 	public void onRightDrawerViewSelected(int position) {
 		Fragment newFragment = null;
 		Bundle args = null;
@@ -437,6 +449,7 @@ public class MainActivity extends FragmentActivity implements
 		
 		launchFragment(newFragment, args);
 	}
+	*/
 	
 	public void onHomeScreenButtonSelected(View v) {
 		Fragment newFragment = null;
