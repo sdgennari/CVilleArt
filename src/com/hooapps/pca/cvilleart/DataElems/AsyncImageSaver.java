@@ -3,28 +3,22 @@ package com.hooapps.pca.cvilleart.DataElems;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hooapps.pca.cvilleart.MainActivity;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
 public class AsyncImageSaver extends AsyncTask<HashMap<String, String>, Void, Void> {
 	
-	private static final int THUMB_SIZE = 48 * 3;
+	private static final int THUMB_SIZE = 48 * 2;
 	private static final int BLUR_WIDTH = 800;
 	private static final int BLUR_HEIGHT = 400;
 	
 	private Context context;
 	private ImageUtils utils;
-	
-	/*
-	ImageUtils utils = ImageUtils.getInstance();
-	String path = utils.saveImageThumb(imagePath, name, width, height);
-	
-	ContentValues values = new ContentValues();
-	values.put(VenueTable.IMAGE_THUMB_PATH, path);
-	context.getContentResolver().update(PCAContentProvider.VENUE_CONTENT_URI, values, VenueTable.ORGANIZATION_NAME+" = ?", new String[] {name});
-	*/
 	
 	public AsyncImageSaver(Context context) {
 		this.context = context;
@@ -51,6 +45,7 @@ public class AsyncImageSaver extends AsyncTask<HashMap<String, String>, Void, Vo
 				// Save the image thumb to the phone memory
 				utils.saveImageThumb(map.get(name), name, THUMB_SIZE, THUMB_SIZE);
 				utils.saveImageBlur(map.get(name), name, BLUR_WIDTH, BLUR_HEIGHT);
+				//Log.d("IMAGE", "Saved image for " + name);
 			}
 		}
 		
@@ -58,7 +53,11 @@ public class AsyncImageSaver extends AsyncTask<HashMap<String, String>, Void, Vo
 	}
 	
 	@Override
-	protected void onPostExecute(Void result) {}
+	protected void onPostExecute(Void result) {
+		// Update the timestamp of last modified
+		SharedPreferences prefs = context.getSharedPreferences("com.hooapps.pca", Context.MODE_PRIVATE);
+		prefs.edit().putLong(MainActivity.LAST_DATA_UPDATE, System.currentTimeMillis()).apply();
+	}
 	
 	@Override
 	protected void onProgressUpdate(Void... values) {}

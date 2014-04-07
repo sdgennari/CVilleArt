@@ -50,10 +50,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider;
 import com.hooapps.pca.cvilleart.DataElems.VenueTable;
-import com.hooapps.pca.cvilleart.Transportation.TransportationParkingFragment;
-import com.hooapps.pca.cvilleart.Transportation.TransportationPublicFragment;
-import com.hooapps.pca.cvilleart.Transportation.TransportationTaxiFragment;
-import com.squareup.picasso.Picasso;
 
 // TODO Update the JavaDoc description as the functionality increases
 
@@ -317,13 +313,10 @@ public class TransportationFragment extends Fragment {
 			endAddress = venueMap.get(endAddress);
 		}
 		
-		
 		// Encode the uri
 		String uri = GOOGLE_MAP_BASE;
 		uri += GOOGLE_MAP_START + Uri.encode(startAddress);
 		uri += "&" + GOOGLE_MAP_END + Uri.encode(endAddress);
-		
-		Log.d("TRANS", uri);
 		
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
 		intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");

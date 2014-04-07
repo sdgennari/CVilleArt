@@ -69,10 +69,16 @@ public class EventCursorAdapter extends SimpleCursorAdapter {
 		c.setTimeInMillis(startTime * 1000L);
 		int hours = c.get(Calendar.HOUR_OF_DAY);
 		int minutes = c.get(Calendar.MINUTE);
+		int formattedHours = hours;
 		
 		// Update the timeView
 		TextView timeView = (TextView) v.findViewById(R.id.time);
-		timeView.setText(String.format("% 2d", hours%12) + ":" + String.format("%02d", minutes));
+		
+		// Properly format the hours for AM/PM
+		if (hours > 12) {
+			formattedHours = hours % 12;
+		}
+		timeView.setText(String.format("% 2d", formattedHours) + ":" + String.format("%02d", minutes));
 		
 		TextView timePeriodView = (TextView) v.findViewById(R.id.time_period);
 		if (hours/12 == 0) {

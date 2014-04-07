@@ -108,17 +108,9 @@ public class ImageUtils {
 
 		};
 		
-		// Only save the image if the url is valid and the thumb nail has not already been made
 		if(sourcePath != null && !sourcePath.isEmpty() && !thumb.exists()) {
 			Picasso.with(context).load(sourcePath).resize(width, height).centerCrop().into(target);
-			
-			// TODO LOG THE PROGRESS
-			Log.d("IMAGE", "Saving thumb at " + thumb.getAbsolutePath());
-			
-			//return thumb.getPath();
 		}
-		
-		//return null;
 	}
 	
 	public void saveImageBlur(String sourcePath, String venueName, int width, int height) {
@@ -148,9 +140,6 @@ public class ImageUtils {
 		
 		if (sourcePath != null && !sourcePath.isEmpty() && !blur.exists()) {			
 			Picasso.with(context).load(sourcePath).resize(width, height).centerCrop().transform(blurTrans).into(target);
-			
-			// TODO LOG THE PROGRESS
-			Log.d("IMAGE", "Saving blur at " + blur.getAbsolutePath());
 		}
 	}
 }

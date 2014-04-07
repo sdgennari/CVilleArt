@@ -323,6 +323,11 @@ public class AsyncDataLoader extends AsyncTask<String, Void, HashMap<String, Str
 					continue;
 				}
 				
+				// Special exception, replace visual arts with gallery
+				if (categoryString.equals("Visual Arts")) {
+					categoryString = "Gallery";
+				}
+				
 				// If the category is not one we are searching for, set it to 'Venue' and continue
 				try {
 					Categories.valueOf(categoryString.replace(' ', '_').toUpperCase(Locale.ENGLISH));

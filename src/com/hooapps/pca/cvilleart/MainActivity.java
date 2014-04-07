@@ -23,8 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import jxl.*;
-
 import com.hooapps.pca.cvilleart.DataElems.AlarmScheduleReceiver;
 import com.hooapps.pca.cvilleart.DataElems.AsyncDataLoader;
 import com.hooapps.pca.cvilleart.DataElems.DataIntentService;
@@ -38,8 +36,6 @@ import com.hooapps.pca.cvilleart.ListViewElems.HeaderItem;
 import com.hooapps.pca.cvilleart.ListViewElems.Item;
 import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter;
 import com.hooapps.pca.cvilleart.ListViewElems.TextItem;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -85,9 +81,7 @@ public class MainActivity extends FragmentActivity implements
 		EventListFragment.OnEventViewSelectedListener,
 		HomeScreenFragment.OnHomeScreenButtonSelectedListener,
 		NearMeFragment.OnInfoWindowSelectedListener,
-		DiscoverItemFragment.OnDiscoverItemSelectedOpenMapListener//,
-		/*AsyncExcelLoader.AsyncExcelLoaderListener,*/
-		/*AsyncJSONLoader.AsyncJSONLoaderListener*/ {
+		DiscoverItemFragment.OnDiscoverItemSelectedOpenMapListener {
 	
 	private final int MILLI_PER_FOUR_WEEK = 3 * 7 * 24 * 60 * 60 * 1000;
 	private final String BASE_PATH = "https://www.googleapis.com/calendar/v3/calendars/";
@@ -96,7 +90,7 @@ public class MainActivity extends FragmentActivity implements
 	private final String API_KEY = "T00%3A00%3A00Z&key=AIzaSyDegSazDw-VcXQtWyVDmsDiV-xgwaT9ijE";
 	
 	private static final String IS_FIRST_LAUNCH = "is_first_launch";
-	private static final String LAST_DATA_UPDATE = "last_data_update";
+	public static final String LAST_DATA_UPDATE = "last_data_update";
 	private static final int MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 	
 	//private String venuePath 	=	"http://people.virginia.edu/~sdg6vt/CVilleArt/PCA_Data.json";
@@ -218,7 +212,6 @@ public class MainActivity extends FragmentActivity implements
 		
 		// If the data is more than one day old, update it
 		if (modifiedMillis < (currentMillis - MILLIS_PER_DAY)) {
-			
 			Toast.makeText(this, "Loading data...", Toast.LENGTH_SHORT).show();
 			
 			AsyncDataLoader musicLoader = new AsyncDataLoader(this);
@@ -245,8 +238,10 @@ public class MainActivity extends FragmentActivity implements
 			AsyncDataLoader venueLoader = new AsyncDataLoader(this);
 			venueLoader.execute(venuePath);
 			
+			/*
 			// Update the timestamp of last modified
 			prefs.edit().putLong(LAST_DATA_UPDATE, currentMillis).apply();
+			*/
 		}
 	}
 
@@ -260,31 +255,20 @@ public class MainActivity extends FragmentActivity implements
 
 		// Initialize the List of items for the ItemArrayAdapter
 		List<Item> items = new ArrayList<Item>();
-		//items.add(new HeaderItem("Favorites"));
-		//TODO: Write BookmarkItem Constructor to receive list of image URLs to display
-		//Use sharedPreferences to keep track of what urls the user wants and what discoverItemFragment to display upon click
-		//Make it easy to add/remove bookmarks
-		//have a better default image
-		//items.add(new BookmarkItem());
-		
-		/*
-		items.add(new HeaderItem("Menu"));
-		items.add(new TextItem("Home"));
-		items.add(new TextItem("Bookmarks"));
-		items.add(new TextItem("Recent"));
-		*/
 		
 		//items.add(new TextItem("Home"));
 		items.add(new HeaderItem("CVille Art"));
 		items.add(new TextItem("Home"));
 		items.add(new TextItem("Map"));
 		items.add(new TextItem("Venues"));
-		items.add(new TextItem("Transportation"));
 		items.add(new TextItem("Events"));
-
+		items.add(new TextItem("Transportation"));
+		
+		/*
 		items.add(new HeaderItem("Community"));
 		items.add(new TextItem("Streams"));
 		items.add(new TextItem("Capture"));
+		*/
 
 		// Set the ItemArrayAdapter as the ListView adapter
 		ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
@@ -300,40 +284,6 @@ public class MainActivity extends FragmentActivity implements
 		});
 	}
 
-	private void bookmark2setOnClickListener(MainActivity mainActivity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * Creates the items for the rightNavDrawer and places them inside of the
-	 * custom ItemArrayAdapter. This adapter is then set as the adapter for the
-	 * ListView.
-	 */
-	/*
-	public void initializeRightNavDrawer() {
-		rightNavDrawerList = (ListView) findViewById(R.id.right_drawer);
-
-		// Initialize the List of items for the ItemArrayAdapter
-		List<Item> items = new ArrayList<Item>();
-		items.add(new HeaderItem("Help"));
-		items.add(new TextItem("Help"));
-		items.add(new TextItem("About"));
-
-		// Set the ItemArrayAdapter as the ListView adapter
-		ItemArrayAdapter adapter = new ItemArrayAdapter(this, items);
-		rightNavDrawerList.setAdapter(adapter);
-
-		// Respond accordingly when an item is clicked
-		rightNavDrawerList.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				onRightDrawerViewSelected(position);
-				drawerLayout.closeDrawer(rightNavDrawerList);
-			}
-		});
-	}
-	*/
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -344,30 +294,20 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		// Display the about section
 		case R.id.action_settings:
-			Fragment newFragment = new AboutFragment();
-			Bundle args = new Bundle();
-			launchFragment(newFragment, args);
+			if (getSupportFragmentManager().findFragmentByTag("about") != null) {
+				// Return to the previous screen as if back were pressed
+				super.onBackPressed();
+			} else {
+				Fragment newFragment = new AboutFragment();
+				Bundle args = new Bundle();
+				launchFragment(newFragment, args, "about");
+			}
 			return true;
 			
-		/*
-		case R.id.action_settings:
-			if (drawerLayout.isDrawerOpen(leftNavDrawerList)) {
-				drawerLayout.closeDrawer(leftNavDrawerList);
-			}
-			if (drawerLayout.isDrawerOpen(rightNavDrawerList)) {
-				drawerLayout.closeDrawer(rightNavDrawerList);
-			} else {
-				drawerLayout.openDrawer(rightNavDrawerList);
-			}
-			return true;
-		*/
+		// Display the nav drawer
 		case android.R.id.home:
-			/*
-			if (drawerLayout.isDrawerOpen(rightNavDrawerList)) {
-				drawerLayout.closeDrawer(rightNavDrawerList);
-			}
-			*/
 			if (drawerLayout.isDrawerOpen(leftNavDrawerList)) {
 				drawerLayout.closeDrawer(leftNavDrawerList);
 			} else {
@@ -413,43 +353,22 @@ public class MainActivity extends FragmentActivity implements
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
-		// TransportationFragment
-		case 4:
-			newFragment = new TransportationFragment();
-			args = new Bundle();
-			// TODO Pass all relevant info to the fragment via args
-			break;
 		// EventFragment
-		case 5:
+		case 4:
 			newFragment = new EventListFragment();
 			args = new Bundle();
 			// TODO Pass all relevant info to the fragment via args
 			break;
-
-		}
-		
-		launchFragment(newFragment, args);
-	}
-	
-	/*
-	public void onRightDrawerViewSelected(int position) {
-		Fragment newFragment = null;
-		Bundle args = null;
-		switch (position) {
-		// Help
-		case 1:
-			//newFragment = new HelpFragment();
+		// TransportationFragment
+		case 5:
+			newFragment = new TransportationFragment();
 			args = new Bundle();
-			break;
-		case 2:
-			newFragment = new AboutFragment();
-			args = new Bundle();
+			// TODO Pass all relevant info to the fragment via args
 			break;
 		}
 		
-		launchFragment(newFragment, args);
+		launchFragment(newFragment, args, null);
 	}
-	*/
 	
 	public void onHomeScreenButtonSelected(View v) {
 		Fragment newFragment = null;
@@ -470,10 +389,10 @@ public class MainActivity extends FragmentActivity implements
 			break;
 		}
 		
-		launchFragment(newFragment, args);
+		launchFragment(newFragment, args, null);
 	}
 	
-	private void launchFragment(Fragment newFragment, Bundle args) {
+	private void launchFragment(Fragment newFragment, Bundle args, String tag) {
 		// Abort the mission if the fragment or args is still null to avoid
 		// NullPointerException
 		if (newFragment == null || args == null) {
@@ -487,7 +406,7 @@ public class MainActivity extends FragmentActivity implements
 		// Add the transaction to the back stack to allow for navigation with
 		// the back button
 
-		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.replace(R.id.fragment_container, newFragment, tag);
 		// NOTE: This is fine as is. According to the API, this doesn't replace
 		// the fragment_container. Instead, it replaces
 		// all the fragments in the given container with the newFragment. In
@@ -520,20 +439,7 @@ public class MainActivity extends FragmentActivity implements
 		Uri venueUri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
 		args.putParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE, venueUri);
 		
-		launchFragment(newFragment, args);
-		/*
-		newFragment.setArguments(args);
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-		// Replace the fragment in fragment_container with the new fragment
-		// Add the transaction to the back stack to allow for navigation with
-		// the back button
-		transaction.replace(R.id.fragment_container, newFragment);
-		transaction.addToBackStack(null);
-
-		// Commit the transaction
-		transaction.commit();
-		*/
+		launchFragment(newFragment, args, null);
 	}
 	
 	public void OnEventViewSelected(ListView l, View v, int position, long id) {
@@ -543,60 +449,8 @@ public class MainActivity extends FragmentActivity implements
 		Uri eventUri = Uri.parse(PCAContentProvider.EVENT_CONTENT_URI+"/"+id);
 		args.putParcelable(PCAContentProvider.EVENT_CONTENT_ITEM_TYPE, eventUri);
 		
-		launchFragment(newFragment, args);
-		/*
-		newFragment.setArguments(args);
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		
-		transaction.replace(R.id.fragment_container, newFragment);
-		transaction.addToBackStack(null);
-		
-		transaction.commit();
-		*/
+		launchFragment(newFragment, args, null);
 	}
-
-	/**
-	 * Helper method to schedule services at the appropriate time to update the
-	 * database.
-	 */
-	/*
-	private void scheduleServices() {
-		AlarmManager alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(this, AlarmScheduleReceiver.class);
-		PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-		
-		Calendar calendar = Calendar.getInstance();
-		
-		// Set the current time to tomorrow
-		calendar.setTimeInMillis(System.currentTimeMillis() + AlarmManager.INTERVAL_DAY);
-		
-		// TODO DISABLE AFTER DEBUGGING
-		//calendar.setTimeInMillis(System.currentTimeMillis());
-		
-		// Set the alarm to start at 1:XX AM tomorrow
-		calendar.set(Calendar.HOUR_OF_DAY, 1);
-		
-		alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
-	}
-	*/
-	
-	/*
-	public void onBookmarkClick(View v) {
-		int id = v.getId();
-		if (id == R.id.bookmark1)
-			Log.d("Testing", "Image Button 1");
-		else if (id == R.id.bookmark2)
-			Log.d("Testing", "Image Button 2");
-		else if (id == R.id.bookmark3)
-			Log.d("Testing","Image Button 3");
-		else if (id == R.id.bookmark4)
-			Log.d("Testing","Image Button 4");
-		else if (id == R.id.bookmark5)
-			Log.d("Testing","Image Button 5");
-		else if (id == R.id.bookmark6)
-			Log.d("Testing","Image Button 6");
-	}
-	*/
 	
 	private String formatTimeRange(String calendarId) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -624,7 +478,7 @@ public class MainActivity extends FragmentActivity implements
 		Uri venueUri = Uri.parse(PCAContentProvider.VENUE_CONTENT_URI+"/"+id);
 		args.putParcelable(PCAContentProvider.VENUE_CONTENT_ITEM_TYPE, venueUri);
 		
-		launchFragment(newFragment, args);
+		launchFragment(newFragment, args, null);
 	}
 
 	@Override
@@ -635,6 +489,6 @@ public class MainActivity extends FragmentActivity implements
 		
 		args.putInt(VenueTable.COLUMN_ID, id);
 		
-		launchFragment(newFragment, args);
+		launchFragment(newFragment, args, null);
 	}
 }

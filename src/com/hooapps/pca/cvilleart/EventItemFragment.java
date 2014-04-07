@@ -190,7 +190,13 @@ public class EventItemFragment extends Fragment {
 		
 		int hours = c.get(Calendar.HOUR_OF_DAY);
 		int minutes = c.get(Calendar.MINUTE);
-		result = String.format("% 2d", hours%12) + ":" + String.format("%02d", minutes);
+		int formattedHours = hours;;
+		
+		// Properly format the hours for AM/PM
+		if (hours > 12) {
+			formattedHours = hours % 12;
+		}
+		result = String.format("% 2d", formattedHours) + ":" + String.format("%02d", minutes);
 		
 		if (hours/12 == 0) {
 			result += " AM";

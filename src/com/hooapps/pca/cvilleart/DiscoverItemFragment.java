@@ -51,8 +51,6 @@ import com.hooapps.pca.cvilleart.DataElems.VenueTable;
 import com.hooapps.pca.cvilleart.DataElems.PCAContentProvider.Categories;
 import com.hooapps.pca.cvilleart.DiscoverListFragment.OnDiscoverViewSelectedListener;
 import com.hooapps.pca.cvilleart.ListViewElems.Item;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 

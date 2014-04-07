@@ -6,8 +6,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.hooapps.pca.cvilleart.R;
 import com.hooapps.pca.cvilleart.CustomElems.RoundedImageView;
 import com.hooapps.pca.cvilleart.ListViewElems.ItemArrayAdapter.Type;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -38,7 +36,6 @@ public class ArtVenue implements Item
 	private final String secondaryCategory;
 	private final String LatLngString;
 	private final String imagePath;
-	private ImageLoader imageLoader = ImageLoader.getInstance();
 	
 	public ArtVenue(String organizationName, String emailAddress, String URL, String description, 
 			String phoneNumber, String streetAddress, String city, String zipCode, String stateAbv,
@@ -219,6 +216,7 @@ public class ArtVenue implements Item
 			view = convertView;
 		}
 		
+		/*
 		final ImageView imageView = (RoundedImageView)view.findViewById(R.id.image);
 		// TODO Connect this to DiscoverCursorAdapter
 		imageLoader.loadImage(imagePath, new SimpleImageLoadingListener() {
@@ -227,6 +225,7 @@ public class ArtVenue implements Item
 				imageView.setImageBitmap(loadedImage);
 		    }
 		});
+		*/
 		
 		TextView title = (TextView) view.findViewById(R.id.venue_title);
 		title.setText(this.organizationName);

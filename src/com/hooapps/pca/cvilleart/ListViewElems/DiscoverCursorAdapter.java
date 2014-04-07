@@ -73,9 +73,6 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		String name = cursor.getString(colName);
 		String categoryString = cursor.getString(colType);
 		String imagePath = cursor.getString(colImgUrl);
-		//String thumbPath = cursor.getString(colImgThumb);
-		
-		Log.d("BIND", "BindView for " + name);
 
 		// Display the data on the views in the list
 		TextView titleView = (TextView)v.findViewById(R.id.venue_title);
@@ -87,8 +84,6 @@ public class DiscoverCursorAdapter extends SimpleCursorAdapter {
 		*/
 
 		ImageView imageView = (ImageView) v.findViewById(R.id.image);
-		
-		Picasso.with(context).setDebugging(true);
 		
 		// Set the image based on category
 		int drawableResId = 0;
